@@ -20,7 +20,7 @@ describe('createScreenMap', () => {
     const map = createScreenMap(options);
     expect(map.elements[0]?.selector.resourceId).toBe('com.example.app:id/submit');
     expect(map.elements[0]?.center).toEqual({ x: 60, y: 45 });
-    expect(map.elements[0]?.normalizedCenter).toEqual({ x: 0.5, y: 0.5 });
+    expect(map.elements[0]?.normalizedCoordinates).toEqual({ x: 0.5, y: 0.5 });
     expect(map.fingerprint).toBe(createScreenMap(options).fingerprint);
   });
 
