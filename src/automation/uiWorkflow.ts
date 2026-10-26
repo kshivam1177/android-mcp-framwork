@@ -3,9 +3,10 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { execCommand } from '../utils/exec.js';
 import { loadConfig } from '../config/loader.js';
+import { runAdbShell } from '../utils/adb.js';
 
 type Selector = { resourceId?: string; text?: string; contentDesc?: string; className?: string };
-type ScreenElement = { id: string; name?: string; type?: string; selector?: Selector; coordinates?: { x: number; y: number }; required?: boolean; sensitive?: boolean };
+type ScreenElement = { id: string; name?: string; type?: string; selector?: Selector; coordinates?: { x: number; y: number }; normalizedCoordinates?: { x: number; y: number }; required?: boolean; sensitive?: boolean };
 type ScreenDefinition = { schemaVersion?: string; id: string; name?: string; form: ScreenElement[]; detection?: { requiredElements?: string[] }; screenshot?: { width: number; height: number } };
 type WorkflowAction = { id: string; type: 'tap'|'type'|'wait'|'wait_for_screen'|'assert_screen'|'back'|'key'; screen?: string; element?: string; value?: string; timeoutMs?: number; intervalMs?: number; key?: string };
 type WorkflowDefinition = { schemaVersion?: string; id: string; name?: string; forms: Record<string,string>; actions: WorkflowAction[]; settings?: { stopOnFailure?: boolean; verifyAfterAction?: boolean } };
@@ -156,9 +157,21 @@ export async function runUiWorkflow(options: { cwd: string; workflowFile: string
             if (action.type === 'type') args.push(resolveValue(action.value ?? ''));
             args.push(selector);
             await android(args, projectRoot);
-          } else if (element.coordinates) {
+          } else if (element.coordinates || element.normalizedCoordinates) {
             if (action.type !== 'tap') throw new Error('Coordinate fallback supports tap only; add a semantic selector for text input.');
-            const { x, y } = element.coordinates;
+            let x: number;
+            let y: number;
+            if (element.normalizedCoordinates) {
+              if (!options.deviceId) throw new Error('Normalized coordinate fallback requires a resolved device ID.');
+              const display = await runAdbShell(options.deviceId, ['wm', 'size']);
+              const sizeMatch = display.stdout.match(/Override size:\\s*(\\d+)x(\\d+)/) ?? display.stdout.match(/Physical size:\\s*(\\d+)x(\\d+)/);
+              if (!sizeMatch) throw new Error('Unable to resolve device display dimensions for normalized coordinates.');
+              x = element.normalizedCoordinates.x * Number(sizeMatch[1]);
+              y = element.normalizedCoordinates.y * Number(sizeMatch[2]);
+            } else {
+              x = element.coordinates!.x;
+              y = element.coordinates!.y;
+            }
             const args = [...(options.deviceId ? ['-s', options.deviceId] : []), 'shell', 'input', 'tap', String(Math.round(x)), String(Math.round(y))];
             const adb = process.env.ADB_PATH || 'adb';
             const { execCommand } = await import('../utils/exec.js');
