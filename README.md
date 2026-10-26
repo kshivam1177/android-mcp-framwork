@@ -38,7 +38,7 @@ androidmcp-framework setup
 
 This creates `.androidmcp-framework/config.yaml`. If existing data remains under `.android-build-mcp/` or `.androidbuildmcp/`, inspect it and run `androidmcp-framework setup --migrate` to copy files without overwriting existing content. The old directory is not deleted automatically.
 
-Project testing instructions, saved test cases, and generated reports live inside `.androidmcp-framework/`.
+All project-specific framework data is kept inside `.androidmcp-framework/`. Screenshots, saved UI hierarchy JSON, screen recordings, and bug-report archives are organized under `.androidmcp-framework/artifacts/`; test-case definitions and timestamped test reports remain in their dedicated `testcases/` and `test-reports/` directories. Generated artifacts are local outputs and are ignored by Git by default.
 
 ## Local checkout config
 
