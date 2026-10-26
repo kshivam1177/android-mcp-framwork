@@ -9,6 +9,7 @@ import button from './button.js';
 import gesture from './gesture.js';
 import screenshot from './screenshot.js';
 import analyzeScreenImage from './analyze_screen_image.js';
+import saveScreenMap from './save_screen_map.js';
 import analyzeScreenshot from './analyze_screenshot.js';
 import fillForm from './fill_form.js';
 import runUiWorkflow from './run_ui_workflow.js';
@@ -29,6 +30,7 @@ export const uiAutomationTools: ToolModule[] = [
   gesture,
   screenshot,
   analyzeScreenImage,
+  saveScreenMap,
   analyzeScreenshot,
   fillForm,
   runUiWorkflow,
