@@ -9,7 +9,7 @@ import { createServer } from '../mcp/server.js';
 import { WORKFLOWS } from '../workflows.js';
 import { runDoctorChecks } from '../tools/doctor/doctor.js';
 import { getConfigDir } from '../config/loader.js';
-import { PROJECT_CONFIG_DIR, findProjectConfigPath } from '../utils/paths.js';
+import { PROJECT_CONFIG_DIR, findProjectConfigPath, resolveProjectRoot } from '../utils/paths.js';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 
@@ -49,10 +49,11 @@ function listTools(json: boolean): void {
 }
 
 function setupConfig(cwd: string, migrate: boolean): void {
-  const canonicalDir = path.join(cwd, PROJECT_CONFIG_DIR);
+  const projectRoot = resolveProjectRoot(cwd);
+  const canonicalDir = path.join(projectRoot, PROJECT_CONFIG_DIR);
   const canonicalPath = path.join(canonicalDir, 'config.yaml');
   const existingCanonical = fs.existsSync(canonicalPath);
-  const legacyPath = findProjectConfigPath(cwd);
+  const legacyPath = findProjectConfigPath(projectRoot);
 
   if (existingCanonical) {
     console.log(`${canonicalPath} already exists - leaving it as-is.`);
