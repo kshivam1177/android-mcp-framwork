@@ -5,7 +5,8 @@
   "type": "module",
   "license": "MIT",
   "bin": {
-    "androidmcp-framework": "build/cli/index.js"
+    "androidmcp-framework": "build/cli/index.js",
+    "amf": "build/cli/index.js"
   },
   "main": "build/mcp/server.js",
   "exports": {
