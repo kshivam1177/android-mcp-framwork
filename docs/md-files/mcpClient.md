@@ -1,6 +1,6 @@
 # MCP client configuration
 
-AndroidMCP Framework currently runs as a local **stdio MCP server**. It uses the package/CLI name `androidmcp-framework` and starts with the `mcp` command. For a client-specific walkthrough, see [MCP integration guide](./mcp-guide.md).
+AndroidMCP Framwork currently runs as a local **stdio MCP server**. It uses the package/CLI name `androidmcp-framework` and starts with the `mcp` command. For a client-specific walkthrough, see [MCP integration guide](./mcp-guide.md).
 
 ## Generic configuration
 
@@ -9,7 +9,7 @@ Clients using the common `mcpServers` schema can use:
 ```json
 {
   "mcpServers": {
-    "androidmcp-framework": {
+    "androidmcp-framwork": {
       "command": "npx",
       "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
@@ -22,7 +22,7 @@ For VS Code's `.vscode/mcp.json` schema, use a top-level `servers` object:
 ```json
 {
   "servers": {
-    "androidmcp-framework": {
+    "androidmcp-framwork": {
       "type": "stdio",
       "command": "npx",
       "args": ["-y", "androidmcp-framework@latest", "mcp"]
@@ -43,7 +43,7 @@ npx -y androidmcp-framework@latest workflows
 npx -y androidmcp-framework@latest tools
 ```
 
-Then restart/reload the MCP client and ask it to list the AndroidMCP Framework tools or call the available doctor tool.
+Then restart/reload the MCP client and ask it to list the AndroidMCP Framwork tools or call the available doctor tool.
 
 ## Project configuration is separate
 
