@@ -1,6 +1,6 @@
 # Testing intelligence
 
-AndroidBuildMCP exposes four MCP tools for an initial, conservative test-intelligence workflow.
+AndroidBuildMCP exposes four MCP tools for an initial, conservative test-intelligence workflow and a freshness-aware UI-map cache utility.
 
 ## Tools
 
@@ -8,6 +8,12 @@ AndroidBuildMCP exposes four MCP tools for an initial, conservative test-intelli
 - `android_test_validate_plan`: validates a structured plan with a non-empty goal and explicit action steps. Invalid or incomplete plans are marked `blocked`; validation is not execution.
 - `android_test_resolve_instructions`: merges `global`, `project`, `feature`, and `run` layers in that order. Nested objects merge recursively; arrays and scalar values from a more specific layer replace earlier values.
 - `android_test_write_report`: writes Markdown and JSON under `.android-build-mcp/test-reports/<YYYY-MM-DD>/<time>-<run-id>/`. The run ID includes a UUID fragment to avoid collisions.
+
+## UI-map cache utility
+
+`src/automation/uiMapCache.ts` provides a process-local cache for UI-map snapshots with TTL expiry, app-version and source-fingerprint validation, defensive copies, and explicit invalidation. Callers should invalidate entries after navigation, app restart, or state-changing interactions. Stable semantic selectors (resource IDs, test IDs, labels, and roles) should be preferred over coordinates.
+
+The utility is covered by unit tests, but it is not yet wired into the UI snapshot/execution path. Therefore, it does not yet guarantee fewer live inspections or prevent stale-map use by existing automation tools.
 
 ## Truthful reporting and secrets
 
