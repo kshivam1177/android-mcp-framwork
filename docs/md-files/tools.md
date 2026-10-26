@@ -432,7 +432,7 @@ Switch the active session-defaults profile - useful in a monorepo with several G
 
 ## doctor _(enabled by default)_
 
-Environment diagnostics: adb, java, gradle, Android SDK, emulator, optional uiautomator2 bridge.
+Environment diagnostics: adb, java, gradle, Android SDK, emulator, optional uiautomator2 bridge, and optional Tesseract OCR.
 
 ### `doctor`
 Check this machine's Android toolchain: adb, java, a Gradle wrapper/binary, ANDROID_HOME/ANDROID_SDK_ROOT, the emulator binary, avdmanager, and (optional) python3 + uiautomator2's u2cli for the enhanced automation backend. Run this first when something isn't working.
