@@ -3,14 +3,15 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { execCommand } from '../utils/exec.js';
 import { loadConfig } from '../config/loader.js';
+import { runAdbShell } from '../utils/adb.js';
 
 type Selector = { resourceId?: string; text?: string; contentDesc?: string; className?: string };
-type ScreenElement = { id: string; name?: string; type?: string; selector?: Selector; coordinates?: { x: number; y: number }; required?: boolean; sensitive?: boolean };
+type ScreenElement = { id: string; name?: string; type?: string; selector?: Selector; coordinates?: { x: number; y: number }; normalizedCoordinates?: { x: number; y: number }; required?: boolean; sensitive?: boolean };
 type ScreenDefinition = { schemaVersion?: string; id: string; name?: string; form: ScreenElement[]; detection?: { requiredElements?: string[] }; screenshot?: { width: number; height: number } };
 type WorkflowAction = { id: string; type: 'tap'|'type'|'wait'|'wait_for_screen'|'assert_screen'|'back'|'key'; screen?: string; element?: string; value?: string; timeoutMs?: number; intervalMs?: number; key?: string };
 type WorkflowDefinition = { schemaVersion?: string; id: string; name?: string; forms: Record<string,string>; actions: WorkflowAction[]; settings?: { stopOnFailure?: boolean; verifyAfterAction?: boolean } };
 export type StepResult = { id: string; type: string; status: 'passed'|'failed'; durationMs: number; message?: string };
-export type WorkflowResult = { workflowId: string; success: boolean; startedAt: string; durationMs: number; steps: StepResult[]; reportPath: string };
+export type WorkflowResult = { workflowId: string; success: boolean; startedAt: string; durationMs: number; steps: StepResult[]; reportPath: string; sequenceCachePath?: string };
 
 const ROOT = '.androidmcp-framework';
 const MAX_JSON_BYTES = 1024 * 1024;
@@ -118,8 +119,11 @@ async function waitForScreen(screen: ScreenDefinition, cwd: string, deviceId: st
 export async function runUiWorkflow(options: { cwd: string; workflowFile: string; deviceId?: string }): Promise<WorkflowResult> {
   const projectRoot = path.resolve(options.cwd);
   const root = path.resolve(projectRoot, ROOT);
-  const workflowDir = path.join(root, 'workflows');
-  const workflowPath = within(workflowDir, options.workflowFile);
+  const sequenceDir = path.join(root, 'action-sequences');
+  const isSequence = options.workflowFile.replace(/\\\\/g, '/').startsWith('action-sequences/');
+  const workflowDir = isSequence ? sequenceDir : path.join(root, 'workflows');
+  const relativeWorkflowPath = isSequence ? options.workflowFile.slice('action-sequences/'.length) : options.workflowFile;
+  const workflowPath = within(workflowDir, relativeWorkflowPath);
   if (!workflowPath.endsWith('.json')) throw new Error('Workflow file must end in .json.');
   const workflow = await readJson<WorkflowDefinition>(workflowPath);
   validateWorkflow(workflow);
@@ -153,9 +157,21 @@ export async function runUiWorkflow(options: { cwd: string; workflowFile: string
             if (action.type === 'type') args.push(resolveValue(action.value ?? ''));
             args.push(selector);
             await android(args, projectRoot);
-          } else if (element.coordinates) {
+          } else if (element.coordinates || element.normalizedCoordinates) {
             if (action.type !== 'tap') throw new Error('Coordinate fallback supports tap only; add a semantic selector for text input.');
-            const { x, y } = element.coordinates;
+            let x: number;
+            let y: number;
+            if (element.normalizedCoordinates) {
+              if (!options.deviceId) throw new Error('Normalized coordinate fallback requires a resolved device ID.');
+              const display = await runAdbShell(options.deviceId, ['wm', 'size']);
+              const sizeMatch = display.stdout.match(/Override size: *([0-9]+)x([0-9]+)/) ?? display.stdout.match(/Physical size: *([0-9]+)x([0-9]+)/);
+              if (!sizeMatch) throw new Error('Unable to resolve device display dimensions for normalized coordinates.');
+              x = element.normalizedCoordinates.x * Number(sizeMatch[1]);
+              y = element.normalizedCoordinates.y * Number(sizeMatch[2]);
+            } else {
+              x = element.coordinates!.x;
+              y = element.coordinates!.y;
+            }
             const args = [...(options.deviceId ? ['-s', options.deviceId] : []), 'shell', 'input', 'tap', String(Math.round(x)), String(Math.round(y))];
             const adb = process.env.ADB_PATH || 'adb';
             const { execCommand } = await import('../utils/exec.js');
@@ -192,7 +208,24 @@ export async function runUiWorkflow(options: { cwd: string; workflowFile: string
   const reportDir = path.join(root, 'test-reports', date, `${time}-${randomUUID().slice(0,8)}`);
   await mkdir(reportDir, { recursive: true });
   const reportPath = path.join(reportDir, 'workflow-report.json');
-  const result: WorkflowResult = { workflowId: workflow.id, success, startedAt: startedAt.toISOString(), durationMs: Date.now() - started, steps, reportPath: path.relative(projectRoot, reportPath) };
+  const durationMs = Date.now() - started;
+  const result: WorkflowResult = { workflowId: workflow.id, success, startedAt: startedAt.toISOString(), durationMs, steps, reportPath: path.relative(projectRoot, reportPath) };
   await writeFile(reportPath, JSON.stringify(result, null, 2) + '\n', { encoding: 'utf8', flag: 'wx' });
+  if (success) {
+    await mkdir(sequenceDir, { recursive: true });
+    const sequenceCachePath = path.join(sequenceDir, `${workflow.id}.json`);
+    const sequence = {
+      ...workflow,
+      _cache: {
+        sourceWorkflow: path.relative(root, workflowPath).split(path.sep).join('/'),
+        lastSuccessfulRun: startedAt.toISOString(),
+        lastDurationMs: durationMs,
+        lastSuccessfulSteps: steps.map(({ id, type, durationMs: stepDurationMs }) => ({ id, type, durationMs: stepDurationMs })),
+        replayInstructions: 'Replay with run_ui_workflow using workflowFile action-sequences/<workflow-id>.json. Validate selectors and screen state before coordinate fallback.',
+      },
+    };
+    await writeFile(sequenceCachePath, JSON.stringify(sequence, null, 2) + '\n', 'utf8');
+    result.sequenceCachePath = path.relative(projectRoot, sequenceCachePath);
+  }
   return result;
 }
