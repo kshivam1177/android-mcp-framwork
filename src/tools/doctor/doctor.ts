@@ -30,7 +30,6 @@ async function checkBinary(name: string, command: string, args: string[], requir
 export async function runDoctorChecks(): Promise<{ summary: string; checks: CheckResult[] }> {
   const config = loadConfig();
   const checks: CheckResult[] = [];
-
   checks.push(await checkBinary('adb', getAdbPath(), ['version'], true));
   checks.push(await checkBinary('java', 'java', ['-version'], true));
   checks.push(await checkBinary('gradle', config.paths.gradlePath ?? 'gradle', ['--version'], false));
@@ -46,7 +45,6 @@ export async function runDoctorChecks(): Promise<{ summary: string; checks: Chec
   if (androidHome) {
     const emulatorBin = path.join(androidHome, 'emulator', process.platform === 'win32' ? 'emulator.exe' : 'emulator');
     checks.push({ name: 'emulator binary', ok: fs.existsSync(emulatorBin), required: false, detail: emulatorBin });
-
     const buildToolsDir = path.join(androidHome, 'build-tools');
     checks.push({
       name: 'build-tools (aapt2)',
@@ -57,15 +55,11 @@ export async function runDoctorChecks(): Promise<{ summary: string; checks: Chec
   }
 
   checks.push(await checkBinary('Android CLI', config.paths.androidCliPath, ['-V'], false));
-  checks.push(await checkBinary('python3', process.platform === 'win32' ? 'python' : 'python3', ['--version'], false));
-  checks.push(await checkBinary('u2cli (uiautomator2)', config.paths.u2cliPath, ['--help'], false));
 
   const requiredFailed = checks.filter((c) => c.required && !c.ok);
-  const summary =
-    requiredFailed.length === 0
-      ? 'All required checks passed.'
-      : `${requiredFailed.length} required check(s) failed: ${requiredFailed.map((c) => c.name).join(', ')}`;
-
+  const summary = requiredFailed.length === 0
+    ? 'All required checks passed.'
+    : `${requiredFailed.length} required check(s) failed: ${requiredFailed.map((c) => c.name).join(', ')}`;
   return { summary, checks };
 }
 
@@ -74,8 +68,7 @@ export function register(server: McpServer) {
     toolName,
     {
       title: 'Doctor',
-      description:
-        'Check this machine\'s Android toolchain: adb, java, a Gradle wrapper/binary, ANDROID_HOME/ANDROID_SDK_ROOT, the emulator binary, avdmanager, and (optional) python3 + uiautomator2\'s u2cli for the enhanced automation backend. Run this first when something isn\'t working.',
+      description: 'Check Android development prerequisites: adb, Java, Gradle, Android SDK, emulator, build-tools and the optional Google Android CLI integration. This framework does not require Python.',
       inputSchema: {},
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },
