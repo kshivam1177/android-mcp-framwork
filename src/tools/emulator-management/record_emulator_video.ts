@@ -4,8 +4,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { withErrorHandling, textResult } from '../../utils/response.js';
 import { resolveTarget, getAdbPath, runAdbForTarget } from '../../utils/adb.js';
 import { startBackgroundProcess, stopTrackedProcess, getTrackedProcess } from '../../utils/processRegistry.js';
-import { getStateDir } from '../../utils/paths.js';
-import fs from 'node:fs';
+import { createArtifactPath, timestampedArtifactName } from '../../utils/artifacts.js';
 import type { ToolModule } from '../types.js';
 
 export const toolName = 'record_emulator_video';
@@ -17,20 +16,21 @@ export function register(server: McpServer) {
     {
       title: 'Record Screen Video',
       description:
-        'Start or stop an on-device screen recording (adb shell screenrecord) and pull the resulting .mp4 to the local filesystem on stop. Works on both emulators and physical devices.',
+        'Start or stop an on-device screen recording (adb shell screenrecord) and pull the resulting .mp4 to the project artifacts folder on stop by default. Works on emulators and physical devices.',
       inputSchema: {
         action: z.enum(['start', 'stop']),
         targetId: z.string().optional(),
         processId: z.string().optional().describe('Required for action:"stop" - the processId returned by action:"start".'),
-        localOutputPath: z.string().optional().describe('Where to save the pulled .mp4 on stop. Defaults to a path under the state dir.'),
+        projectPath: z.string().optional().describe('Project root for the recording; defaults to the current working directory.'),
+        localOutputPath: z.string().optional().describe('Optional explicit output path. Defaults to .androidmcp-framework/artifacts/recordings/.'),
       },
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     },
     withErrorHandling(
-      async (args: { action: 'start' | 'stop'; targetId?: string; processId?: string; localOutputPath?: string }) => {
+      async (args: { action: 'start' | 'stop'; targetId?: string; processId?: string; projectPath?: string; localOutputPath?: string }) => {
         if (args.action === 'start') {
           const target = await resolveTarget({ requestedId: args.targetId });
-          const remotePath = `/sdcard/androidbuildmcp_${Date.now()}.mp4`;
+          const remotePath = `/sdcard/androidmcp_${Date.now()}.mp4`;
           const tracked = startBackgroundProcess(getAdbPath(), ['-s', target.id, 'shell', 'screenrecord', remotePath], {
             targetId: target.id,
             kind: 'screenrecord',
@@ -51,9 +51,13 @@ export function register(server: McpServer) {
         if (!remotePath) {
           return textResult('Stopped the recording, but could not determine the remote file path to pull.');
         }
-        const dir = path.join(getStateDir(), 'recordings');
-        fs.mkdirSync(dir, { recursive: true });
-        const localPath = args.localOutputPath ?? path.join(dir, path.basename(remotePath));
+        const localPath = args.localOutputPath
+          ? path.resolve(args.localOutputPath)
+          : createArtifactPath(
+              args.projectPath ?? process.cwd(),
+              'recordings',
+              timestampedArtifactName(tracked.targetId, 'mp4')
+            );
         await runAdbForTarget(tracked.targetId, ['pull', remotePath, localPath], { timeoutMs: 60_000 });
         return textResult(`Recording stopped and saved to ${localPath}.`, { localPath, remotePath });
       }
