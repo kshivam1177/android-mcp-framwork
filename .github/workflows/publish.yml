@@ -5,12 +5,12 @@ on:
     branches: [master]
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 concurrency:
   group: release-master
   cancel-in-progress: false
+
+permissions:
+  contents: read
 
 jobs:
   verify-package:
@@ -36,19 +36,66 @@ jobs:
     needs: verify-package
     environment: npm-publish
     permissions:
-      contents: read
+      contents: write
       id-token: write
+    outputs:
+      published_version: ${{ steps.release-version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
       - run: npm ci
-      - run: npm run build
+      - name: Choose next publish version
+        id: release-version
+        shell: bash
+        run: |
+          set -euo pipefail
+          CURRENT_VERSION="$(node -p "require('./package.json').version")"
+          LATEST_VERSION="$(npm view androidmcp-framework version 2>/dev/null || echo '0.0.0')"
+          NEXT_VERSION="$(node --input-type=module - "$CURRENT_VERSION" "$LATEST_VERSION" <<'NODE'
+          const [, , currentText, latestText] = process.argv;
+          const parse = (v) => v.split('-')[0].split('.').map((x) => Number.parseInt(x, 10));
+          const compare = (a, b) => {
+            const aa = parse(a), bb = parse(b);
+            for (let i = 0; i < 3; i++) {
+              if ((aa[i] ?? 0) !== (bb[i] ?? 0)) return (aa[i] ?? 0) > (bb[i] ?? 0) ? 1 : -1;
+            }
+            return 0;
+          };
+          const current = parse(currentText);
+          if (compare(latestText, currentText) >= 0) {
+            current[2] = Math.max(current[2] ?? 0, parse(latestText)[2] ?? 0) + 1;
+          }
+          process.stdout.write(current.slice(0, 3).join('.'));
+          NODE
+          )"
+          if [ "$NEXT_VERSION" != "$CURRENT_VERSION" ]; then
+            npm version "$NEXT_VERSION" --no-git-tag-version
+          fi
+          echo "version=$NEXT_VERSION" >> "$GITHUB_OUTPUT"
+          echo "Publishing AndroidMCP Framework $NEXT_VERSION"
+      - name: Build release package
+        run: npm run build
       - name: Publish package using npm trusted publishing
         run: npm publish --access public
+      - name: Commit published version to master
+        env:
+          VERSION: ${{ steps.release-version.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          if git diff --cached --quiet; then
+            echo "Package version already matches published version."
+            exit 0
+          fi
+          git commit -m "chore: record published npm version v${VERSION}"
+          git push origin HEAD:master
 
   publish-mcp-registry:
     name: Publish to Official MCP Registry
@@ -60,14 +107,16 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
-      - name: Synchronize registry metadata with package version
+      - name: Synchronize registry metadata with published package version
+        env:
+          PUBLISHED_VERSION: ${{ needs.publish-npm.outputs.published_version }}
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const version = process.env.PUBLISHED_VERSION;
           const manifest = JSON.parse(fs.readFileSync('server.json', 'utf8'));
-          manifest.version = pkg.version;
-          for (const item of manifest.packages ?? []) item.version = pkg.version;
+          manifest.version = version;
+          for (const item of manifest.packages ?? []) item.version = version;
           fs.writeFileSync('server.json', JSON.stringify(manifest, null, 2) + '\n');
           NODE
       - name: Install MCP Publisher
