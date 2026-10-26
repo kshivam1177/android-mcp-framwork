@@ -2,7 +2,7 @@
 
 A Model Context Protocol (MCP) server and CLI that gives coding agents Android development capabilities: build, install, and launch on emulators and physical devices; semantic UI automation; logcat/crash diagnostics; JaCoco coverage; project discovery and scaffolding. Modeled on [XcodeBuildMCP](https://github.com/cameroncooke/XcodeBuildMCP)'s tool naming and workflow conventions, translated to the Android/Gradle/adb toolchain.
 
-67 tools across 13 workflows. Five are enabled by default (`device`, `ui-automation`, `session-management`, `doctor`, `workflow-discovery`); the rest are opt-in - see [docs/md-files/workflow.md](docs/md-files/workflow.md).
+68 tools across 13 workflows. Five are enabled by default (`device`, `ui-automation`, `session-management`, `doctor`, `workflow-discovery`); the rest are opt-in - see [docs/md-files/workflow.md](docs/md-files/workflow.md).
 
 ## Install
 
@@ -14,6 +14,8 @@ androidmcp-framework doctor
 Or run on demand with no install: `npx -y androidmcp-framework@latest mcp`.
 
 ## MCP documentation
+
+- [Screenshot OCR and coordinate analysis](docs/screenshot-analysis.md) - local OCR that returns text bounding boxes and center coordinates as JSON.
 
 - [MCP integration guide](docs/md-files/mcp-guide.md) - protocol behavior, client setup, project context, tool discovery, troubleshooting, and security.
 - [Supported clients and transports](docs/md-files/supportedclients.md) - verified integration scope and current limitations.
