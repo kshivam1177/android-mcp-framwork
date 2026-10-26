@@ -1,4 +1,4 @@
-# AndroidMCP Framework
+# AndroidMCP Framwork
 
 A Model Context Protocol (MCP) server and CLI that gives coding agents Android development capabilities: build, install, and launch on emulators and physical devices; semantic UI automation; logcat/crash diagnostics; JaCoco coverage; project discovery and scaffolding. Modeled on [XcodeBuildMCP](https://github.com/cameroncooke/XcodeBuildMCP)'s tool naming and workflow conventions, translated to the Android/Gradle/adb toolchain.
 
@@ -24,7 +24,7 @@ Or run on demand with no install: `npx -y androidmcp-framework@latest mcp`.
 ```json
 {
   "mcpServers": {
-    "androidmcp-framework": {
+    "androidmcp-framwork": {
       "command": "npx",
       "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
