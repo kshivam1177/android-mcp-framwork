@@ -12,6 +12,7 @@ export interface TestStepResult {
 }
 export interface TestRunReport {
   request: string;
+  summary?: string;
   platform?: string;
   device?: string;
   buildVersion?: string;
@@ -57,7 +58,8 @@ function markdown(report: TestRunReport, runId: string, createdAt: string): stri
     '## Request',
     report.request,
     '',
-    '## Summary',
+    ...(report.summary ? ['## Summary', report.summary, ''] : []),
+    '## Outcome counts',
     `- Passed: ${count('passed')}`,
     `- Failed: ${count('failed')}`,
     `- Skipped: ${count('skipped')}`,
