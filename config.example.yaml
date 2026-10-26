@@ -11,6 +11,7 @@ enabledWorkflows:
   - session-management
   - doctor
   - workflow-discovery
+  - testing-intelligence
 
 customWorkflows: {}
 
