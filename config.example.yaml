@@ -1,0 +1,16 @@
+# AndroidBuildMCP example configuration
+# Copy to your project-level configuration path and customize as needed.
+
+logging:
+  level: info
+
+android:
+  adbPath: null
+  defaultDevice: null
+
+automation:
+  backend: adb
+  timeoutMs: 15000
+
+reports:
+  directory: .androidbuildmcp/test-reports
