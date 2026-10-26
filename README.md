@@ -32,7 +32,57 @@ Or run on demand with no install: `npx -y androidmcp-framework@latest mcp`.
 }
 ```
 
-See [docs/md-files/agent-setup.md](docs/md-files/agent-setup.md) for copy/paste setup instructions for Claude Code, Codex, Gemini CLI, Antigravity, and VS Code with GitHub Copilot. [Android Studio has a transport limitation](docs/md-files/agent-setup.md#9-android-studio-with-gemini): its documented MCP client does not support stdio, while this server currently uses stdio only.
+See [docs/md-files/agent-setup.md](docs/md-files/agent-setup.md) for setup instructions for [Claude Code](docs/md-files/agent-setup.md#4-claude-code), [Codex](docs/md-files/agent-setup.md#5-openai-codex-cli-and-ide-extension), [Antigravity](docs/md-files/agent-setup.md#7-google-antigravity), and [VS Code with GitHub Copilot](docs/md-files/agent-setup.md#8-vs-code-with-github-copilot). The [sample config file](examples/mcp-config.example.json) is also included in the npm package. [Android Studio has a transport limitation](docs/md-files/agent-setup.md#9-android-studio-with-gemini): its documented MCP client does not support stdio, while this server currently uses stdio only.
+
+
+### Local checkout config (Node + Android SDK)
+
+For a local source checkout, build the project first with `npm ci` and `npm run build`, then configure your MCP client to launch the built entry point. This example uses the local paths you supplied; replace them if your checkout or Android SDK is elsewhere. The recommended client alias is `androidmcp-framework`.
+
+```json
+{
+  "mcpServers": {
+    "androidmcp-framework": {
+      "command": "node",
+      "args": [
+        "/Users/kshivam117/MyStorage/devArea/projects/savera/AndroidBuildMCP/build/cli/index.js",
+        "mcp"
+      ],
+      "env": {
+        "ANDROID_HOME": "/Users/kshivam117/MyStorage/devArea/setup/sdk/android-sdk",
+        "PATH": "/Users/kshivam117/MyStorage/devArea/setup/sdk/android-sdk/platform-tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+      },
+      "trust": true,
+      "alwaysAllow": [
+        "build_device",
+        "build_run_device",
+        "install_app_device",
+        "launch_app_device",
+        "stop_app_device",
+        "uninstall_app_device",
+        "tap",
+        "long_press",
+        "type_text",
+        "swipe",
+        "touch",
+        "press_key",
+        "open_url_device",
+        "start_log_capture",
+        "stop_log_capture",
+        "clear_app_data",
+        "grant_permissions",
+        "reset_permissions",
+        "push_file_device",
+        "pull_file_device",
+        "clear_logs",
+        "doctor"
+      ]
+    }
+  }
+}
+```
+
+**Note:** `trust` and `alwaysAllow` are client-specific extensions, not standard MCP fields. The client may ignore or reject them if its schema does not support them. The allowlist above is a starting point; review state-changing tools before auto-approving them. See [the full explanation](docs/md-files/agent-setup.md#14-trust-and-alwaysallow) and [the portable sample config](examples/mcp-config.example.json).
 
 ## Set up a project
 
@@ -41,7 +91,7 @@ cd your-android-project
 androidmcp-framework setup
 ```
 
-Then either edit `.androidbuildmcp/config.yaml`'s `sessionDefaults`, or call `session_set_defaults` from your agent once connected. Full details: [docs/md-files/setup.md](docs/md-files/setup.md).
+Then either edit `.android-build-mcp/config.yaml`'s `sessionDefaults`, or call `session_set_defaults` from your agent once connected. Full details: [docs/md-files/setup.md](docs/md-files/setup.md).
 
 ## What's here
 

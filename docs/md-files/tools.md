@@ -1,6 +1,6 @@
 # Tools Reference
 
-Every tool AndroidBuildMCP exposes, grouped by workflow. Only `device`, `ui-automation`, `session-management`, `doctor`, and `workflow-discovery` are enabled by default - see [workflow.md](./workflow.md) for how to turn the rest on. This file mirrors the actual registered tool metadata (title, description, parameters, annotations) - if you change a tool's description in source, regenerate this file rather than editing it by hand.
+Every tool AndroidMCP Framework exposes, grouped by workflow. Only `device`, `ui-automation`, `session-management`, `doctor`, and `workflow-discovery` are enabled by default - see [workflow.md](./workflow.md) for how to turn the rest on. This file mirrors the actual registered tool metadata (title, description, parameters, annotations) - if you change a tool's description in source, regenerate this file rather than editing it by hand.
 
 **Total: 67 tools across 13 workflows.**
 
@@ -448,7 +448,7 @@ Check this machine's Android toolchain: adb, java, a Gradle wrapper/binary, ANDR
 List and toggle which workflows are enabled for this running server session.
 
 ### `manage_workflows`
-List every workflow and which of its tools are currently enabled, or enable/disable a workflow for this running server session. Session-only - it does not edit .androidbuildmcp/config.yaml, so restart-persistent changes still belong in enabledWorkflows there.
+List every workflow and which of its tools are currently enabled, or enable/disable a workflow for this running server session. Session-only - it does not edit .android-build-mcp/config.yaml, so restart-persistent changes still belong in enabledWorkflows there.
 
 - **Title:** Manage Workflows
 - **Parameters:** `action`, `workflowName`

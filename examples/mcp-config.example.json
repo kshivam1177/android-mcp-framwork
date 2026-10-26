@@ -1,0 +1,40 @@
+{
+  "mcpServers": {
+    "androidmcp-framework": {
+      "command": "node",
+      "args": [
+        "/absolute/path/to/android-mcp-framwork/build/cli/index.js",
+        "mcp"
+      ],
+      "env": {
+        "ANDROID_HOME": "/absolute/path/to/android-sdk",
+        "PATH": "/absolute/path/to/android-sdk/platform-tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+      },
+      "trust": true,
+      "alwaysAllow": [
+        "build_device",
+        "build_run_device",
+        "install_app_device",
+        "launch_app_device",
+        "stop_app_device",
+        "uninstall_app_device",
+        "tap",
+        "long_press",
+        "type_text",
+        "swipe",
+        "touch",
+        "press_key",
+        "open_url_device",
+        "start_log_capture",
+        "stop_log_capture",
+        "clear_app_data",
+        "grant_permissions",
+        "reset_permissions",
+        "push_file_device",
+        "pull_file_device",
+        "clear_logs",
+        "doctor"
+      ]
+    }
+  }
+}

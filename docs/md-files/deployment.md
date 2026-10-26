@@ -1,6 +1,6 @@
 # Deployment and release setup
 
-AndroidBuildMCP is a local developer tool that runs as a child process of an MCP client. It does not need a public server or hosted endpoint for stdio usage.
+AndroidMCP Framework is a local developer tool that runs as a child process of an MCP client. It does not need a public server or hosted endpoint for stdio usage.
 
 ## Local development
 
@@ -19,9 +19,9 @@ Connect a client to the built entry point:
 ```json
 {
   "mcpServers": {
-    "androidbuildmcp": {
+    "androidmcp-framework": {
       "command": "node",
-      "args": ["/absolute/path/to/AndroidBuildMCP/build/cli/index.js", "mcp"]
+      "args": ["/absolute/path/to/AndroidMCP Framework/build/cli/index.js", "mcp"]
     }
   }
 }
@@ -33,9 +33,9 @@ Use an absolute path in client configuration. Configure `ANDROID_HOME` or `ANDRO
 
 1. Ensure `package.json` version is incremented and `package-lock.json` matches.
 2. Run `npm ci`, `npm run typecheck`, `npm test`, and `npm run build` in CI.
-3. Run `npm pack --dry-run` and confirm `build/`, `scripts/`, `templates/`, docs/README, and license are included as intended. The Python UI-automation bridge in `scripts/` must be present in the published package.
+3. Run `npm pack --dry-run` and confirm `build/`, `scripts/`, `templates/`, examples/, README, and license are included as intended. The Python UI-automation bridge in `scripts/` must be present in the published package.
 4. Publish using the project's release credentials and normal npm provenance/release policy.
-5. Smoke-test the published package in a clean environment with `npx -y androidbuildmcp@<version> doctor` and a real MCP client.
+5. Smoke-test the published package in a clean environment with `npx -y androidmcp-framework@<version> doctor` and a real MCP client.
 
 ## CI considerations
 

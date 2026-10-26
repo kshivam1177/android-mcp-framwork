@@ -8,19 +8,19 @@
 - A Gradle wrapper in your Android project (recommended) or Gradle itself on `PATH`
 - Optional, for the richer UI-automation backend: Python 3.9+ with `pip install uiautomator2 && python -m uiautomator2 init`
 
-None of the above needs to be installed *for* AndroidBuildMCP itself - they're the normal Android dev toolchain. Run `androidbuildmcp doctor` any time to check what's actually on this machine.
+None of the above needs to be installed *for* AndroidMCP Framework itself - they're the normal Android dev toolchain. Run `androidmcp-framework doctor` any time to check what's actually on this machine.
 
 ## Install
 
 ```bash
-npm install -g androidbuildmcp@latest
+npm install -g androidmcp-framework@latest
 ```
 
 Verify:
 
 ```bash
-androidbuildmcp --help
-androidbuildmcp doctor
+androidmcp-framework --help
+androidmcp-framework doctor
 ```
 
 ### Run without installing globally
@@ -28,7 +28,7 @@ androidbuildmcp doctor
 Most MCP clients can start the server on demand instead:
 
 ```bash
-npx -y androidbuildmcp@latest mcp
+npx -y androidmcp-framework@latest mcp
 ```
 
 This is what the config snippets in [mcpClient.md](./mcpClient.md) use by default - nothing to install or update manually.
@@ -36,10 +36,10 @@ This is what the config snippets in [mcpClient.md](./mcpClient.md) use by defaul
 ## Updating
 
 ```bash
-npm install -g androidbuildmcp@latest
+npm install -g androidmcp-framework@latest
 ```
 
-If you're using the `npx -y androidbuildmcp@latest` form in your MCP client config, you're always on latest automatically (npx re-resolves the version each time, subject to its own cache).
+If you're using the `npx -y androidmcp-framework@latest` form in your MCP client config, you're always on latest automatically (npx re-resolves the version each time, subject to its own cache).
 
 ## Next
 
