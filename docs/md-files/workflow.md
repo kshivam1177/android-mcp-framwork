@@ -1,6 +1,6 @@
 # Workflows
 
-A **workflow** is a named group of related tools. Instead of handing an agent all 66 tools at once, AndroidMCP Framework starts with a small default set and lets you turn the rest on as you need them - fewer tools in context, less chance of the wrong tool getting picked.
+A **workflow** is a named group of related tools. Instead of handing an agent all 74 tools at once, AndroidMCP Framework starts with a small default set and lets you turn the rest on as you need them - fewer tools in context, less chance of the wrong tool getting picked.
 
 ## Default state
 
@@ -14,15 +14,14 @@ Everything else (`emulator-management`, `debugging`, `project-discovery`, `gradl
 |---|---|---|---|
 | `device` | 11 | on | Build, install, launch, stop, test, and transfer files to/from Android targets - emulators and physical devices together, since adb doesn't distinguish the way Xcode's simctl/devicectl split does. |
 | `emulator-management` | 10 | off | Create, boot, wipe, and configure AVDs: location, dark/light appearance, status-bar demo mode, screen recording. |
-| `ui-automation` | 13 | on | Semantic UI snapshots (elementRef-based) plus tap/swipe/drag/type/key/gesture/screenshot/wait/batch. |
+| `ui-automation` | 16 | on | Semantic snapshots, screenshot OCR, selector-based form filling, JSON UI workflows, and device interactions. |
 | `debugging` | 6 | off | Logcat streaming, crash and ANR extraction, log clearing, full adb bugreport. Log/crash-focused by design - no JDWP breakpoint debugging in this version. |
-| `coverage` | 2 | off | Read JaCoco XML coverage reports, overall and per source file. |
 | `project-discovery` | 4 | off | Find Gradle project roots, list modules and build variants, inspect build configuration. |
 | `gradle-module` | 5 | off | Build/test/run/list/stop a standalone Gradle module (pure-JVM/Kotlin library or CLI) - the roughest analogy in this project to Xcode's swift-package workflow; Android has no exact equivalent to a runnable SPM target. |
 | `session-management` | 4 | on | View, set, clear, and switch between named session-default profiles (projectPath/module/variant/targetId/...). |
-| `doctor` | 1 | on | Environment diagnostics: adb, java, gradle, Android SDK, emulator, ADB-based UI automation. |
+| `doctor` | 1 | on | Environment diagnostics: adb, Java, Gradle, Android SDK, emulator, optional Android CLI and Tesseract OCR. |
 | `workflow-discovery` | 1 | on | List and toggle which workflows are enabled for this running server session. |
-| `android-cli` | 6 | off | Optional integration with Google Android CLI 1.0: environment info, Android Studio semantic analysis/navigation, dependency version lookup, and skills discovery. |
+| `android-cli` | 6 | off | Optional integration with Google Android CLI 1.0: environment info, Android Studio semantic analysis/navigation, dependency version lookup, and skills discovery. |\n| `testing-intelligence` | 10 | off | Project test discovery, saved test cases/instructions, screen QA audits, change-impact analysis, plan validation, and reports. |
 
 See [tools.md](./tools.md) for every individual tool.
 
@@ -37,7 +36,7 @@ enabledWorkflows:
   - session-management
   - doctor
   - workflow-discovery
-  - android-cli # optional: requires Google Android CLI installed separately
+  - android-cli # optional: requires Google Android CLI installed separately\n  - testing-intelligence # change-aware test planning and reports
   - emulator-management   # <- added
   - coverage              # <- added
 ```
