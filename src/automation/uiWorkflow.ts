@@ -164,7 +164,7 @@ export async function runUiWorkflow(options: { cwd: string; workflowFile: string
             if (element.normalizedCoordinates) {
               if (!options.deviceId) throw new Error('Normalized coordinate fallback requires a resolved device ID.');
               const display = await runAdbShell(options.deviceId, ['wm', 'size']);
-              const sizeMatch = display.stdout.match(/Override size:\\s*(\\d+)x(\\d+)/) ?? display.stdout.match(/Physical size:\\s*(\\d+)x(\\d+)/);
+              const sizeMatch = display.stdout.match(/Override size: *([0-9]+)x([0-9]+)/) ?? display.stdout.match(/Physical size: *([0-9]+)x([0-9]+)/);
               if (!sizeMatch) throw new Error('Unable to resolve device display dimensions for normalized coordinates.');
               x = element.normalizedCoordinates.x * Number(sizeMatch[1]);
               y = element.normalizedCoordinates.y * Number(sizeMatch[2]);
