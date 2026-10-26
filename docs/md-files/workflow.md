@@ -22,7 +22,8 @@ Everything else (`emulator-management`, `debugging`, `project-discovery`, `proje
 | `session-management` | 4 | on | View, set, clear, and switch between named session-default profiles (projectPath/module/variant/targetId/...). |
 | `doctor` | 1 | on | Environment diagnostics: adb, java, gradle, Android SDK, emulator, optional uiautomator2 bridge. |
 | `workflow-discovery` | 1 | on | List and toggle which workflows are enabled for this running server session. |
-| `android-cli` | 6 | off | Optional integration with Google Android CLI 1.0: environment info, Android Studio semantic analysis/navigation, dependency version lookup, and skills discovery. |\n| `testing-intelligence` | 10 | off | Repository/test discovery, change-impact analysis, layered instruction resolution, plan validation, saved test cases, screen audits, and structured reports. |
+| `android-cli` | 6 | off | Optional integration with Google Android CLI 1.0: environment info, Android Studio semantic analysis/navigation, dependency version lookup, and skills discovery. |
+| `testing-intelligence` | 10 | off | Repository/test discovery, change-impact analysis, layered instruction resolution, plan validation, saved test cases, screen audits, and structured reports. |
 
 See [tools.md](./tools.md) for every individual tool.
 
@@ -74,4 +75,3 @@ Any tool listed under a custom workflow is enabled even if its real workflow isn
 ## CLI
 
 `androidmcp-framework workflows` prints this same table from the command line, no MCP client needed.
-\n
