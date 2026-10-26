@@ -1,9 +1,13 @@
 node_modules/
 build/
+dist/
 *.log
 .DS_Store
+.androidmcp-framework/
+# Legacy project directories are ignored to avoid accidentally committing
+# local configuration while users migrate to .androidmcp-framework/.
+.android-build-mcp/
 .androidbuildmcp/
 coverage/
 *.tsbuildinfo
 .env
-dist/
