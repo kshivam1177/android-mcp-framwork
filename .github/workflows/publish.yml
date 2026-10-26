@@ -44,8 +44,7 @@ jobs:
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
-          cache: npm
-          cache-dependency-path: package-lock.json
+          package-manager-cache: false
       - run: npm ci
       - run: npm run build
       - name: Publish package using npm trusted publishing
@@ -61,11 +60,23 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+      - name: Synchronize registry metadata with package version
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const manifest = JSON.parse(fs.readFileSync('server.json', 'utf8'));
+          manifest.version = pkg.version;
+          for (const item of manifest.packages ?? []) item.version = pkg.version;
+          fs.writeFileSync('server.json', JSON.stringify(manifest, null, 2) + '\n');
+          NODE
       - name: Install MCP Publisher
         run: |
-          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
           chmod +x ./mcp-publisher
       - name: Authenticate to MCP Registry via GitHub OIDC
         run: ./mcp-publisher login github-oidc
+      - name: Validate server metadata
+        run: ./mcp-publisher validate ./server.json
       - name: Publish server metadata
         run: ./mcp-publisher publish ./server.json
