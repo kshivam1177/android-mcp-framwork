@@ -93,7 +93,7 @@ await yargs(hideBin(process.argv))
   .scriptName('androidmcp-framework')
   .command('mcp', 'Start the MCP server over stdio (for MCP clients)', () => {}, runMcp)
   .command('doctor', 'Check the local Android toolchain (adb, java, gradle, SDK, emulator)', () => {}, runDoctor)
-  .command('update', 'Update the global androidmcp-framework installation to the latest npm version and clear npm cache', () => {}, runUpdate)
+  .command('update', 'Update androidmcp-framework if a newer npm version exists and clear the npx execution cache', () => {}, runUpdate)
   .command('workflows', 'List every workflow, its tool count, and whether it is on by default', () => {}, listWorkflows)
   .command(
     'tools',
