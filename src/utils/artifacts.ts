@@ -5,6 +5,7 @@ import { getConfigDir } from '../config/loader.js';
 /**
  * Create a path for generated evidence that belongs to an application project.
  * Artifact categories are single path segments to prevent path traversal.
+ * Existing evidence is never silently replaced; a numeric suffix is added.
  */
 export function createArtifactPath(projectRoot: string, category: string, fileName: string): string {
   if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/.test(category)) {
@@ -19,7 +20,15 @@ export function createArtifactPath(projectRoot: string, category: string, fileNa
   const configDir = getConfigDir(path.resolve(projectRoot));
   const artifactDir = path.join(configDir, 'artifacts', category);
   fs.mkdirSync(artifactDir, { recursive: true });
-  return path.join(artifactDir, safeFileName);
+
+  const extension = path.extname(safeFileName);
+  const stem = extension ? safeFileName.slice(0, -extension.length) : safeFileName;
+  let candidate = path.join(artifactDir, safeFileName);
+  let suffix = 1;
+  while (fs.existsSync(candidate)) {
+    candidate = path.join(artifactDir, `${stem}-${suffix++}${extension}`);
+  }
+  return candidate;
 }
 
 /** Create a filesystem-safe, timestamped artifact name. */
