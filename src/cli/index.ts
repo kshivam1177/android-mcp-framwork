@@ -69,7 +69,7 @@ function setupConfig(cwd: string): void {
 }
 
 await yargs(hideBin(process.argv))
-  .scriptName('androidbuildmcp')
+  .scriptName('androidmcp-framework')
   .command('mcp', 'Start the MCP server over stdio (for MCP clients)', () => {}, runMcp)
   .command('doctor', 'Check the local Android toolchain (adb, java, gradle, SDK, emulator)', () => {}, runDoctor)
   .command('workflows', 'List every workflow, its tool count, and whether it is on by default', () => {}, listWorkflows)
@@ -85,7 +85,7 @@ await yargs(hideBin(process.argv))
     () => {},
     () => setupConfig(process.cwd())
   )
-  .demandCommand(1, 'Pass a command - try "androidbuildmcp --help".')
+  .demandCommand(1, 'Pass a command - try "androidmcp-framework --help".')
   .strict()
   .help()
   .parseAsync();
