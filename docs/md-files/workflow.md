@@ -1,33 +1,32 @@
 # Workflows
 
-A **workflow** is a named group of related tools. AndroidMCP Framework enables six workflows by default, including testing intelligence, and lets you turn optional workflows on as needed.
+A workflow is a named group of related tools. AndroidMCP Framework enables six workflows by default, including testing intelligence, and lets you enable optional workflows as needed.
 
 ## Default state
 
-Six workflows ship enabled: `device`, `ui-automation`, `session-management`, `doctor`, `workflow-discovery`, and `testing-intelligence`. This includes test-project analysis, screen audits, test-case persistence, and report writing without a manual enable step.
+The following workflows are enabled without a manual enable call: `device`, `ui-automation`, `session-management`, `doctor`, `workflow-discovery`, and `testing-intelligence`. Testing intelligence provides project analysis, screen audits, test-case persistence, change-impact analysis, and structured test reports.
 
-Everything else (`emulator-management`, `debugging`, `project-discovery`, `gradle-module`, and `android-cli`) is opt-in.
+Optional workflows are `emulator-management`, `debugging`, `project-discovery`, `gradle-module`, and `android-cli`.
 
 ## Full list
 
-| Workflow | Tools | Default | Description |
-|---|---|---|---|
-| `device` | 11 | on | Build, install, launch, stop, test, and transfer files to/from Android targets - emulators and physical devices together, since adb doesn't distinguish the way Xcode's simctl/devicectl split does. |
-| `emulator-management` | 10 | off | Create, boot, wipe, and configure AVDs: location, dark/light appearance, status-bar demo mode, screen recording. |
-| `ui-automation` | 18 | on | Semantic snapshots, screenshot OCR, selector-based form filling, JSON UI workflows, and device interactions. |
-| `debugging` | 6 | off | Logcat streaming, crash and ANR extraction, log clearing, full adb bugreport. Log/crash-focused by design - no JDWP breakpoint debugging in this version. |
-| `project-discovery` | 4 | off | Find Gradle project roots, list modules and build variants, inspect build configuration. |
-| `gradle-module` | 5 | off | Build/test/run/list/stop a standalone Gradle module (pure-JVM/Kotlin library or CLI) - the roughest analogy in this project to Xcode's swift-package workflow; Android has no exact equivalent to a runnable SPM target. |
-| `session-management` | 4 | on | View, set, clear, and switch between named session-default profiles (projectPath/module/variant/targetId/...). |
-| `doctor` | 1 | on | Environment diagnostics: adb, Java, Gradle, Android SDK, emulator, optional Android CLI and Tesseract OCR. |
-| `workflow-discovery` | 1 | on | List and toggle which workflows are enabled for this running server session. |
-| `android-cli` | 6 | off | Optional integration with Google Android CLI 1.0: environment info, Android Studio semantic analysis/navigation, dependency version lookup, and skills discovery. |\n| `testing-intelligence` | 10 | on | Project test discovery, saved test cases/instructions, screen QA audits, change-impact analysis, plan validation, and reports. |
+| Workflow | Default | Description |
+|---|---|---|
+| `device` | On | Build, install, launch, stop, test, and transfer files to/from Android devices. Includes Native Android Gradle tests and Flutter `flutter test` adapters. |
+| `emulator-management` | Off | Create, boot, wipe, and configure Android Virtual Devices. |
+| `ui-automation` | On | Semantic snapshots, screenshots, selector-based form filling, JSON workflows, keyboard dismissal, and device interactions. |
+| `debugging` | Off | Logcat streaming, crash and ANR extraction, log clearing, and ADB bug reports. |
+| `project-discovery` | Off | Find Gradle roots, list modules and build variants, inspect build configuration. |
+| `gradle-module` | Off | Build and test standalone Gradle modules. |
+| `session-management` | On | View, set, clear, and switch between session-default profiles. |
+| `doctor` | On | Diagnose ADB, Java, Gradle, Android SDK, emulator, and optional Android CLI setup. |
+| `workflow-discovery` | On | List and toggle workflows for the current server session. |
+| `android-cli` | Off | Optional Google Android CLI integration. |
+| `testing-intelligence` | On | Analyze projects, discover Native Android and Flutter tests, audit screens, save test cases, and write reports. |
 
-See [tools.md](./tools.md) for every individual tool.
+## Persistent configuration
 
-## Turning workflows on persistently
-
-Edit `.androidmcp-framework/config.yaml`:
+Edit `.androidmcp-framework/config.yaml` and restart the MCP client to change enabled workflows:
 
 ```yaml
 enabledWorkflows:
@@ -36,44 +35,18 @@ enabledWorkflows:
   - session-management
   - doctor
   - workflow-discovery
-  - android-cli # optional: requires Google Android CLI installed separately
-  - emulator-management   # <- added
-  - coverage              # <- added
+  - testing-intelligence
+  # Optional:
+  # - android-cli
+  # - emulator-management
 ```
 
-An explicit `enabledWorkflows: []` means *nothing* is enabled - it does not fall back to the defaults. Restart your MCP client after editing.
+A config file's explicit `enabledWorkflows` list is authoritative. If an older config omits `testing-intelligence`, add it to that list to enable the workflow for that existing installation. Fresh/default configs include it automatically. An explicit `enabledWorkflows: []` means no workflows are enabled.
 
-## Turning workflows on for just this session
+## Session-only configuration
 
-Call the `manage_workflows` tool (part of `workflow-discovery`, which is why it's on by default - without it there'd be no way to enable anything else at runtime):
-
-```json
-{ "action": "enable", "workflowName": "emulator-management" }
-```
-
-```json
-{ "action": "list" }
-```
-
-Session-only changes don't touch `config.yaml` and don't survive a server restart.
+Call `manage_workflows` with `{"action":"enable","workflowName":"emulator-management"}` to enable a workflow for the current server session. Session-only changes do not update `config.yaml` and do not survive a restart.
 
 ## Custom workflows
 
-`customWorkflows` in `config.yaml` lets you enable individual tools by name, independent of their parent workflow - useful for a narrow use case like a CI smoke-test agent:
-
-```yaml
-customWorkflows:
-  ci-smoke:
-    - build_run_device
-    - get_crash_report
-    - stop_app_device
-```
-
-Any tool listed under a custom workflow is enabled even if its real workflow isn't.
-
-## CLI
-
-`androidmcp-framework workflows` prints this same table from the command line, no MCP client needed.
-
-
-| `testing-intelligence` | Disabled | Repository analysis, persistent test instructions, timestamped reports; foundation for change-aware testing. |
+`customWorkflows` can enable individual tools independently of their parent workflow. See [tools.md](./tools.md) for the tool reference.
