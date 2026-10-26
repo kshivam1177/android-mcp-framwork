@@ -18,6 +18,44 @@ export function readPackageVersion(packageJsonText: string): string | undefined 
   }
 }
 
+function parseVersion(version: string): { major: number; minor: number; patch: number; prerelease: string[] } | undefined {
+  const match = version.trim().replace(/^v/, '').match(/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([0-9A-Za-z.-]+))?(?:\+[0-9A-Za-z.-]+)?$/);
+  if (!match) return undefined;
+  return {
+    major: Number(match[1]),
+    minor: Number(match[2]),
+    patch: Number(match[3]),
+    prerelease: match[4] ? match[4].split('.') : [],
+  };
+}
+
+/** Compare valid semantic versions; returns undefined for non-semver inputs. */
+export function compareVersions(left: string, right: string): number | undefined {
+  const a = parseVersion(left);
+  const b = parseVersion(right);
+  if (!a || !b) return undefined;
+  for (const key of ['major', 'minor', 'patch'] as const) {
+    if (a[key] !== b[key]) return a[key] > b[key] ? 1 : -1;
+  }
+  if (a.prerelease.length === 0 && b.prerelease.length === 0) return 0;
+  if (a.prerelease.length === 0) return 1;
+  if (b.prerelease.length === 0) return -1;
+  const length = Math.max(a.prerelease.length, b.prerelease.length);
+  for (let i = 0; i < length; i++) {
+    const ai = a.prerelease[i];
+    const bi = b.prerelease[i];
+    if (ai === undefined) return -1;
+    if (bi === undefined) return 1;
+    if (ai === bi) continue;
+    const an = /^\d+$/.test(ai);
+    const bn = /^\d+$/.test(bi);
+    if (an && bn) return Number(ai) > Number(bi) ? 1 : -1;
+    if (an !== bn) return an ? -1 : 1;
+    return ai > bi ? 1 : -1;
+  }
+  return 0;
+}
+
 function defaultNpmRunner(args: string[], inheritOutput = false): string {
   const command = process.platform === 'win32' ? 'npm.cmd' : 'npm';
   const output = execFileSync(command, args, {
@@ -37,8 +75,20 @@ function canonicalPath(candidate: string): string {
   }
 }
 
+function clearNpxCache(runner: NpmRunner): void {
+  // Ask npm for its configured cache path so this also works on Windows and
+  // when npm_config_cache overrides the default ~/.npm location.
+  const cacheRoot = runner(['config', 'get', 'cache']).trim();
+  if (!cacheRoot || cacheRoot === 'undefined' || cacheRoot === 'null') {
+    throw new Error('npm did not return a valid cache directory');
+  }
+  const npxCachePath = path.join(cacheRoot, '_npx');
+  fs.rmSync(npxCachePath, { recursive: true, force: true });
+}
+
 export interface UpdateResult {
   success: boolean;
+  updated?: boolean;
   currentVersion?: string;
   latestVersion?: string;
   installedVersion?: string;
@@ -46,9 +96,9 @@ export interface UpdateResult {
 }
 
 /**
- * Update the global npm installation in place. npm install replaces the old
- * package version; npm cache clean is intentionally explicit because npm's
- * content-addressed cache is shared with unrelated Node.js projects.
+ * Update the global npm installation only when the registry has a newer
+ * version. Clear only npm's npx execution cache, not the shared npm package
+ * download cache used by unrelated Node.js projects.
  */
 export function runSelfUpdate(
   packageRoot: string,
@@ -71,9 +121,7 @@ export function runSelfUpdate(
 
   const resolvedPackageRoot = canonicalPath(packageRoot);
   const resolvedGlobalRoot = canonicalPath(globalRoot);
-  const relative = path.relative(resolvedGlobalRoot, resolvedPackageRoot);
-  const insideGlobalRoot = relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
-  if (!insideGlobalRoot) {
+  if (!isPathInsideDirectory(resolvedPackageRoot, resolvedGlobalRoot)) {
     const message = 'This command is not running from the global npm installation. Install it globally first with: npm install -g androidmcp-framework@latest';
     log(message);
     return { success: false, currentVersion, message };
@@ -89,7 +137,25 @@ export function runSelfUpdate(
     return { success: false, currentVersion, message };
   }
 
-  log(`Updating androidmcp-framework: ${currentVersion ?? 'unknown'} -> ${latestVersion}...`);
+  if (!currentVersion) {
+    const message = 'Could not read the installed package version. No update was attempted.';
+    log(message);
+    return { success: false, latestVersion, message };
+  }
+
+  const comparison = compareVersions(latestVersion, currentVersion);
+  if (comparison === undefined) {
+    const message = `Could not compare installed version ${currentVersion} with registry version ${latestVersion}; no update was attempted.`;
+    log(message);
+    return { success: false, currentVersion, latestVersion, message };
+  }
+  if (comparison <= 0) {
+    const message = `androidmcp-framework ${currentVersion} is already up to date (registry latest: ${latestVersion}). No installation or cache cleanup was needed.`;
+    log(message);
+    return { success: true, updated: false, currentVersion, latestVersion, installedVersion: currentVersion, message };
+  }
+
+  log(`Updating androidmcp-framework: ${currentVersion} -> ${latestVersion}...`);
   try {
     runner(['install', '--global', 'androidmcp-framework@latest'], true);
   } catch {
@@ -100,9 +166,9 @@ export function runSelfUpdate(
 
   let cacheWarning = '';
   try {
-    runner(['cache', 'clean', '--force'], true);
-  } catch {
-    cacheWarning = ' Warning: the package was updated, but npm cache cleanup failed.';
+    clearNpxCache(runner);
+  } catch (err) {
+    cacheWarning = ` Warning: the package was updated, but npx cache cleanup failed: ${(err as Error).message}`;
   }
 
   let installedVersion: string | undefined;
@@ -113,7 +179,6 @@ export function runSelfUpdate(
     };
     installedVersion = parsed.dependencies?.['androidmcp-framework']?.version;
   } catch {
-    // Verify from the package directory if npm list output is unavailable.
     try {
       const installedPackageJson = path.join(globalRoot, 'androidmcp-framework', 'package.json');
       installedVersion = readPackageVersion(fs.readFileSync(installedPackageJson, 'utf8'));
@@ -125,16 +190,15 @@ export function runSelfUpdate(
   if (!installedVersion) {
     const message = 'The install command completed, but the installed version could not be verified.' + cacheWarning;
     log(message);
-    return { success: false, currentVersion, latestVersion, message };
+    return { success: false, updated: true, currentVersion, latestVersion, message };
   }
   if (installedVersion !== latestVersion) {
     const message = `Installed version ${installedVersion} does not match npm's latest version ${latestVersion}. Retry the update and inspect npm permissions or registry configuration.` + cacheWarning;
     log(message);
-    return { success: false, currentVersion, latestVersion, installedVersion, message };
+    return { success: false, updated: true, currentVersion, latestVersion, installedVersion, message };
   }
 
-  const message = `Updated androidmcp-framework to ${installedVersion}. The previous globally installed version was replaced.` +
-    ' npm cache cleanup was attempted (this clears npm cache entries for all projects, not just AndroidMCP Framework).' + cacheWarning;
+  const message = `Updated androidmcp-framework from ${currentVersion} to ${installedVersion}. The previous global version was replaced. Cleared the npx execution cache at the configured npm cache directory.` + cacheWarning;
   log(message);
-  return { success: true, currentVersion, latestVersion, installedVersion, message };
+  return { success: true, updated: true, currentVersion, latestVersion, installedVersion, message };
 }

@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { isPathInsideDirectory, readPackageVersion, runSelfUpdate } from '../update.js';
+import { compareVersions, isPathInsideDirectory, readPackageVersion, runSelfUpdate } from '../update.js';
 
 describe('amf update helpers', () => {
   const roots: string[] = [];
@@ -17,24 +17,34 @@ describe('amf update helpers', () => {
     expect(isPathInsideDirectory(root, root)).toBe(true);
   });
 
-  it('reads package versions safely', () => {
+  it('reads package versions safely and compares semantic versions', () => {
     expect(readPackageVersion('{"version":"1.2.3"}')).toBe('1.2.3');
     expect(readPackageVersion('{"version":3}')).toBeUndefined();
     expect(readPackageVersion('not json')).toBeUndefined();
+    expect(compareVersions('1.2.4', '1.2.3')).toBe(1);
+    expect(compareVersions('1.2.3', '1.2.3')).toBe(0);
+    expect(compareVersions('1.2.3-beta.1', '1.2.3')).toBe(-1);
+    expect(compareVersions('invalid', '1.2.3')).toBeUndefined();
   });
 
-  it('installs latest, clears npm cache, and verifies the installed version', () => {
+  it('installs only a newer version and removes only the configured npx cache', () => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'amf-update-'));
     roots.push(root);
     const globalRoot = path.join(root, 'node_modules');
     const packageRoot = path.join(globalRoot, 'androidmcp-framework');
+    const cacheRoot = path.join(root, 'npm-cache');
+    const npxCache = path.join(cacheRoot, '_npx');
     fs.mkdirSync(packageRoot, { recursive: true });
+    fs.mkdirSync(npxCache, { recursive: true });
     fs.writeFileSync(path.join(packageRoot, 'package.json'), '{"name":"androidmcp-framework","version":"1.0.0"}');
+    fs.writeFileSync(path.join(npxCache, 'cache-entry'), 'remove me');
+    fs.writeFileSync(path.join(cacheRoot, 'other-cache-entry'), 'keep me');
     const calls: string[][] = [];
     const runner = (args: string[]) => {
       calls.push(args);
       if (args[0] === 'root') return globalRoot;
       if (args[0] === 'view') return '1.2.3';
+      if (args[0] === 'config') return cacheRoot;
       if (args[0] === 'list') return JSON.stringify({ dependencies: { 'androidmcp-framework': { version: '1.2.3' } } });
       return '';
     };
@@ -42,11 +52,34 @@ describe('amf update helpers', () => {
 
     const result = runSelfUpdate(packageRoot, runner, log);
 
-    expect(result).toMatchObject({ success: true, currentVersion: '1.0.0', latestVersion: '1.2.3', installedVersion: '1.2.3' });
+    expect(result).toMatchObject({ success: true, updated: true, currentVersion: '1.0.0', latestVersion: '1.2.3', installedVersion: '1.2.3' });
+    expect(calls).toContainEqual(['view', 'androidmcp-framework', 'version']);
     expect(calls).toContainEqual(['install', '--global', 'androidmcp-framework@latest']);
-    expect(calls).toContainEqual(['cache', 'clean', '--force']);
+    expect(calls).toContainEqual(['config', 'get', 'cache']);
     expect(calls).toContainEqual(['list', '--global', '--depth=0', '--json']);
-    expect(log).toHaveBeenCalledWith(expect.stringContaining('clears npm cache entries for all projects'));
+    expect(fs.existsSync(npxCache)).toBe(false);
+    expect(fs.readFileSync(path.join(cacheRoot, 'other-cache-entry'), 'utf8')).toBe('keep me');
+    expect(log).toHaveBeenCalledWith(expect.stringContaining('Cleared the npx execution cache'));
+  });
+
+  it('does not reinstall or clear cache when the installed version is already latest', () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'amf-update-current-'));
+    roots.push(root);
+    const globalRoot = path.join(root, 'node_modules');
+    const packageRoot = path.join(globalRoot, 'androidmcp-framework');
+    fs.mkdirSync(packageRoot, { recursive: true });
+    fs.writeFileSync(path.join(packageRoot, 'package.json'), '{"version":"1.2.3"}');
+    const calls: string[][] = [];
+    const runner = (args: string[]) => {
+      calls.push(args);
+      if (args[0] === 'root') return globalRoot;
+      if (args[0] === 'view') return '1.2.3';
+      return '';
+    };
+    const result = runSelfUpdate(packageRoot, runner, vi.fn());
+    expect(result).toMatchObject({ success: true, updated: false, installedVersion: '1.2.3' });
+    expect(calls.some((args) => args[0] === 'install')).toBe(false);
+    expect(calls.some((args) => args[0] === 'config')).toBe(false);
   });
 
   it('refuses to update a non-global npx or local checkout', () => {

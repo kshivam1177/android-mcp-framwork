@@ -109,3 +109,8 @@ export function findProjectConfigPath(startDir: string = process.cwd()): string 
     dir = parent;
   }
 }
+
+/** Explicitly named alias for callers that need to discover the nearest project root. */
+export function findProjectRoot(startDir: string = process.cwd()): string {
+  return resolveProjectRoot(startDir);
+}

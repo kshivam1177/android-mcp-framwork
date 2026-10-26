@@ -4,7 +4,7 @@ import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { imageResult, errorResult } from '../../utils/response.js';
 import { createArtifactPath, timestampedArtifactName } from '../../utils/artifacts.js';
-import { resolveProjectRoot } from '../../utils/paths.js';
+import { findProjectRoot } from '../../utils/paths.js';
 import { getEffectiveSessionDefaults } from '../../session/defaults.js';
 import { resolveTargetAndBackend } from './_shared.js';
 import type { ToolModule } from '../types.js';
@@ -30,7 +30,16 @@ export function register(server: McpServer) {
       try {
         const { target, backend } = await resolveTargetAndBackend(args.targetId);
         const { data, mimeType } = await backend.screenshot(target.id);
-        const projectRoot = resolveProjectRoot(args.projectPath ?? getEffectiveSessionDefaults().defaults.projectPath ?? process.cwd());
+        // Explicit MCP arguments win. Otherwise prefer saved session defaults,
+        // but don't let a stale relative/default cwd prevent upward root discovery.
+        let configuredProjectPath: string | undefined;
+        try {
+          configuredProjectPath = getEffectiveSessionDefaults().defaults.projectPath;
+        } catch {
+          // A missing or invalid daemon-side config must not prevent screenshot persistence.
+        }
+        const startPath = args.projectPath ?? configuredProjectPath ?? process.cwd();
+        const projectRoot = findProjectRoot(path.resolve(startPath));
         const artifactPath = createArtifactPath(
           projectRoot,
           'screenshots',

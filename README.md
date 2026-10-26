@@ -15,7 +15,7 @@ amf update
 amf doctor
 ```
 
-Or run on demand with no global install: `npx -y androidmcp-framework@latest mcp`. The `amf update` command updates a global npm installation; if you use `npx`, rerun it with `@latest` to fetch the latest version. Cache cleanup uses `npm cache clean --force`, which clears the shared npm cache for all Node.js projects on the machine.
+Or run on demand with no global install: `npx -y androidmcp-framework@latest mcp`. The `amf update` command updates a global npm installation; if you use `npx`, rerun it with `@latest` to fetch the latest version. If an update is installed, the command clears only npm's `_npx` execution cache under the configured npm cache directory (normally `~/.npm/_npx` on macOS/Linux); it does not clear the shared package-download cache.
 
 ## Connect an MCP client
 
