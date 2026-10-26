@@ -1,4 +1,7 @@
+import fs from 'node:fs';
 import path from 'node:path';
+import { resolveProjectRoot } from '../../utils/paths.js';
+import { findFlutterProjectRoot, flutterAndroidRoot } from '../../utils/projectDiscovery.js';
 import { getEffectiveSessionDefaults } from '../../session/defaults.js';
 import { AndroidBuildMcpError } from '../../types.js';
 
@@ -18,7 +21,25 @@ export interface BuildParamArgs {
  * fails loudly (never silently picks a guessed value) if still missing. */
 export function resolveBuildParams(args: BuildParamArgs): ResolvedBuildParams {
   const defaults = getEffectiveSessionDefaults().defaults;
-  const projectPath = args.projectPath ?? defaults.projectPath ?? undefined;
+  const configuredProjectPath = args.projectPath ?? defaults.projectPath ?? undefined;
+  let projectPath = configuredProjectPath
+    ? path.resolve(configuredProjectPath)
+    : resolveProjectRoot(process.cwd());
+
+  const hasGradleSettings = (dir: string) =>
+    fs.existsSync(path.join(dir, 'settings.gradle')) || fs.existsSync(path.join(dir, 'settings.gradle.kts'));
+  const flutterRoot = findFlutterProjectRoot(projectPath);
+  if (flutterRoot) {
+    projectPath = flutterAndroidRoot(flutterRoot) ?? flutterRoot;
+  } else if (!hasGradleSettings(projectPath)) {
+    const workspaceRoot = resolveProjectRoot(projectPath);
+    if (hasGradleSettings(workspaceRoot)) {
+      projectPath = workspaceRoot;
+    } else {
+      const workspaceFlutterRoot = findFlutterProjectRoot(workspaceRoot);
+      if (workspaceFlutterRoot) projectPath = flutterAndroidRoot(workspaceFlutterRoot) ?? workspaceFlutterRoot;
+    }
+  }
   const module = args.module ?? defaults.module ?? undefined;
   const variant = args.variant ?? defaults.variant ?? undefined;
 
