@@ -2,6 +2,7 @@ import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { execCommand } from '../utils/exec.js';
+import { loadConfig } from '../config/loader.js';
 
 type Selector = { resourceId?: string; text?: string; contentDesc?: string; className?: string };
 type ScreenElement = { id: string; name?: string; type?: string; selector?: Selector; coordinates?: { x: number; y: number }; required?: boolean; sensitive?: boolean };
@@ -65,7 +66,8 @@ function findElement(screen: ScreenDefinition, id: string): ScreenElement {
   return found;
 }
 async function android(args: string[], cwd: string, timeoutMs = 30000): Promise<string> {
-  const command = process.env.ANDROID_CLI_PATH || 'android';
+  const configuredPath = loadConfig({ cwd }).paths.androidCliPath;
+  const command = process.env.ANDROID_CLI_PATH || configuredPath || 'android';
   const result = await execCommand(command, args, { cwd, timeoutMs });
   if (result.exitCode !== 0) throw new Error(`Google Android CLI failed (${result.exitCode}): ${result.stderr || result.stdout}`);
   return result.stdout;
