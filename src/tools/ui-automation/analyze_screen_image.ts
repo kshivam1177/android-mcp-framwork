@@ -59,7 +59,7 @@ export function register(server: McpServer) {
         reportPath,
         ...analysis,
       };
-      fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\\n`, 'utf8');
+      fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
       return {
         content: [
           { type: 'text' as const, text: JSON.stringify(report, null, 2) },
