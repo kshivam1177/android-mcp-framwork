@@ -1,6 +1,6 @@
 # Workflows
 
-A **workflow** is a named group of related tools. Instead of handing an agent all 67 tools at once, AndroidBuildMCP starts with a small default set and lets you turn the rest on as you need them - fewer tools in context, less chance of the wrong tool getting picked.
+A **workflow** is a named group of related tools. Instead of handing an agent all 67 tools at once, AndroidMCP Framwork starts with a small default set and lets you turn the rest on as you need them - fewer tools in context, less chance of the wrong tool getting picked.
 
 ## Default state
 
@@ -29,7 +29,7 @@ See [tools.md](./tools.md) for every individual tool.
 
 ## Turning workflows on persistently
 
-Edit `.androidbuildmcp/config.yaml`:
+Edit `.androidmcp-framework/config.yaml`:
 
 ```yaml
 enabledWorkflows:
@@ -75,7 +75,7 @@ Any tool listed under a custom workflow is enabled even if its real workflow isn
 
 ## CLI
 
-`androidbuildmcp workflows` prints this same table from the command line, no MCP client needed.
+`androidmcp-framework workflows` prints this same table from the command line, no MCP client needed.
 
 
 | `testing-intelligence` | Disabled | Repository analysis, persistent test instructions, timestamped reports; foundation for change-aware testing. |
