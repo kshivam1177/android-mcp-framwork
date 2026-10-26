@@ -1,4 +1,4 @@
-name: Publish npm package and MCP Registry metadata
+name: Publish npm package
 
 on:
   push:
@@ -8,16 +8,10 @@ on:
       - ".github/workflows/**"
       - "README.md"
       - "docs/**"
-      - "server.json"
   workflow_dispatch:
     inputs:
       publish_npm:
         description: Publish the npm package
-        type: boolean
-        required: true
-        default: true
-      publish_mcp_registry:
-        description: Publish to the Official MCP Registry
         type: boolean
         required: true
         default: true
@@ -131,109 +125,3 @@ jobs:
           git commit -m "chore: record published npm version v${VERSION}"
           git push origin HEAD:master
 
-  publish-mcp-registry:
-    name: Publish to Official MCP Registry
-    if: ${{ always() && needs.verify-package.result == 'success' && (github.event_name == 'push' || inputs.publish_mcp_registry) && (needs.publish-npm.result == 'success' || needs.publish-npm.result == 'skipped') }}
-    runs-on: ubuntu-latest
-    needs:
-      - verify-package
-      - publish-npm
-    environment: mcp-registry-publish
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v4
-      - name: Resolve registry version
-        id: package-version
-        env:
-          NPM_RELEASE_VERSION: ${{ needs.publish-npm.outputs.published_version }}
-        run: |
-          set -euo pipefail
-          if [ -n "$NPM_RELEASE_VERSION" ]; then
-            VERSION="$NPM_RELEASE_VERSION"
-          else
-            VERSION="$(node -p "require('./package.json').version")"
-          fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-      - name: Wait for npm package version to be visible
-        env:
-          PUBLISHED_VERSION: ${{ steps.package-version.outputs.version }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          # Allow up to 5 minutes for npm's version metadata to become visible.
-          for attempt in $(seq 1 30); do
-            if npm view "androidmcp-framework@${PUBLISHED_VERSION}" version --registry=https://registry.npmjs.org; then
-              echo "Confirmed npm version ${PUBLISHED_VERSION} is visible."
-              exit 0
-            fi
-            echo "npm version ${PUBLISHED_VERSION} is not visible yet; retrying in 10 seconds."
-            if [ "$attempt" -lt 30 ]; then sleep 10; fi
-          done
-          echo "ERROR: npm version ${PUBLISHED_VERSION} is not visible after 5 minutes." >&2
-          exit 1
-      - name: Synchronize registry metadata with package version
-        env:
-          PUBLISHED_VERSION: ${{ steps.package-version.outputs.version }}
-        run: |
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const version = process.env.PUBLISHED_VERSION;
-          const manifest = JSON.parse(fs.readFileSync('server.json', 'utf8'));
-          manifest.version = version;
-          for (const item of manifest.packages ?? []) item.version = version;
-          fs.writeFileSync('server.json', JSON.stringify(manifest, null, 2) + '\n');
-          NODE
-      - name: Install cosign
-        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
-      - name: Download and verify MCP Publisher
-        env:
-          MCP_PUBLISHER_VERSION: v1.8.1
-        run: |
-          set -euo pipefail
-          archive="mcp-publisher_linux_amd64.tar.gz"
-          base_url="https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}"
-          curl --fail --location --silent --show-error --output "$archive" "$base_url/$archive"
-          curl --fail --location --silent --show-error --output "$archive.sigstore.json" "$base_url/$archive.sigstore.json"
-          cosign verify-blob \
-            --bundle "$archive.sigstore.json" \
-            --certificate-identity "https://github.com/modelcontextprotocol/registry/.github/workflows/release.yml@refs/tags/${MCP_PUBLISHER_VERSION}" \
-            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-            "$archive"
-          tar xzf "$archive" mcp-publisher
-          rm -f "$archive" "$archive.sigstore.json"
-          chmod +x ./mcp-publisher
-      - name: Authenticate to MCP Registry via GitHub OIDC
-        run: ./mcp-publisher login github-oidc
-      - name: Validate server metadata
-        run: ./mcp-publisher validate ./server.json
-      - name: Publish server metadata (retry npm propagation)
-        env:
-          PUBLISHED_VERSION: ${{ steps.package-version.outputs.version }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          max_attempts=8
-          for attempt in $(seq 1 "$max_attempts"); do
-            echo "Publishing MCP server metadata for version $PUBLISHED_VERSION (attempt $attempt/$max_attempts)"
-            set +e
-            output="$(./mcp-publisher publish ./server.json 2>&1)"
-            status=$?
-            set -e
-            printf '%s\n' "$output"
-            if [ "$status" -eq 0 ]; then
-              exit 0
-            fi
-            if ! grep -Eqi "version .* was not found|newly published release can take a moment|status: 404" <<<"$output"; then
-              echo "MCP Registry publish failed for a reason other than npm propagation delay." >&2
-              exit "$status"
-            fi
-            if [ "$attempt" -lt "$max_attempts" ]; then
-              delay=$((attempt * 10))
-              echo "npm version is not visible to the MCP Registry yet; retrying in $delay seconds."
-              sleep "$delay"
-            fi
-          done
-          echo "MCP Registry still cannot see npm package version $PUBLISHED_VERSION after retries." >&2
-          exit 1
