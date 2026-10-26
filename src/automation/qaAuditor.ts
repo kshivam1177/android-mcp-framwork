@@ -1,0 +1,3 @@
+import type { UiElement, UiSnapshot } from './backend.js';
+export interface QaFinding { severity:'info'|'warning'|'error'; rule:string; message:string; element?:UiElement; }
+export function auditSnapshot(snapshot:UiSnapshot):QaFinding[]{const findings:QaFinding[]=[];for(const element of snapshot.elements){const text=element.text??'';if(/TODO|Lorem ipsum|placeholder/i.test(text))findings.push({severity:'warning',rule:'placeholder-text',message:`Potential placeholder text: ${text}`,element});const b=element.bounds;if((element.clickable||element.focusable)&&b&&((b.right-b.left)<48||(b.bottom-b.top)<48))findings.push({severity:'warning',rule:'small-touch-target',message:'Interactive element may have a small touch target',element});}return findings;}
