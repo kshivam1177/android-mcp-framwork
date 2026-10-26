@@ -8,7 +8,7 @@ From your Android project's root:
 androidmcp-framework setup
 ```
 
-This writes `.androidmcp-framework/config.yaml` (copied from the bundled `config.example.yaml`) if one doesn't already exist. It won't overwrite an existing config.
+This writes `.android-build-mcp/config.yaml` (copied from the bundled `config.example.yaml`) if one doesn't already exist. It won't overwrite an existing config.
 
 Then set your session defaults so you don't have to pass `projectPath`/`module`/`variant` on every tool call - either edit the file directly, or do it live once your MCP client is connected by calling `session_set_defaults`:
 
@@ -20,7 +20,7 @@ Check what's active any time with `session_show_defaults`.
 
 ## The config file
 
-`.androidmcp-framework/config.yaml`, project-scoped (not global - a monorepo with several Android projects gets one per project). Every field is optional; see [`config.example.yaml`](../../config.example.yaml) in the repo root for the full annotated schema. The main sections:
+`.android-build-mcp/config.yaml`, project-scoped (not global - a monorepo with several Android projects gets one per project). Every field is optional; see [`config.example.yaml`](../../config.example.yaml) in the repo root for the full annotated schema. The main sections:
 
 - **`enabledWorkflows`** - which tool groups are exposed. See [workflow.md](./workflow.md).
 - **`customWorkflows`** - enable individual tools outside their parent workflow.
