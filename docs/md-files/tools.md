@@ -316,24 +316,6 @@ Generate a full adb bugreport (system state, logs, dumpsys output for every serv
 - **Parameters:** `targetId`, `localOutputPath`
 - **Annotations:** read-only, idempotent
 
-## coverage
-
-Read JaCoco XML coverage reports, overall and per source file.
-
-### `get_coverage_report`
-Read a JaCoco XML coverage report and summarize instruction/line/branch/method/class coverage overall and per package. Looks under <module>/build/reports/jacoco/** for the newest report unless reportPath is given directly - run your module's jacocoTestReport Gradle task first if none exists yet.
-
-- **Title:** Get Coverage Report
-- **Parameters:** `projectPath`, `module`, `reportPath`
-- **Annotations:** read-only, idempotent
-
-### `get_file_coverage`
-Show coverage for one source file (matched by filename, e.g. "MainActivity.kt") from a JaCoco XML report - instruction/line/branch/method counters, scoped to that file only.
-
-- **Title:** Get File Coverage
-- **Parameters:** `fileName`, `projectPath`, `module`, `reportPath`
-- **Annotations:** read-only, idempotent
-
 ## project-discovery
 
 Find Gradle project roots, list modules and build variants, inspect build configuration.
