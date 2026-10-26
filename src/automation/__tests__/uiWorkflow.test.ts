@@ -2,9 +2,56 @@ import { describe, expect, it } from 'vitest';
 import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { writeFileSync } from 'node:fs';
+import { resetConfigCache } from '../../config/loader.js';
 import { runUiWorkflow } from '../uiWorkflow.js';
 
 describe('runUiWorkflow validation and path safety', () => {
+  it('uses paths.androidCliPath from project config unless ANDROID_CLI_PATH overrides it', async () => {
+    const cwd = await mkdtemp(path.join(os.tmpdir(), 'ui-workflow-config-test-'));
+    const root = path.join(cwd, '.androidmcp-framework');
+    const workflows = path.join(root, 'workflows');
+    const screens = path.join(root, 'screens');
+    const callsFile = path.join(cwd, 'calls.json');
+    const cliFile = path.join(cwd, 'fake-android-cli.mjs');
+    const previousPath = process.env.ANDROID_CLI_PATH;
+
+    try {
+      await mkdir(workflows, { recursive: true });
+      await mkdir(screens, { recursive: true });
+      await writeFile(path.join(root, 'config.yaml'), `schemaVersion: 1\npaths:\n  androidCliPath: ${JSON.stringify(cliFile)}\n`);
+      await writeFile(cliFile, [
+        "import fs from 'node:fs';",
+        "const args = process.argv.slice(2);",
+        `fs.appendFileSync(${JSON.stringify(callsFile)}, JSON.stringify(args) + '\\\\n');`,
+        "if (args[0] === 'layout') process.stdout.write(JSON.stringify({ elements: [] }));",
+      ].join('\n'));
+      await writeFile(path.join(screens, 'home.json'), JSON.stringify({
+        id: 'home',
+        form: [{ id: 'hello', selector: { text: 'Hello' }, required: true }],
+      }));
+      await writeFile(path.join(workflows, 'smoke.json'), JSON.stringify({
+        id: 'config-path-test',
+        forms: { home: 'home.json' },
+        actions: [{ id: 'assert-home', type: 'assert_screen', screen: 'home', timeoutMs: 1000, intervalMs: 10 }],
+      }));
+
+      delete process.env.ANDROID_CLI_PATH;
+      resetConfigCache();
+      const result = await runUiWorkflow({ cwd, workflowFile: 'smoke.json' });
+      expect(result.success).toBe(false);
+      expect((await import('node:fs/promises')).readFile ? true : false).toBe(true);
+      const calls = (await (await import('node:fs/promises')).readFile(callsFile, 'utf8')).trim().split('\n');
+      expect(calls.length).toBeGreaterThan(0);
+      expect(calls[0]).toContain('"layout"');
+    } finally {
+      if (previousPath === undefined) delete process.env.ANDROID_CLI_PATH;
+      else process.env.ANDROID_CLI_PATH = previousPath;
+      resetConfigCache();
+      await rm(cwd, { recursive: true, force: true });
+    }
+  });
+
   it('rejects traversal paths before executing commands', async () => {
     const cwd = await mkdtemp(path.join(os.tmpdir(), 'ui-workflow-test-'));
     try {
