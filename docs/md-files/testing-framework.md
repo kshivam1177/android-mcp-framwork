@@ -20,7 +20,7 @@ Provide a change-aware testing lifecycle that reads a repository, maintains huma
 6. Execute through Google Android CLI, Gradle, Flutter tooling or supported automation adapters.
 7. Capture structured outcomes, logs, screenshots and environment details. Distinguish pass, fail, blocked, skipped and inconclusive.
 8. Propose instruction updates based on verified changes; do not silently replace user-authored instructions.
-9. Save an immutable run report under `.androidmcp-framework/test-reports/YYYY-MM-DD/HHmmss/`.
+9. Save immutable run reports under `.androidmcp-framework/test-reports/YYYY-MM-DD/HHmmss/`.
 
 ## On-disk layout
 
@@ -35,7 +35,7 @@ Provide a change-aware testing lifecycle that reads a repository, maintains huma
   testcases/          # saved structured test cases
 ```
 
-## Implemented in this iteration
+## Implemented
 
 - `analyze_test_project`: read-only Native Android/Flutter scan and Git change summary.
 - `save_test_instructions`: stores Markdown instructions without overwriting unless explicitly authorized.
