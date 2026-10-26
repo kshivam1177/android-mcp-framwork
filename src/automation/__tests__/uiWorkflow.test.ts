@@ -15,7 +15,6 @@ describe('runUiWorkflow validation and path safety', () => {
     const callsJson = JSON.stringify(callsFile);
     const cliFile = path.join(cwd, 'fake-android-cli.mjs');
     const cliLauncher = path.join(cwd, 'fake-android-cli-launcher.mjs');
-    const launcherJson = JSON.stringify(cliLauncher);
     const previousPath = process.env.ANDROID_CLI_PATH;
 
     try {
