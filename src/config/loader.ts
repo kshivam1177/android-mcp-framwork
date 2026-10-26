@@ -3,7 +3,7 @@ import path from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { ConfigSchema, DEFAULT_CONFIG } from './schema.js';
 import type { Config } from './schema.js';
-import { findProjectConfigPath } from '../utils/paths.js';
+import { findProjectConfigPath, PROJECT_CONFIG_DIR } from '../utils/paths.js';
 import { AndroidBuildMcpError } from '../types.js';
 
 let cachedConfig: Config | null = null;
@@ -54,26 +54,13 @@ export function loadConfig(options: LoadConfigOptions = {}): Config {
 }
 
 export function getConfigPath(cwd: string = process.cwd()): string {
-  return findProjectConfigPath(cwd) ?? path.join(cwd, '.android-build-mcp', 'config.yaml');
+  return findProjectConfigPath(cwd) ?? path.join(cwd, PROJECT_CONFIG_DIR, 'config.yaml');
 }
 
 export function getConfigDir(cwd: string = process.cwd()): string {
   const configPath = findProjectConfigPath(cwd);
-  if (configPath) {
-    return path.dirname(configPath);
-  }
-  const hyphenated = path.join(cwd, '.android-build-mcp');
-  if (fs.existsSync(hyphenated)) {
-    return hyphenated;
-  }
-  const legacy = path.join(cwd, '.androidbuildmcp');
-  if (fs.existsSync(legacy)) {
-    return legacy;
-  }
-  return path.join(cwd, '.android-build-mcp');
+  return configPath ? path.dirname(configPath) : path.join(cwd, PROJECT_CONFIG_DIR);
 }
-
-
 
 /** Mostly for tests: drop the cache so the next loadConfig() re-reads disk. */
 export function resetConfigCache(): void {
