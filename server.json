@@ -16,7 +16,14 @@
       "version": "0.1.0",
       "transport": {
         "type": "stdio"
-      }
+      },
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "packageArguments": [
+        {
+          "type": "positional",
+          "value": "mcp"
+        }
+      ]
     }
   ]
 }
