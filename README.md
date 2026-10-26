@@ -9,6 +9,8 @@ A Model Context Protocol (MCP) server and CLI that gives coding agents Android d
 ```bash
 npm install -g androidmcp-framework@latest
 androidmcp-framework doctor
+# Short alias (also installed by npm)
+amf doctor
 ```
 
 Or run on demand with no global install: `npx -y androidmcp-framework@latest mcp`.
