@@ -31,7 +31,7 @@ describe('runUiWorkflow validation and path safety', () => {
         "import { spawn } from 'node:child_process';",
         `const child = spawn(${JSON.stringify(process.execPath)}, [${JSON.stringify(cliFile)}, ...process.argv.slice(2)], { stdio: 'inherit' });`,
         "child.on('exit', (code) => process.exit(code ?? 1));",
-      ].join('\\n'));
+      ].join('\n'));
       await writeFile(path.join(screens, 'home.json'), JSON.stringify({
         id: 'home',
         form: [{ id: 'hello', selector: { text: 'Hello' }, required: true }],
@@ -42,7 +42,7 @@ describe('runUiWorkflow validation and path safety', () => {
         actions: [{ id: 'assert-home', type: 'assert_screen', screen: 'home', timeoutMs: 1000, intervalMs: 10 }],
       }));
 
-      // Use a Node launcher script as a config value via a tiny portable shell-free wrapper is not possible cross-platform; test config selection via PATH fallback below.\n      delete process.env.ANDROID_CLI_PATH;
+      delete process.env.ANDROID_CLI_PATH;
       resetConfigCache();
       const result = await runUiWorkflow({ cwd, workflowFile: 'smoke.json' });
       expect(result.success).toBe(false);
