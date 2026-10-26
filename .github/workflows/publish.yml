@@ -189,7 +189,7 @@ jobs:
             output="$(./mcp-publisher publish ./server.json 2>&1)"
             status=$?
             set -e
-            printf '%s\\n' "$output"
+            printf '%s\n' "$output"
             if [ "$status" -eq 0 ]; then
               exit 0
             fi
