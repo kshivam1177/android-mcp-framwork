@@ -1,19 +1,27 @@
-# Supported coding agents and MCP clients
+# Supported MCP clients and transports
 
-AndroidBuildMCP currently exposes a local **stdio MCP server**. It can connect to MCP clients that launch local stdio processes. Direct Android Studio MCP integration is not currently supported because Android Studio's documented MCP integration does not support stdio; it requires HTTP transport.
+AndroidMCP Framework is an MCP server implemented with the official TypeScript SDK. The current release exposes **tools over local stdio transport**. It is not currently an HTTP server, and it does not claim MCP Resources or Prompts support unless those capabilities are explicitly added and tested.
 
-| Client | Current status | Configuration location / method |
-|---|---|---|
-| Claude Code | Supported (stdio) | `claude mcp add ...` or project `.mcp.json` |
-| OpenAI Codex CLI / IDE extension | Supported (stdio) | `codex mcp add ...` or `~/.codex/config.toml` |
-| Google Gemini CLI | Supported (stdio) | `.gemini/settings.json` or `~/.gemini/settings.json` |
-| Google Antigravity IDE / CLI | Supported (stdio) | `.agents/mcp_config.json` or `~/.gemini/config/mcp_config.json` |
-| VS Code + GitHub Copilot Agent mode | Supported (stdio) | Prefer workspace `.mcp.json`; `.vscode/mcp.json` is also supported |
-| Android Studio Gemini | Not directly supported yet | Requires Streamable HTTP transport or a reviewed stdio-to-HTTP bridge |
-| Any other MCP client | Depends on stdio support | Configure `npx -y androidbuildmcp@latest mcp` if it supports local stdio servers |
+## Compatibility matrix
 
-## Important distinction
+| Client | Status | Connection type | Setup |
+|---|---|---|---|
+| Claude Code | Supported | Local stdio | `claude mcp add` or project `.mcp.json` |
+| OpenAI Codex CLI / IDE extension | Supported | Local stdio | `codex mcp add` or `~/.codex/config.toml` |
+| Google Gemini CLI | Supported | Local stdio | `.gemini/settings.json` |
+| Google Antigravity | Supported where local stdio MCP servers are enabled | Local stdio | MCP server configuration |
+| VS Code + GitHub Copilot | Supported | Local stdio | Workspace `.mcp.json` or `.vscode/mcp.json` |
+| Android Studio Gemini | Not directly supported by this server today | Requires HTTP-based MCP endpoint | Requires Streamable HTTP transport or a separately reviewed bridge |
+| Other MCP clients | Conditional | Must support local stdio processes | Use the generic configuration below |
 
-MCP client compatibility means the client can discover and call the current server's tools. It does **not** mean every planned natural-language testing capability is implemented. The testing-intelligence workflow currently provides early project analysis, persistent instruction writing, and report writing; the full adaptive test generation/execution lifecycle remains roadmap work.
+“Supported” means the client can launch the server and discover/call its currently registered tools. It does not mean every optional workflow is enabled by default, nor that every planned testing feature is implemented.
 
-See [agent-setup.md](./agent-setup.md) for copy/paste configurations, troubleshooting, and example prompts.
+## Transport and protocol scope
+
+- **Transport:** stdio only in the current release.
+- **Server identity:** `androidbuildmcp` internally; the package/CLI name is `androidmcp-framework`.
+- **MCP capability currently exposed:** tools and tool schemas/results.
+- **Not currently provided:** a built-in Streamable HTTP endpoint. Do not configure an HTTP URL for this release.
+- **Tools are workflow-gated:** tool registration and tool availability are distinct. Optional workflows may need enabling in the project configuration and a server restart.
+
+For the full client setup, troubleshooting and security guide, see [MCP integration guide](./mcp-guide.md).
