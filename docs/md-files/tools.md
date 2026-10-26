@@ -2,7 +2,7 @@
 
 Every tool AndroidMCP Framework exposes, grouped by workflow. Only `device`, `ui-automation`, `session-management`, `doctor`, and `workflow-discovery` are enabled by default - see [workflow.md](./workflow.md) for how to turn the rest on. This file mirrors the actual registered tool metadata (title, description, parameters, annotations) - if you change a tool's description in source, regenerate this file rather than editing it by hand.
 
-**Total: 67 tools across 13 workflows.**
+**Total: 74 tools across 12 workflows.**
 
 ## device _(enabled by default)_
 
@@ -161,7 +161,7 @@ Start or stop an on-device screen recording (adb shell screenrecord) and pull th
 
 ## ui-automation _(enabled by default)_
 
-Semantic UI snapshots (elementRef-based) plus tap/swipe/drag/type/key/gesture/screenshot/wait/batch.
+Semantic UI snapshots, screenshot OCR coordinates, selector-based form filling, and tap/swipe/drag/type/key/gesture/wait/batch.
 
 ### `snapshot_ui`
 Capture a semantic UI hierarchy for the current screen - every element gets a short-lived elementRef (e1, e2, ...) that tap/long_press/type_text can target directly instead of guessing pixel coordinates. Refresh after navigation, scrolling, or any layout change - refs from a stale snapshot are rejected.
@@ -233,6 +233,22 @@ Capture a screenshot of the current screen. Image format depends on which automa
 - **Parameters:** `targetId`
 - **Annotations:** read-only, idempotent
 
+### `analyze_screenshot`
+Run local OCR on the current Android screenshot and return visible text with bounding boxes and center coordinates in screenshot pixels as JSON. Requires Tesseract OCR installed locally. OCR detects text, not every icon or non-text control; use snapshot_ui for semantic Android element bounds.
+
+- **Title:** Analyze Screenshot
+- **Parameters:** `targetId`, `language`, `minConfidence`, `mode`, `timeoutMs`
+- **Annotations:** read-only, idempotent
+
+See [Screenshot OCR and coordinate analysis](../screenshot-analysis.md) for installation and JSON output details.
+
+### `fill_form`
+Fill visible Android form fields using semantic UI selectors, optionally clear existing text, and optionally tap a uniquely identified submit button. Refreshes the hierarchy between fields. Ambiguous or missing matches fail safely.
+
+- **Title:** Fill Form
+- **Parameters:** `targetId`, `fields`, `clearExisting`, `submit`
+- **Annotations:** mutating
+
 ### `wait_for_ui`
 Poll the UI until a condition holds, then record the latest snapshot (same caching as snapshot_ui - refs from the result are usable directly). With textContains/resourceId: waits for a matching element to appear (or disappear, if gone:true). With neither: waits for the hierarchy to stop changing between polls ("settled").
 
@@ -298,24 +314,6 @@ Generate a full adb bugreport (system state, logs, dumpsys output for every serv
 
 - **Title:** Bug Report
 - **Parameters:** `targetId`, `localOutputPath`
-- **Annotations:** read-only, idempotent
-
-## coverage
-
-Read JaCoco XML coverage reports, overall and per source file.
-
-### `get_coverage_report`
-Read a JaCoco XML coverage report and summarize instruction/line/branch/method/class coverage overall and per package. Looks under <module>/build/reports/jacoco/** for the newest report unless reportPath is given directly - run your module's jacocoTestReport Gradle task first if none exists yet.
-
-- **Title:** Get Coverage Report
-- **Parameters:** `projectPath`, `module`, `reportPath`
-- **Annotations:** read-only, idempotent
-
-### `get_file_coverage`
-Show coverage for one source file (matched by filename, e.g. "MainActivity.kt") from a JaCoco XML report - instruction/line/branch/method counters, scoped to that file only.
-
-- **Title:** Get File Coverage
-- **Parameters:** `fileName`, `projectPath`, `module`, `reportPath`
 - **Annotations:** read-only, idempotent
 
 ## project-discovery
@@ -434,7 +432,7 @@ Switch the active session-defaults profile - useful in a monorepo with several G
 
 ## doctor _(enabled by default)_
 
-Environment diagnostics: adb, java, gradle, Android SDK, emulator, optional uiautomator2 bridge.
+Environment diagnostics: adb, java, gradle, Android SDK, emulator, optional uiautomator2 bridge, and optional Tesseract OCR.
 
 ### `doctor`
 Check this machine's Android toolchain: adb, java, a Gradle wrapper/binary, ANDROID_HOME/ANDROID_SDK_ROOT, the emulator binary, avdmanager, and (optional) python3 + uiautomator2's u2cli for the enhanced automation backend. Run this first when something isn't working.
@@ -485,10 +483,17 @@ Look up current versions for one or more Maven artifacts, Gradle plugins, or too
 Run `android skills list` to list available/installed agent skills. No parameters. Read-only.
 
 
-## testing-intelligence (3 tools)
+## testing-intelligence (10 tools)
 
-- `analyze_test_project` — detect Native Android/Flutter markers, list test files and inspect Git changes (read-only).
+- `analyze_test_project` — detect Native Android/Flutter markers, list test files, and inspect repository structure (read-only).
+- `analyze_changes` — map Git changes to focused test suites and recommend broad regression when impact is uncertain; does not execute tests.
+- `resolve_test_instructions` — merge global, project, feature, and run-specific instruction layers.
+- `validate_test_plan` — validate explicit test goals and steps; incomplete plans are blocked, not executed.
 - `save_test_instructions` — persist user-authored Markdown test instructions without overwriting existing files unless explicitly authorized.
-- `write_test_report` — write Markdown and JSON run records to `.android-build-mcp/test-reports/YYYY-MM-DD/HHmmss/`.
+- `save_test_case` — persist a structured test case.
+- `list_test_cases` — list saved test cases.
+- `run_test_case` — run a stored test case through supported automation.
+- `audit_screen` — inspect the active screen for UI issues and relevant log errors.
+- `write_test_report` — write Markdown and JSON run records to `.android-build-mcp/test-reports/YYYY-MM-DD/<time>-<run-id>/`, redacting common secret fields and token values.
 
-These tools establish the framework foundation; they do not yet provide autonomous test generation or execution.
+These tools support conservative change-aware test selection and reporting. A plan or recommendation is not proof that tests were executed; only explicit execution outcomes are reported as passed.

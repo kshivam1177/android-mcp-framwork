@@ -36,7 +36,7 @@ export const WORKFLOWS: WorkflowDefinition[] = [
   },
   {
     name: 'ui-automation',
-    description: 'Semantic UI snapshots (elementRef-based) plus tap/swipe/drag/type/key/gesture/screenshot/wait/batch.',
+    description: 'Semantic UI snapshots, screenshot OCR coordinates, selector-based form filling, declarative JSON workflows executed through Google's Android CLI, and tap/swipe/drag/type/key/gesture/wait/batch.',
     defaultEnabled: true,
     tools: uiAutomationTools,
   },
@@ -73,7 +73,7 @@ export const WORKFLOWS: WorkflowDefinition[] = [
   },
   {
     name: 'doctor',
-    description: 'Environment diagnostics: adb, java, gradle, Android SDK, emulator, optional uiautomator2 bridge.',
+    description: 'Environment diagnostics: adb, java, gradle, Android SDK, emulator, optional uiautomator2 bridge, and optional Tesseract OCR.',
     defaultEnabled: true,
     tools: doctorTools,
   },
@@ -85,7 +85,7 @@ export const WORKFLOWS: WorkflowDefinition[] = [
   },
   {
     name: 'testing-intelligence',
-    description: 'Analyze Native Android and Flutter repositories, persist custom test instructions, and write timestamped test reports. This is the foundation for change-aware natural-language test planning; it does not autonomously generate or execute tests yet.',
+    description: 'Project test discovery, saved test cases/instructions, screen QA audits, change-impact analysis, layered instruction resolution, plan validation, and test reports',
     defaultEnabled: false,
     tools: testingIntelligenceTools,
   },
