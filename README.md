@@ -9,11 +9,13 @@ Testing intelligence is enabled by default alongside `device`, `ui-automation`, 
 ```bash
 npm install -g androidmcp-framework@latest
 androidmcp-framework doctor
+# Update to the latest global release and clear npm cache
+amf update
 # Short alias (also installed by npm)
 amf doctor
 ```
 
-Or run on demand with no global install: `npx -y androidmcp-framework@latest mcp`.
+Or run on demand with no global install: `npx -y androidmcp-framework@latest mcp`. The `amf update` command updates a global npm installation; if you use `npx`, rerun it with `@latest` to fetch the latest version. Cache cleanup uses `npm cache clean --force`, which clears the shared npm cache for all Node.js projects on the machine.
 
 ## Connect an MCP client
 
