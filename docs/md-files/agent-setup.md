@@ -10,6 +10,7 @@ Install the normal development tools for the project you want to test:
 - Git (recommended; change analysis uses Git when available).
 - For native Android: Android SDK/platform-tools (`adb`), JDK 17+, Gradle wrapper, and an emulator or connected device for device tests.
 - For Flutter: Flutter SDK and Dart. Run `flutter doctor` and resolve the requirements for the targets you intend to test.
+- For screenshot OCR coordinate analysis: install Tesseract OCR and make `tesseract` available on `PATH` (or set `TESSERACT_PATH`). See [screenshot analysis setup](../screenshot-analysis.md).
 - For Google's Android CLI integration: install the official CLI by following the [Android CLI setup guide](https://developer.android.com/tools/agents/android-cli). Confirm `android --help` works and the executable is on `PATH`, or configure `paths.androidCliPath`.
 
 AndroidMCP Framework does not install Android Studio, Android SDK, Flutter, JDK, emulator images, or Google Android CLI on your behalf.
