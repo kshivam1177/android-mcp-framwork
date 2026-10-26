@@ -1,6 +1,6 @@
 # Deployment and release setup
 
-AndroidMCP Framwork is a local developer tool that runs as a child process of an MCP client. It does not need a public server or hosted endpoint for stdio usage.
+AndroidMCP Framework is a local developer tool that runs as a child process of an MCP client. It does not need a public server or hosted endpoint for stdio usage.
 
 ## Local development
 
@@ -19,9 +19,9 @@ Connect a client to the built entry point:
 ```json
 {
   "mcpServers": {
-    "androidmcp-framwork": {
+    "androidmcp-framework": {
       "command": "node",
-      "args": ["/absolute/path/to/AndroidMCP Framwork/build/cli/index.js", "mcp"]
+      "args": ["/absolute/path/to/AndroidMCP Framework/build/cli/index.js", "mcp"]
     }
   }
 }
