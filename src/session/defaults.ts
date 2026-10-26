@@ -82,7 +82,7 @@ function resolveProjectPath(defaults: SessionDefaults): SessionDefaults {
   if (hasGradleSettings(workspaceRoot)) {
     return { ...defaults, projectPath: workspaceRoot };
   }
-  const flutterRoot = findFlutterProjectRoot(candidate ?? workspaceRoot);
+  const flutterRoot = findFlutterProjectRoot(candidate && fs.existsSync(candidate) ? candidate : workspaceRoot);
   if (flutterRoot) return { ...defaults, projectPath: flutterRoot };
   return { ...defaults, projectPath: candidate ?? workspaceRoot };
 }
