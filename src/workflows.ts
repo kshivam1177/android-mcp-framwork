@@ -3,7 +3,6 @@ import { emulatorManagementTools } from './tools/emulator-management/index.js';
 import { uiAutomationTools } from './tools/ui-automation/index.js';
 import { debuggingTools } from './tools/debugging/index.js';
 import { projectDiscoveryTools } from './tools/project-discovery/index.js';
-import { projectScaffoldingTools } from './tools/project-scaffolding/index.js';
 import { gradleModuleTools } from './tools/gradle-module/index.js';
 import { sessionManagementTools } from './tools/session-management/index.js';
 import { doctorTools } from './tools/doctor/index.js';
@@ -53,12 +52,6 @@ export const WORKFLOWS: WorkflowDefinition[] = [
     tools: projectDiscoveryTools,
   },
   {
-    name: 'project-scaffolding',
-    description: 'Generate a new minimal Kotlin + Compose Android project from a bundled template.',
-    defaultEnabled: false,
-    tools: projectScaffoldingTools,
-  },
-  {
     name: 'gradle-module',
     description:
       'Build/test/run/list/stop a standalone Gradle module (pure-JVM/Kotlin library or CLI) - the roughest analogy in this project to Xcode\'s swift-package workflow; Android has no exact equivalent to a runnable SPM target.',
@@ -73,7 +66,7 @@ export const WORKFLOWS: WorkflowDefinition[] = [
   },
   {
     name: 'doctor',
-    description: 'Environment diagnostics: adb, java, gradle, Android SDK, emulator, optional uiautomator2 bridge.',
+    description: 'Environment diagnostics: adb, Java, Gradle, Android SDK, emulator and optional Google Android CLI.',
     defaultEnabled: true,
     tools: doctorTools,
   },
