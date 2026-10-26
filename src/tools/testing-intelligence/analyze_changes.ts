@@ -3,6 +3,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { analyzeChangedFiles, collectGitChanges, type ChangedFile } from '../../testing-intelligence/changeImpact.js';
 import { withErrorHandling, textResult } from '../../utils/response.js';
 import type { ToolModule } from '../types.js';
+import { resolveProjectRoot } from '../../utils/paths.js';
 
 export const toolName = 'analyze_changes';
 export const workflow = 'testing-intelligence';
@@ -25,7 +26,7 @@ export function register(server: McpServer) {
   }, withErrorHandling(async (args: { projectPath?: string; base?: string; changedFiles?: ChangedFile[] }) => {
     const result = args.changedFiles
       ? analyzeChangedFiles(args.changedFiles, args.base ?? 'HEAD~1')
-      : await collectGitChanges(args.projectPath ?? process.cwd(), args.base ?? 'HEAD~1');
+      : await collectGitChanges(resolveProjectRoot(args.projectPath ?? process.cwd()), args.base ?? 'HEAD~1');
     return textResult(JSON.stringify(result, null, 2), result as unknown as Record<string, unknown>);
   }));
 }

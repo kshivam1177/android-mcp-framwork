@@ -2,7 +2,7 @@
 
 A Model Context Protocol (MCP) server and CLI that gives coding agents Android development capabilities: build, install, and launch on emulators and physical devices; semantic UI automation; logcat/crash diagnostics; project discovery; change-aware testing intelligence.
 
-66 tools across 12 workflows. Five are enabled by default (`device`, `ui-automation`, `session-management`, `doctor`, `workflow-discovery`); the rest are opt-in - see [workflow docs](docs/md-files/workflow.md).
+Testing intelligence is enabled by default alongside `device`, `ui-automation`, `session-management`, `doctor`, and `workflow-discovery`. Tools such as `analyze_test_project`, `audit_screen`, `save_test_case`, and `write_test_report` are available without enabling another workflow. See [workflow docs](docs/md-files/workflow.md).
 
 ## Install
 
@@ -40,7 +40,7 @@ androidmcp-framework setup
 
 This creates `.androidmcp-framework/config.yaml`. If existing data remains under `.android-build-mcp/` or `.androidbuildmcp/`, inspect it and run `androidmcp-framework setup --migrate` to copy files without overwriting existing content. The old directory is not deleted automatically.
 
-All project-specific framework data is kept inside `.androidmcp-framework/`. Screenshots, saved UI hierarchy JSON, screen recordings, and bug-report archives are organized under `.androidmcp-framework/artifacts/`; test-case definitions and timestamped test reports remain in their dedicated `testcases/` and `test-reports/` directories. Generated artifacts are local outputs and are ignored by Git by default.
+All project-specific framework data is kept inside `.androidmcp-framework/`. Screenshots are saved under `.androidmcp-framework/artifacts/screenshots/`, raw accessibility hierarchy snapshots under `.androidmcp-framework/artifacts/snapshots/`, and other evidence under `.androidmcp-framework/artifacts/`. `screenshot` returns the absolute saved image path with the image; `snapshot_ui` saves the full tree and returns a compact summary by default. Test-case definitions and timestamped reports remain under `testcases/` and `test-reports/`. The workspace root is discovered by walking upward to the nearest `.androidmcp-framework/config.yaml` or `.git` marker, with the current directory as fallback. Generated artifacts are local outputs and are ignored by Git by default.
 
 ## Local checkout config
 
@@ -66,7 +66,7 @@ TypeScript compiles from `src/` to generated `build/`. Do not commit generated `
 
 ## Testing framework
 
-The `testing-intelligence` workflow analyzes Native Android and Flutter projects, saves custom instructions and test cases, and writes timestamped Markdown/JSON reports under `.androidmcp-framework/test-reports/YYYY-MM-DD/HHmmss/`. It does not yet claim fully autonomous end-to-end test generation/execution; see [Testing Framework](docs/md-files/testing-framework.md).
+The `testing-intelligence` workflow is enabled by default: it analyzes Native Android and Flutter workspaces, discovers nested Flutter packages, saves custom instructions and test cases, audits screens, and writes timestamped Markdown/JSON reports under `.androidmcp-framework/test-reports/YYYY-MM-DD/HHmmss/`. `test_device` routes Flutter unit/widget tests through `flutter test` (`kind: "unit"`) and can run device integration tests with `flutter test -d <device-id> integration_test` when `integration_test/` exists. See [Testing Framework](docs/md-files/testing-framework.md).
 
 ## License
 

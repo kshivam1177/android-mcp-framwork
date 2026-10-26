@@ -11,6 +11,7 @@ enabledWorkflows:
   - session-management
   - doctor
   - workflow-discovery
+  - testing-intelligence
 
 customWorkflows: {}
 
@@ -21,7 +22,7 @@ disableSessionDefaults: false
 debug: false
 
 sessionDefaults:
-  projectPath: ./app
+  projectPath: . # workspace root; Flutter/native project roots are auto-detected
   module: :app
   variant: debug
   targetId: null

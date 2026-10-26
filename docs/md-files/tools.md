@@ -1,8 +1,8 @@
 # Tools Reference
 
-Every tool AndroidMCP Framework exposes, grouped by workflow. Only `device`, `ui-automation`, `session-management`, `doctor`, and `workflow-discovery` are enabled by default - see [workflow.md](./workflow.md) for how to turn the rest on. This file mirrors the actual registered tool metadata (title, description, parameters, annotations) - if you change a tool's description in source, regenerate this file rather than editing it by hand.
+Every tool AndroidMCP Framework exposes, grouped by workflow. Only `device`, `ui-automation`, `session-management`, `doctor`, `workflow-discovery`, and `testing-intelligence` are enabled by default - see [workflow.md](./workflow.md) for how to turn the rest on. This file mirrors the actual registered tool metadata (title, description, parameters, annotations) - if you change a tool's description in source, regenerate this file rather than editing it by hand.
 
-**Total: 74 tools across 11 workflows.**
+**Total: 76 tools across 11 workflows.**
 
 ## device _(enabled by default)_
 
@@ -65,7 +65,7 @@ Reset an app to first-install state on the resolved target (adb shell pm clear) 
 - **Annotations:** destructive, idempotent
 
 ### `test_device`
-Run tests for a module + variant. `instrumented` (default) runs connected<Variant>AndroidTest against the resolved target via ANDROID_SERIAL - needs an emulator or device attached. `unit` runs test<Variant>UnitTest on the JVM instead and needs no target at all.
+Run Native Android Gradle tests or Flutter tests. Native `unit` runs test<Variant>UnitTest and `instrumented` runs connected<Variant>AndroidTest. Flutter `unit` runs `flutter test` for unit/widget tests; Flutter `instrumented` runs `flutter test -d <device-id> integration_test` when `integration_test/` exists.
 
 - **Title:** Test (Device)
 - **Parameters:** `projectPath`, `module`, `variant`, `targetId`, `kind`, `extraArgs`
@@ -164,10 +164,10 @@ Start or stop an on-device screen recording (adb shell screenrecord) and pull th
 Semantic UI snapshots, screenshot OCR coordinates, selector-based form filling, declarative JSON workflows using Google's Android CLI, and tap/swipe/drag/type/key/gesture/wait/batch.
 
 ### `snapshot_ui`
-Capture a semantic UI hierarchy for the current screen - every element gets a short-lived elementRef (e1, e2, ...) that tap/long_press/type_text can target directly instead of guessing pixel coordinates. Refresh after navigation, scrolling, or any layout change - refs from a stale snapshot are rejected.
+Capture the semantic UI hierarchy and cache short-lived elementRefs. By default, saves the raw hierarchy XML and full parsed tree under `.androidmcp-framework/artifacts/snapshots/` and returns a compact summary; set `includeElements=true` to include elements inline. Refresh after navigation, scrolling, or any layout change.
 
 - **Title:** Snapshot UI
-- **Parameters:** `targetId`, `interactiveOnly`
+- **Parameters:** `targetId`, `projectPath`, `interactiveOnly`, `persist`, `includeElements`
 - **Annotations:** read-only
 
 ### `tap`
@@ -212,6 +212,13 @@ Send one hardware/software key event (adb shell input keyevent). Accepts either 
 - **Parameters:** `keyCode`, `targetId`
 - **Annotations:** mutating
 
+### `hide_keyboard`
+Dismiss the on-screen keyboard using KEYCODE_ESCAPE (111) by default, or KEYCODE_BACK (4) when strategy is `back`.
+
+- **Title:** Hide Keyboard
+- **Parameters:** `targetId`, `strategy`
+- **Annotations:** idempotent
+
 ### `button`
 Press a named hardware/system button: home, back, recents, power, volume_up, volume_down, menu, enter, camera.
 
@@ -227,10 +234,10 @@ Named system gesture presets: expand_notifications, expand_quick_settings, colla
 - **Annotations:** mutating
 
 ### `screenshot`
-Capture a screenshot of the current screen. Image format depends on which automation backend served the request (adb -> PNG, uiautomator2 bridge -> JPEG) - check the response mimeType if it matters.
+Capture a screenshot, always save it under `.androidmcp-framework/artifacts/screenshots/<targetId>-<timestamp>.png`, and return the image with the absolute saved path in the text response.
 
 - **Title:** Screenshot
-- **Parameters:** `targetId`
+- **Parameters:** `targetId`, `projectPath`, `outputPath`
 - **Annotations:** read-only, idempotent
 
 ### `analyze_screenshot`

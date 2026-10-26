@@ -5,6 +5,7 @@ import swipe from './swipe.js';
 import drag from './drag.js';
 import typeText from './type_text.js';
 import keyPress from './key_press.js';
+import hideKeyboard from './hide_keyboard.js';
 import button from './button.js';
 import gesture from './gesture.js';
 import screenshot from './screenshot.js';
@@ -26,6 +27,7 @@ export const uiAutomationTools: ToolModule[] = [
   drag,
   typeText,
   keyPress,
+  hideKeyboard,
   button,
   gesture,
   screenshot,
