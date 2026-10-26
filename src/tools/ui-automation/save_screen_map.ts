@@ -41,7 +41,7 @@ export function register(server: McpServer) {
       const screenshotPath = path.join(imageDir, `${args.screenId}.${imageExtension}`);
       const mapPath = path.join(mapDir, `${args.screenId}.json`);
       const display = await runAdbShell(target.id, ['wm', 'size']);
-      const sizeMatch = display.stdout.match(/(?:Physical|Override) size:\s*(\d+)x(\d+)/);
+      const sizeMatch = display.stdout.match(/Override size:\s*(\d+)x(\d+)/) ?? display.stdout.match(/Physical size:\s*(\d+)x(\d+)/);
       const width = sizeMatch ? Number(sizeMatch[1]) : Math.max(0, ...nodes.map((node) => node.bounds.right));
       const height = sizeMatch ? Number(sizeMatch[2]) : Math.max(0, ...nodes.map((node) => node.bounds.bottom));
       if (width <= 0 || height <= 0) throw new Error('Could not determine screenshot dimensions for screen map.');
