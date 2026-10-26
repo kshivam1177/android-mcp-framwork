@@ -10,7 +10,7 @@ androidmcp-framework setup
 
 This creates `.androidmcp-framework/config.yaml` if it doesn't exist. Existing canonical configurations are never overwritten.
 
-If the project already contains `.android-build-mcp/` or `.androidbuildmcp/`, setup reports that legacy directory. Review the files and run `androidmcp-framework setup --migrate` to copy them into `.androidmcp-framework/`; the migration does not overwrite existing files or delete the old directory.
+If the project already contains `.androidmcp-framework/` or `.androidbuildmcp/`, setup reports that legacy directory. Review the files and run `androidmcp-framework setup --migrate` to copy them into `.androidmcp-framework/`; the migration does not overwrite existing files or delete the old directory.
 
 ## The config file
 
