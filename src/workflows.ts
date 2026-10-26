@@ -73,7 +73,7 @@ export const WORKFLOWS: WorkflowDefinition[] = [
   },
   {
     name: 'doctor',
-    description: 'Environment diagnostics: adb, java, gradle, Android SDK, emulator, optional uiautomator2 bridge.',
+    description: 'Environment diagnostics: adb, java, gradle, Android SDK, emulator, optional uiautomator2 bridge, and optional Tesseract OCR.',
     defaultEnabled: true,
     tools: doctorTools,
   },
