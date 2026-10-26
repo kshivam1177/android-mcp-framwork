@@ -14,5 +14,7 @@ export async function findApks(root: string): Promise<string[]> {
     }
   }
   await visit(root);
-  return found.sort(async (a, b) => (await stat(b)).mtimeMs - (await stat(a)).mtimeMs);
+  const withMtime = await Promise.all(found.map(async (file) => ({ file, mtimeMs: (await stat(file)).mtimeMs })));
+  withMtime.sort((a, b) => b.mtimeMs - a.mtimeMs);
+  return withMtime.map((item) => item.file);
 }
