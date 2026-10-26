@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "androidmcp-framwork": {
+    "androidmcp-framework": {
       "command": "node",
       "args": [
         "/absolute/path/to/android-mcp-framwork/build/cli/index.js",
