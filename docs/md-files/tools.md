@@ -65,7 +65,7 @@ Reset an app to first-install state on the resolved target (adb shell pm clear) 
 - **Annotations:** destructive, idempotent
 
 ### `test_device`
-Run tests for a module + variant. `instrumented` (default) runs connected<Variant>AndroidTest against the resolved target via ANDROID_SERIAL - needs an emulator or device attached. `unit` runs test<Variant>UnitTest on the JVM instead and needs no target at all.
+Run Native Android Gradle tests or Flutter tests. Native `unit` runs test<Variant>UnitTest and `instrumented` runs connected<Variant>AndroidTest. Flutter `unit` runs `flutter test` for unit/widget tests; Flutter `instrumented` runs `flutter test -d <device-id> integration_test` when `integration_test/` exists.
 
 - **Title:** Test (Device)
 - **Parameters:** `projectPath`, `module`, `variant`, `targetId`, `kind`, `extraArgs`
