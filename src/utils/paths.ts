@@ -33,12 +33,55 @@ export function displayPath(absolutePath: string, cwd: string = process.cwd()): 
   return absolutePath;
 }
 
+function isGitMarker(dir: string): boolean {
+  // Git worktrees/submodules may use a .git file pointing at the real metadata.
+  try {
+    const stat = fs.lstatSync(path.join(dir, '.git'));
+    return stat.isDirectory() || stat.isFile();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Resolve the nearest project/workspace root by walking upward from startDir.
+ * A canonical framework config or Git root is a project boundary. Legacy
+ * config markers remain recognized for existing checkouts. If no marker is
+ * found, the resolved start directory is returned as a safe fallback.
+ */
+export function resolveProjectRoot(startDir: string = process.cwd()): string {
+  const initial = path.resolve(startDir);
+  let dir = initial;
+  try {
+    if (fs.statSync(dir).isFile()) dir = path.dirname(dir);
+  } catch {
+    // Keep an explicit, possibly not-yet-created project path intact.
+    return initial;
+  }
+
+  for (;;) {
+    if (fs.existsSync(path.join(dir, PROJECT_CONFIG_DIR, 'config.yaml'))) return dir;
+    if (isGitMarker(dir)) return dir;
+    if (LEGACY_CONFIG_DIRS.some((name) => fs.existsSync(path.join(dir, name, 'config.yaml')))) return dir;
+    const parent = path.dirname(dir);
+    if (parent === dir) return initial;
+    dir = parent;
+  }
+}
+
 /**
  * Find the canonical config first, while continuing to read either legacy
  * directory so existing projects do not lose access to their saved settings.
+ * Stop at the nearest Git boundary so a parent checkout's config is not
+ * accidentally applied to a nested, independent repository.
  */
 export function findProjectConfigPath(startDir: string = process.cwd()): string | null {
   let dir = path.resolve(startDir);
+  try {
+    if (fs.statSync(dir).isFile()) dir = path.dirname(dir);
+  } catch {
+    // The requested start directory may not exist yet.
+  }
   for (;;) {
     const canonical = path.join(dir, PROJECT_CONFIG_DIR, 'config.yaml');
     if (fs.existsSync(canonical)) return canonical;
@@ -46,6 +89,7 @@ export function findProjectConfigPath(startDir: string = process.cwd()): string 
       const legacy = path.join(dir, legacyName, 'config.yaml');
       if (fs.existsSync(legacy)) return legacy;
     }
+    if (isGitMarker(dir)) return null;
     const parent = path.dirname(dir);
     if (parent === dir) return null;
     dir = parent;
