@@ -36,7 +36,7 @@ export const WORKFLOWS: WorkflowDefinition[] = [
   },
   {
     name: 'ui-automation',
-    description: 'Semantic UI snapshots, screenshot OCR coordinates, selector-based form filling, declarative JSON workflows executed through Google's Android CLI, and tap/swipe/drag/type/key/gesture/wait/batch.',
+    description: 'Semantic UI snapshots, screenshot OCR coordinates, selector-based form filling, declarative JSON workflows executed through the official Android CLI, and tap/swipe/drag/type/key/gesture/wait/batch.',
     defaultEnabled: true,
     tools: uiAutomationTools,
   },
