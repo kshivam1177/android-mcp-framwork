@@ -54,7 +54,8 @@ export async function runDoctorChecks(): Promise<{ summary: string; checks: Chec
     });
   }
 
-  checks.push(await checkBinary('Android CLI', config.paths.androidCliPath, ['-V'], false));
+  checks.push(await checkBinary('Android CLI', config.paths.androidCliPath ?? 'android', ['-V'], false));
+  checks.push(await checkBinary('Tesseract OCR', process.env.TESSERACT_PATH || 'tesseract', ['--version'], false));
 
   const requiredFailed = checks.filter((c) => c.required && !c.ok);
   const summary = requiredFailed.length === 0

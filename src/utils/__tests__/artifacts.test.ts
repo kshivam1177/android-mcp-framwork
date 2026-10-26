@@ -23,6 +23,27 @@ describe('project artifact paths', () => {
     expect(fs.existsSync(path.dirname(output))).toBe(true);
   });
 
+  it('discovers the project root when called from a nested package directory', () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'androidmcp-discovered-root-'));
+    roots.push(root);
+    const nested = path.join(root, 'packages', 'mobile');
+    fs.mkdirSync(path.join(root, '.git'), { recursive: true });
+    fs.mkdirSync(nested, { recursive: true });
+
+    const output = createArtifactPath(nested, 'screenshots', 'screen.png');
+
+    expect(output).toBe(path.join(root, '.androidmcp-framework', 'artifacts', 'screenshots', 'screen.png'));
+  });
+
+  it('honors a custom project root when no discovery marker exists', () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'androidmcp-custom-root-'));
+    roots.push(root);
+
+    const output = createArtifactPath(root, 'snapshots', 'tree.json');
+
+    expect(output).toBe(path.join(root, '.androidmcp-framework', 'artifacts', 'snapshots', 'tree.json'));
+  });
+
   it('rejects categories that could escape the artifacts directory', () => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'androidmcp-artifacts-'));
     roots.push(root);

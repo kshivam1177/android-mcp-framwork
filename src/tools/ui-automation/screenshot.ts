@@ -30,11 +30,13 @@ export function register(server: McpServer) {
       try {
         const { target, backend } = await resolveTargetAndBackend(args.targetId);
         const { data, mimeType } = await backend.screenshot(target.id);
+        // Explicit MCP arguments win. Otherwise prefer saved session defaults,
+        // but don't let a stale relative/default cwd prevent upward root discovery.
         let configuredProjectPath: string | undefined;
         try {
           configuredProjectPath = getEffectiveSessionDefaults().defaults.projectPath ?? undefined;
         } catch {
-          // Missing or invalid daemon-side config must not prevent screenshot persistence.
+          // A missing or invalid daemon-side config must not prevent screenshot persistence.
         }
         const startPath = args.projectPath ?? configuredProjectPath ?? process.cwd();
         const projectRoot = findProjectRoot(path.resolve(startPath));
@@ -58,7 +60,7 @@ export function register(server: McpServer) {
           `Screenshot of ${target.id} (${mimeType}) saved to: ${path.resolve(artifactPath)}`,
           extraCopyPath && extraCopyPath !== artifactPath ? `Additional copy: ${extraCopyPath}` : undefined,
           'The image is attached below as base64-encoded MCP image content.',
-        ].filter(Boolean).join('\\n');
+        ].filter(Boolean).join('\n');
         return imageResult(data.toString('base64'), mimeType, message);
       } catch (err) {
         return errorResult(err);

@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { getStateDir } from '../utils/paths.js';
+import { getStateDir, resolveProjectRoot } from '../utils/paths.js';
+import { findFlutterProjectRoot } from '../utils/projectDiscovery.js';
 import { loadConfig } from '../config/loader.js';
 import type { SessionDefaults } from '../config/schema.js';
 
@@ -55,17 +56,56 @@ export interface EffectiveSessionDefaults {
   source: 'config-only' | 'config+overrides';
 }
 
+/**
+ * Resolve session project defaults against the detected workspace. A configured
+ * path is preserved when it is a real Gradle or Flutter root; the legacy
+ * "./app" module path is normalized to the workspace Gradle root when needed.
+ */
+export function resolveSessionProjectPath(defaults: SessionDefaults, startDir: string = process.cwd()): SessionDefaults {
+  const workspaceRoot = resolveProjectRoot(startDir);
+  const configured = defaults.projectPath?.trim();
+  const candidate = configured
+    ? path.resolve(path.isAbsolute(configured) ? configured : path.join(workspaceRoot, configured))
+    : undefined;
+
+  const hasGradleSettings = (dir: string) =>
+    fs.existsSync(path.join(dir, 'settings.gradle')) || fs.existsSync(path.join(dir, 'settings.gradle.kts'));
+  const hasPubspec = (dir: string) => fs.existsSync(path.join(dir, 'pubspec.yaml'));
+
+  if (candidate && fs.existsSync(candidate) && fs.statSync(candidate).isDirectory()) {
+    if (hasGradleSettings(candidate) || hasPubspec(candidate)) {
+      return { ...defaults, projectPath: candidate };
+    }
+    if (hasGradleSettings(workspaceRoot)) {
+      return { ...defaults, projectPath: workspaceRoot };
+    }
+  }
+
+  if (hasGradleSettings(workspaceRoot)) {
+    return { ...defaults, projectPath: workspaceRoot };
+  }
+  const discoveryStart = candidate && fs.existsSync(candidate) ? candidate : workspaceRoot;
+  const flutterRoot = findFlutterProjectRoot(discoveryStart);
+  if (flutterRoot) return { ...defaults, projectPath: flutterRoot };
+  return { ...defaults, projectPath: candidate ?? workspaceRoot };
+}
+
 export function getEffectiveSessionDefaults(): EffectiveSessionDefaults {
   const config = loadConfig();
   const profile = getActiveProfileName();
   if (config.disableSessionDefaults) {
-    return { profile, defaults: config.sessionDefaults, disabled: true, source: 'config-only' };
+    return {
+      profile,
+      defaults: resolveSessionProjectPath(config.sessionDefaults),
+      disabled: true,
+      source: 'config-only',
+    };
   }
   const overrides = readProfileOverrides(profile);
   const hasOverrides = Object.keys(overrides).length > 0;
   return {
     profile,
-    defaults: { ...config.sessionDefaults, ...overrides },
+    defaults: resolveSessionProjectPath({ ...config.sessionDefaults, ...overrides }),
     disabled: false,
     source: hasOverrides ? 'config+overrides' : 'config-only',
   };

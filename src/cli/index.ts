@@ -9,7 +9,7 @@ import { createServer } from '../mcp/server.js';
 import { WORKFLOWS } from '../workflows.js';
 import { runDoctorChecks } from '../tools/doctor/doctor.js';
 import { getConfigDir } from '../config/loader.js';
-import { PROJECT_CONFIG_DIR, findProjectConfigPath } from '../utils/paths.js';
+import { PROJECT_CONFIG_DIR, findProjectConfigPath, resolveProjectRoot } from '../utils/paths.js';
 import { runSelfUpdate } from './update.js';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
@@ -20,12 +20,6 @@ async function runMcp(): Promise<void> {
   await server.connect(transport);
 }
 
-function runUpdate(): void {
-  const packageRoot = path.resolve(moduleDir, '..', '..');
-  const result = runSelfUpdate(packageRoot);
-  if (!result.success) process.exitCode = 1;
-}
-
 async function runDoctor(): Promise<void> {
   const { summary, checks } = await runDoctorChecks();
   console.log(summary);
@@ -34,6 +28,12 @@ async function runDoctor(): Promise<void> {
     console.log(`  [${status}] ${check.name}: ${check.detail}`);
   }
   process.exitCode = checks.some((c) => c.required && !c.ok) ? 1 : 0;
+}
+
+function runUpdate(): void {
+  const packageRoot = path.resolve(moduleDir, '..', '..');
+  const result = runSelfUpdate(packageRoot);
+  if (!result.success) process.exitCode = 1;
 }
 
 function listWorkflows(): void {
@@ -50,17 +50,17 @@ function listTools(json: boolean): void {
     return;
   }
   for (const w of WORKFLOWS) {
-    console.log(`
-${w.name}:`);
+    console.log(`\n${w.name}:`);
     for (const t of w.tools) console.log(`  ${t.toolName}`);
   }
 }
 
 function setupConfig(cwd: string, migrate: boolean): void {
-  const canonicalDir = path.join(cwd, PROJECT_CONFIG_DIR);
+  const projectRoot = resolveProjectRoot(cwd);
+  const canonicalDir = path.join(projectRoot, PROJECT_CONFIG_DIR);
   const canonicalPath = path.join(canonicalDir, 'config.yaml');
   const existingCanonical = fs.existsSync(canonicalPath);
-  const legacyPath = findProjectConfigPath(cwd);
+  const legacyPath = findProjectConfigPath(projectRoot);
 
   if (existingCanonical) {
     console.log(`${canonicalPath} already exists - leaving it as-is.`);
@@ -83,9 +83,7 @@ function setupConfig(cwd: string, migrate: boolean): void {
   const examplePath = path.resolve(moduleDir, '..', '..', 'config.example.yaml');
   const contents = fs.existsSync(examplePath)
     ? fs.readFileSync(examplePath, 'utf8')
-    : 'schemaVersion: 1
-enabledWorkflows: [device, ui-automation, session-management, doctor, workflow-discovery]
-';
+    : 'schemaVersion: 1\nenabledWorkflows: [device, ui-automation, session-management, doctor, workflow-discovery, testing-intelligence]\n';
   fs.writeFileSync(canonicalPath, contents, { encoding: 'utf8', flag: 'wx' });
   console.log(`Wrote ${canonicalPath}.`);
   console.log('Edit enabledWorkflows and sessionDefaults for your project, then restart your MCP client.');
