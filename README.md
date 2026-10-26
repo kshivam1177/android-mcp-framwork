@@ -1,8 +1,8 @@
 # AndroidMCP Framework
 
-A Model Context Protocol (MCP) server and CLI that gives coding agents Android development capabilities: build, install, and launch on emulators and physical devices; semantic UI automation; logcat/crash diagnostics; JaCoCo coverage; project discovery and scaffolding.
+A Model Context Protocol (MCP) server and CLI that gives coding agents Android development capabilities: build, install, and launch on emulators and physical devices; semantic UI automation; logcat/crash diagnostics; project discovery; change-aware testing intelligence.
 
-67 tools across 13 workflows. Five are enabled by default (`device`, `ui-automation`, `session-management`, `doctor`, `workflow-discovery`); the rest are opt-in - see [workflow docs](docs/md-files/workflow.md).
+66 tools across 12 workflows. Five are enabled by default (`device`, `ui-automation`, `session-management`, `doctor`, `workflow-discovery`); the rest are opt-in - see [workflow docs](docs/md-files/workflow.md).
 
 ## Install
 
