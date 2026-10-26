@@ -15,6 +15,7 @@ describe('runUiWorkflow validation and path safety', () => {
     const callsJson = JSON.stringify(callsFile);
     const cliFile = path.join(cwd, 'fake-android-cli.mjs');
     const cliLauncher = path.join(cwd, 'fake-android-cli-launcher.mjs');
+    const launcherJson = JSON.stringify(cliLauncher);
     const previousPath = process.env.ANDROID_CLI_PATH;
 
     try {
@@ -32,6 +33,7 @@ describe('runUiWorkflow validation and path safety', () => {
         `const child = spawn(${JSON.stringify(process.execPath)}, [${JSON.stringify(cliFile)}, ...process.argv.slice(2)], { stdio: 'inherit' });`,
         "child.on('exit', (code) => process.exit(code ?? 1));",
       ].join('\n'));
+      await (await import('node:fs/promises')).chmod(cliLauncher, 0o755);
       await writeFile(path.join(screens, 'home.json'), JSON.stringify({
         id: 'home',
         form: [{ id: 'hello', selector: { text: 'Hello' }, required: true }],
