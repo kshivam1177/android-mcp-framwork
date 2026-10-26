@@ -1,6 +1,6 @@
 # Workflows
 
-A **workflow** is a named group of related tools. Instead of handing an agent all 69 tools at once, AndroidMCP Framework starts with a small default set and lets you turn the rest on as you need them - fewer tools in context, less chance of the wrong tool getting picked.
+A **workflow** is a named group of related tools. Instead of handing an agent all 76 tools at once, AndroidMCP Framework starts with a small default set and lets you turn the rest on as you need them - fewer tools in context, less chance of the wrong tool getting picked.
 
 ## Default state
 
@@ -23,7 +23,7 @@ Everything else (`emulator-management`, `debugging`, `coverage`, `project-discov
 | `session-management` | 4 | on | View, set, clear, and switch between named session-default profiles (projectPath/module/variant/targetId/...). |
 | `doctor` | 1 | on | Environment diagnostics: adb, java, gradle, Android SDK, emulator, optional uiautomator2 bridge. |
 | `workflow-discovery` | 1 | on | List and toggle which workflows are enabled for this running server session. |
-| `android-cli` | 6 | off | Optional integration with Google Android CLI 1.0: environment info, Android Studio semantic analysis/navigation, dependency version lookup, and skills discovery. |
+| `android-cli` | 6 | off | Optional integration with Google Android CLI 1.0: environment info, Android Studio semantic analysis/navigation, dependency version lookup, and skills discovery. |\n| `testing-intelligence` | 10 | off | Repository/test discovery, change-impact analysis, layered instruction resolution, plan validation, saved test cases, screen audits, and structured reports. |
 
 See [tools.md](./tools.md) for every individual tool.
 
