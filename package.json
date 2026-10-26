@@ -1,11 +1,11 @@
 {
-  "name": "androidbuildmcp",
+  "name": "androidmcp-framework",
   "version": "0.1.0",
   "description": "A Model Context Protocol (MCP) server and CLI that gives coding agents tools for Android development: emulator + physical device builds, installs, UI automation, logs, coverage, and project scaffolding.",
   "type": "module",
   "license": "MIT",
   "bin": {
-    "androidbuildmcp": "build/cli/index.js"
+    "androidmcp-framework": "build/cli/index.js"
   },
   "main": "build/mcp/server.js",
   "exports": {
@@ -62,5 +62,16 @@
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.0.0",
     "vitest": "^2.0.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kshivam1177/android-mcp-framwork.git"
+  },
+  "homepage": "https://github.com/kshivam1177/android-mcp-framwork#readme",
+  "bugs": {
+    "url": "https://github.com/kshivam1177/android-mcp-framwork/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
