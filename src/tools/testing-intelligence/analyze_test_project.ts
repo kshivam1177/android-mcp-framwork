@@ -37,8 +37,7 @@ export function register(server: McpServer) {
     inputSchema: { projectPath: z.string().optional().describe('Workspace or package path; auto-discovers the nearest framework config or Git root when omitted.'), baseRef: z.string().optional().describe('Optional Git ref to compare against, e.g. origin/main.') },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   }, withErrorHandling(async (args: { projectPath?: string; baseRef?: string }) => {
-    const defaults = getEffectiveSessionDefaults().defaults;
-    const requestedPath = args.projectPath ?? defaults.projectPath ?? process.cwd();
+    const requestedPath = args.projectPath ?? getEffectiveSessionDefaults().defaults.projectPath ?? process.cwd();
     const root = resolveProjectRoot(requestedPath);
     if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) throw new Error(`Project directory does not exist: ${root}`);
     const files = walk(root);
