@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { writeFileSync } from 'node:fs';
 import { resetConfigCache } from '../../config/loader.js';
 import { runUiWorkflow } from '../uiWorkflow.js';
 
@@ -23,7 +22,7 @@ describe('runUiWorkflow validation and path safety', () => {
       await writeFile(cliFile, [
         "import fs from 'node:fs';",
         "const args = process.argv.slice(2);",
-        `fs.appendFileSync(${JSON.stringify(callsFile)}, JSON.stringify(args) + '\\\\n');`,
+        `fs.appendFileSync(${JSON.stringify(callsFile)}, JSON.stringify(args) + '\\n');`,
         "if (args[0] === 'layout') process.stdout.write(JSON.stringify({ elements: [] }));",
       ].join('\n'));
       await writeFile(path.join(screens, 'home.json'), JSON.stringify({
@@ -40,7 +39,6 @@ describe('runUiWorkflow validation and path safety', () => {
       resetConfigCache();
       const result = await runUiWorkflow({ cwd, workflowFile: 'smoke.json' });
       expect(result.success).toBe(false);
-      expect((await import('node:fs/promises')).readFile ? true : false).toBe(true);
       const calls = (await (await import('node:fs/promises')).readFile(callsFile, 'utf8')).trim().split('\n');
       expect(calls.length).toBeGreaterThan(0);
       expect(calls[0]).toContain('"layout"');
