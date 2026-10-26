@@ -19,18 +19,18 @@ AndroidBuildMCP does not install Android Studio, Android SDK, Flutter, JDK, emul
 ### Recommended: npm package
 
 ```bash
-npm install -g androidbuildmcp@latest
-androidbuildmcp --help
-androidbuildmcp doctor
+npm install -g androidmcp-framework@latest
+androidmcp-framework --help
+androidmcp-framework doctor
 ```
 
 You can also let the MCP client start it with `npx` (no global install required):
 
 ```bash
-npx -y androidbuildmcp@latest mcp
+npx -y androidmcp-framework@latest mcp
 ```
 
-The `mcp` command is a stdio server process. Do not run it in a terminal and expect normal command output: stdout is used for the MCP protocol. For manual diagnostics use `androidbuildmcp doctor`, `androidbuildmcp workflows`, and `androidbuildmcp tools` instead.
+The `mcp` command is a stdio server process. Do not run it in a terminal and expect normal command output: stdout is used for the MCP protocol. For manual diagnostics use `androidmcp-framework doctor`, `androidmcp-framework workflows`, and `androidmcp-framework tools` instead.
 
 ### Run from a local checkout
 
@@ -55,7 +55,7 @@ Use absolute paths in client configuration where possible. Keep the Node executa
 Open the **application repository root** in your agent/IDE. Run:
 
 ```bash
-androidbuildmcp setup
+androidmcp-framework setup
 ```
 
 This creates `.androidbuildmcp/config.yaml` and does not overwrite an existing file. For native Android, configure `sessionDefaults.projectPath`, `module`, and `variant` for your Gradle project. For Flutter, point tools at the Flutter repository root when applicable; note that the current framework has only initial project analysis/instructions/reporting tools for the natural-language testing workflow, and the complete Flutter test execution adapter is not implemented yet.
@@ -63,14 +63,14 @@ This creates `.androidbuildmcp/config.yaml` and does not overwrite an existing f
 Enable the relevant workflows in `.androidbuildmcp/config.yaml`. Workflow names and tools can be checked with:
 
 ```bash
-androidbuildmcp workflows
-androidbuildmcp tools
+androidmcp-framework workflows
+androidmcp-framework tools
 ```
 
 Then run:
 
 ```bash
-androidbuildmcp doctor
+androidmcp-framework doctor
 ```
 
 The Android CLI integration is optional. To use it, enable the `android-cli` workflow in the project's `enabledWorkflows` list after installing Google's CLI. The `testing-intelligence` workflow is the early foundation for project analysis, reusable instructions and timestamped reports; it is not yet a fully autonomous end-to-end testing system.
@@ -80,7 +80,7 @@ The Android CLI integration is optional. To use it, enable the `android-cli` wor
 From the application repository root:
 
 ```bash
-claude mcp add androidbuildmcp -- npx -y androidbuildmcp@latest mcp
+claude mcp add androidmcp-framwork -- npx -y androidmcp-framework@latest mcp
 claude mcp list
 ```
 
@@ -89,9 +89,9 @@ This is project-local when run in a project context according to Claude Code's M
 ```json
 {
   "mcpServers": {
-    "androidbuildmcp": {
+    "androidmcp-framwork": {
       "command": "npx",
-      "args": ["-y", "androidbuildmcp@latest", "mcp"]
+      "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
   }
 }
@@ -106,16 +106,16 @@ Official guide: [Claude Code MCP](https://docs.anthropic.com/en/docs/claude-code
 Codex CLI and its IDE extension share the Codex MCP configuration. From a terminal:
 
 ```bash
-codex mcp add androidbuildmcp -- npx -y androidbuildmcp@latest mcp
+codex mcp add androidmcp-framwork -- npx -y androidmcp-framework@latest mcp
 codex mcp list
 ```
 
 If your installed Codex version expects manual configuration, add this to `~/.codex/config.toml`:
 
 ```toml
-[mcp_servers.androidbuildmcp]
+[mcp_servers.androidmcp-framwork]
 command = "npx"
-args = ["-y", "androidbuildmcp@latest", "mcp"]
+args = ["-y", "androidmcp-framework@latest", "mcp"]
 ```
 
 Restart the Codex session and confirm the server is available. For a local checkout, replace `npx` with `node` and use the absolute path to `build/cli/index.js` as the first argument, followed by `mcp`.
@@ -129,9 +129,9 @@ Gemini CLI supports MCP server definitions in its settings. For a project-scoped
 ```json
 {
   "mcpServers": {
-    "androidbuildmcp": {
+    "androidmcp-framwork": {
       "command": "npx",
-      "args": ["-y", "androidbuildmcp@latest", "mcp"]
+      "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
   }
 }
@@ -148,9 +148,9 @@ Antigravity IDE/CLI uses `mcp_config.json` with a `mcpServers` object. For a wor
 ```json
 {
   "mcpServers": {
-    "androidbuildmcp": {
+    "androidmcp-framwork": {
       "command": "npx",
-      "args": ["-y", "androidbuildmcp@latest", "mcp"]
+      "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
   }
 }
@@ -167,9 +167,9 @@ For new VS Code/Copilot setups, prefer a portable `.mcp.json` at the application
 ```json
 {
   "mcpServers": {
-    "androidbuildmcp": {
+    "androidmcp-framwork": {
       "command": "npx",
-      "args": ["-y", "androidbuildmcp@latest", "mcp"]
+      "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
   }
 }
@@ -180,10 +180,10 @@ Alternatively, VS Code supports `.vscode/mcp.json`, which uses a different schem
 ```json
 {
   "servers": {
-    "androidbuildmcp": {
+    "androidmcp-framwork": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "androidbuildmcp@latest", "mcp"]
+      "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
   }
 }
@@ -243,9 +243,9 @@ Use these after connecting the MCP server. They are prompts for the agent, not c
 
 ## 12. Troubleshooting
 
-- **Server does not start:** run `node --version`, `npx -y androidbuildmcp@latest --help`, and `androidbuildmcp doctor` separately. Check client logs.
+- **Server does not start:** run `node --version`, `npx -y androidmcp-framework@latest --help`, and `androidmcp-framework doctor` separately. Check client logs.
 - **No tools visible:** confirm the config JSON is valid, restart/reload the MCP server, and check that `.androidbuildmcp/config.yaml` has the desired workflow names in `enabledWorkflows`.
-- **Wrong project is targeted:** start the agent from the app repository root, run `androidbuildmcp setup`, and inspect `.androidbuildmcp/config.yaml` and session defaults.
+- **Wrong project is targeted:** start the agent from the app repository root, run `androidmcp-framework setup`, and inspect `.androidbuildmcp/config.yaml` and session defaults.
 - **`adb` or Gradle unavailable:** check Android SDK environment variables, `adb devices`, JDK, and `./gradlew tasks` (or `gradlew.bat tasks` on Windows).
 - **Flutter tests unavailable:** check `flutter doctor`, `flutter --version`, and `flutter test` manually in the Flutter project before expecting an agent to orchestrate them.
 - **Android Studio cannot connect:** remember that the current AndroidBuildMCP server is stdio-only; direct Android Studio connection requires HTTP transport or a reviewed bridge.
