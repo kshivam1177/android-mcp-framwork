@@ -1,0 +1,57 @@
+# AndroidBuildMCP project config.
+# Copy to .android-build-mcp/config.yaml at your project root and edit.
+# Every field is optional; the whole file is optional. Defaults are shown below.
+
+schemaVersion: 1
+
+# Which workflows are exposed as MCP tools. "device" ships enabled by default
+# so an agent isn't handed 60+ tools on first connect. Add more as you need
+# them, e.g. ["device", "ui-automation", "coverage"].
+# Run `androidbuildmcp workflows list` to see every workflow and its tools.
+enabledWorkflows:
+  - device
+  - ui-automation
+  - session-management
+  - doctor
+  - workflow-discovery
+
+# Group arbitrary tools under a custom workflow name for narrow use cases
+# (e.g. a CI smoke-test agent that only needs a handful of tools).
+customWorkflows: {}
+#   ci-smoke:
+#     - build_run_device
+#     - get_crash_report
+#     - stop_app_device
+
+# Preferred UI-automation backend for tap/swipe/type/snapshot tools.
+#   adb          - adb shell input + uiautomator dump. Nothing extra to install.
+#   uiautomator2 - shells out to `u2cli` for richer, selector-based waits.
+#                  Requires: pip install uiautomator2 && python -m uiautomator2 init
+#   auto         - tries uiautomator2 per call, falls back to adb if u2cli
+#                  isn't reachable on PATH or the on-device agent isn't running.
+automationBackend: auto
+
+# If true, sessionDefaults below is ignored entirely and every tool call must
+# pass its own targetId / module / variant explicitly. Useful for CI where you
+# never want an implicit default silently selected.
+disableSessionDefaults: false
+
+# Verbose stderr logging of every shelled-out adb/gradle/u2cli command.
+debug: false
+
+sessionDefaults:
+  projectPath: ./app # path to the Gradle project root (contains settings.gradle[.kts])
+  module: :app # Gradle module path
+  variant: debug # buildType, or buildType+flavor combo, e.g. debugProd
+  targetId: null # adb serial; leave null to auto-resolve when exactly one target is connected
+  avdName: null # preferred AVD name when a tool needs to boot an emulator
+  applicationId: null # defaults to what's read from the module's build config at build time
+  gradleTaskPrefix: null # override only if your module uses non-standard Gradle task names
+
+paths:
+  adbPath: adb # override if adb isn't on PATH
+  gradlePath: null # null = auto-discover ./gradlew, falling back to `gradle` on PATH
+  androidHome: null # null = read ANDROID_HOME / ANDROID_SDK_ROOT env vars
+  javaHome: null # null = read JAVA_HOME
+  u2cliPath: u2cli
+  androidCliPath: android # path to Google Android CLI (optional integration)
