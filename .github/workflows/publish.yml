@@ -121,7 +121,7 @@ jobs:
           NODE
       - name: Install MCP Publisher
         run: |
-          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar -xz -f - mcp-publisher
           chmod +x ./mcp-publisher
       - name: Authenticate to MCP Registry via GitHub OIDC
         run: ./mcp-publisher login github-oidc
