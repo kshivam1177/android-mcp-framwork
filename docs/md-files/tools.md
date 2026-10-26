@@ -2,7 +2,7 @@
 
 Every tool AndroidMCP Framework exposes, grouped by workflow. Only `device`, `ui-automation`, `session-management`, `doctor`, and `workflow-discovery` are enabled by default - see [workflow.md](./workflow.md) for how to turn the rest on. This file mirrors the actual registered tool metadata (title, description, parameters, annotations) - if you change a tool's description in source, regenerate this file rather than editing it by hand.
 
-**Total: 69 tools across 13 workflows.**
+**Total: 76 tools across 13 workflows.**
 
 ## device _(enabled by default)_
 
@@ -501,10 +501,17 @@ Look up current versions for one or more Maven artifacts, Gradle plugins, or too
 Run `android skills list` to list available/installed agent skills. No parameters. Read-only.
 
 
-## testing-intelligence (3 tools)
+## testing-intelligence (10 tools)
 
-- `analyze_test_project` — detect Native Android/Flutter markers, list test files and inspect Git changes (read-only).
+- `analyze_test_project` — detect Native Android/Flutter markers, list test files, and inspect repository structure (read-only).
+- `analyze_changes` — map Git changes to focused test suites and recommend broad regression when impact is uncertain; does not execute tests.
+- `resolve_test_instructions` — merge global, project, feature, and run-specific instruction layers.
+- `validate_test_plan` — validate explicit test goals and steps; incomplete plans are blocked, not executed.
 - `save_test_instructions` — persist user-authored Markdown test instructions without overwriting existing files unless explicitly authorized.
-- `write_test_report` — write Markdown and JSON run records to `.android-build-mcp/test-reports/YYYY-MM-DD/HHmmss/`.
+- `save_test_case` — persist a structured test case.
+- `list_test_cases` — list saved test cases.
+- `run_test_case` — run a stored test case through supported automation.
+- `audit_screen` — inspect the active screen for UI issues and relevant log errors.
+- `write_test_report` — write Markdown and JSON run records to `.android-build-mcp/test-reports/YYYY-MM-DD/<time>-<run-id>/`, redacting common secret fields and token values.
 
-These tools establish the framework foundation; they do not yet provide autonomous test generation or execution.
+These tools support conservative change-aware test selection and reporting. A plan or recommendation is not proof that tests were executed; only explicit execution outcomes are reported as passed.
