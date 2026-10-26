@@ -1,6 +1,6 @@
 # Workflows
 
-A **workflow** is a named group of related tools. Instead of handing an agent all 67 tools at once, AndroidMCP Framwork starts with a small default set and lets you turn the rest on as you need them - fewer tools in context, less chance of the wrong tool getting picked.
+A **workflow** is a named group of related tools. Instead of handing an agent all 67 tools at once, AndroidMCP Framework starts with a small default set and lets you turn the rest on as you need them - fewer tools in context, less chance of the wrong tool getting picked.
 
 ## Default state
 
