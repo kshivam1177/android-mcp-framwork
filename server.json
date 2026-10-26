@@ -1,9 +1,9 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.kshivam1177/androidmcp-framework",
+  "name": "kshivam1177/androidmcp-framework",
   "title": "AndroidMCP Framework",
   "description": "MCP server and CLI for Android development and change-aware Android and Flutter testing workflows.",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "websiteUrl": "https://github.com/kshivam1177/android-mcp-framwork",
   "repository": {
     "url": "https://github.com/kshivam1177/android-mcp-framwork",
@@ -13,7 +13,7 @@
     {
       "registryType": "npm",
       "identifier": "androidmcp-framework",
-      "version": "0.1.8",
+      "version": "0.1.9",
       "transport": {
         "type": "stdio"
       },
