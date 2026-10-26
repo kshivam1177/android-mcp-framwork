@@ -141,6 +141,22 @@ jobs:
             VERSION="$(node -p "require('./package.json').version")"
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Wait for npm package version to be visible
+        env:
+          PUBLISHED_VERSION: ${{ steps.package-version.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 12); do
+            if npm view "androidmcp-framework@${PUBLISHED_VERSION}" version --registry=https://registry.npmjs.org; then
+              echo "Confirmed npm version ${PUBLISHED_VERSION} is visible."
+              exit 0
+            fi
+            echo "npm version ${PUBLISHED_VERSION} is not visible yet; retrying in 10 seconds."
+            sleep 10
+          done
+          echo "ERROR: npm version ${PUBLISHED_VERSION} is not visible after 120 seconds." >&2
+          exit 1
       - name: Synchronize registry metadata with package version
         env:
           PUBLISHED_VERSION: ${{ steps.package-version.outputs.version }}
