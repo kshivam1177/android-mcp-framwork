@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { getConfigDir } from '../config/loader.js';
+import { resolveProjectRoot } from './paths.js';
 
 /**
  * Create a path for generated evidence that belongs to an application project.
@@ -17,7 +18,8 @@ export function createArtifactPath(projectRoot: string, category: string, fileNa
     throw new Error('Artifact file name must be a non-empty file name.');
   }
 
-  const configDir = getConfigDir(path.resolve(projectRoot));
+  const resolvedProjectRoot = resolveProjectRoot(path.resolve(projectRoot));
+  const configDir = getConfigDir(resolvedProjectRoot);
   const artifactDir = path.join(configDir, 'artifacts', category);
   fs.mkdirSync(artifactDir, { recursive: true });
 
