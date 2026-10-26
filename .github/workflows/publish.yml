@@ -2,8 +2,20 @@ name: Publish npm package and MCP Registry metadata
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
   workflow_dispatch:
+    inputs:
+      publish_npm:
+        description: Publish the npm package
+        type: boolean
+        required: true
+        default: true
+      publish_mcp_registry:
+        description: Publish to the Official MCP Registry
+        type: boolean
+        required: true
+        default: true
 
 concurrency:
   group: release-master
@@ -14,7 +26,7 @@ permissions:
 
 jobs:
   verify-package:
-    if: github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'chore: record published npm version')
+    if: ${{ github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'chore: record published npm version') }}
     name: Build and test
     runs-on: ubuntu-latest
     steps:
@@ -33,6 +45,7 @@ jobs:
 
   publish-npm:
     name: Publish to npm
+    if: ${{ github.event_name == 'push' || inputs.publish_npm }}
     runs-on: ubuntu-latest
     needs: verify-package
     environment: npm-publish
@@ -100,17 +113,23 @@ jobs:
 
   publish-mcp-registry:
     name: Publish to Official MCP Registry
+    if: ${{ always() && needs.verify-package.result == 'success' && (github.event_name == 'push' || inputs.publish_mcp_registry) && (needs.publish-npm.result == 'success' || needs.publish-npm.result == 'skipped') }}
     runs-on: ubuntu-latest
-    needs: publish-npm
+    needs:
+      - verify-package
+      - publish-npm
     environment: mcp-registry-publish
     permissions:
       contents: read
       id-token: write
     steps:
       - uses: actions/checkout@v4
-      - name: Synchronize registry metadata with published package version
+      - name: Read package version
+        id: package-version
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Synchronize registry metadata with package version
         env:
-          PUBLISHED_VERSION: ${{ needs.publish-npm.outputs.published_version }}
+          PUBLISHED_VERSION: ${{ needs.publish-npm.outputs.published_version || steps.package-version.outputs.version }}
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -118,11 +137,26 @@ jobs:
           const manifest = JSON.parse(fs.readFileSync('server.json', 'utf8'));
           manifest.version = version;
           for (const item of manifest.packages ?? []) item.version = version;
-          fs.writeFileSync('server.json', JSON.stringify(manifest, null, 2) + '\n');
+          fs.writeFileSync('server.json', JSON.stringify(manifest, null, 2) + '\\n');
           NODE
-      - name: Install MCP Publisher
+      - name: Install cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - name: Download and verify MCP Publisher
+        env:
+          MCP_PUBLISHER_VERSION: v1.8.1
         run: |
-          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar -xz -f - mcp-publisher
+          set -euo pipefail
+          archive="mcp-publisher_linux_amd64.tar.gz"
+          base_url="https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}"
+          curl --fail --location --silent --show-error --output "$archive" "$base_url/$archive"
+          curl --fail --location --silent --show-error --output "$archive.sigstore.json" "$base_url/$archive.sigstore.json"
+          cosign verify-blob \
+            --bundle "$archive.sigstore.json" \
+            --certificate-identity "https://github.com/modelcontextprotocol/registry/.github/workflows/release.yml@refs/tags/${MCP_PUBLISHER_VERSION}" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            "$archive"
+          tar xzf "$archive" mcp-publisher
+          rm -f "$archive" "$archive.sigstore.json"
           chmod +x ./mcp-publisher
       - name: Authenticate to MCP Registry via GitHub OIDC
         run: ./mcp-publisher login github-oidc
