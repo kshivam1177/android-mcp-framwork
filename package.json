@@ -45,7 +45,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint \"src/**/*.ts\"",
-    "docs:check": "node build/cli/index.js tools --json > /dev/null"
+    "docs:check": "npm run build && node build/cli/index.js tools --json > /dev/null"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
