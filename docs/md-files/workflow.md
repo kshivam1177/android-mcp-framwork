@@ -1,12 +1,12 @@
 # Workflows
 
-A **workflow** is a named group of related tools. Instead of handing an agent all 76 tools at once, AndroidMCP Framework starts with a small default set and lets you turn the rest on as you need them - fewer tools in context, less chance of the wrong tool getting picked.
+A **workflow** is a named group of related tools. Instead of handing an agent all 74 tools at once, AndroidMCP Framework starts with a small default set and lets you turn the rest on as you need them - fewer tools in context, less chance of the wrong tool getting picked.
 
 ## Default state
 
 Five workflows ship enabled: `device`, `ui-automation`, `session-management`, `doctor`, and `workflow-discovery`. That combination covers the common loop - build, install, launch, interact with the UI, and diagnose problems - without needing any config file at all.
 
-Everything else (`emulator-management`, `debugging`, `coverage`, `project-discovery`, `project-scaffolding`, `gradle-module`, `android-cli`) is opt-in.
+Everything else (`emulator-management`, `debugging`, `project-discovery`, `project-scaffolding`, `gradle-module`, `android-cli`, `testing-intelligence`) is opt-in.
 
 ## Full list
 
