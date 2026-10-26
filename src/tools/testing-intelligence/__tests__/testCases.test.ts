@@ -29,7 +29,7 @@ describe('Testing Intelligence: save_test_case and list_test_cases', () => {
     }
   });
 
-  it('saves a test case into .android-build-mcp/testcases/ and lists it', async () => {
+  it('saves a test case into .androidmcp-framework/testcases/ and lists it', async () => {
     const saveRes = await saveHandler({
       projectPath: tmpDir,
       id: 'TC-001',
@@ -49,7 +49,7 @@ describe('Testing Intelligence: save_test_case and list_test_cases', () => {
     });
 
     expect(saveRes.isError).toBeFalsy();
-    const testCasesDir = path.join(tmpDir, '.android-build-mcp', 'testcases');
+    const testCasesDir = path.join(tmpDir, '.androidmcp-framework', 'testcases');
     const expectedFile = path.join(testCasesDir, 'tc-001.json');
     expect(fs.existsSync(expectedFile)).toBe(true);
 
