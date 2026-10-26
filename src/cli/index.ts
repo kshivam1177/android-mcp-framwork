@@ -20,7 +20,13 @@ async function runMcp(): Promise<void> {
   await server.connect(transport);
 }
 
-function runUpdate(): void {\n  const packageRoot = path.resolve(moduleDir, '..', '..');\n  const result = runSelfUpdate(packageRoot);\n  if (!result.success) process.exitCode = 1;\n}\n\nasync function runDoctor(): Promise<void> {
+function runUpdate(): void {
+  const packageRoot = path.resolve(moduleDir, '..', '..');
+  const result = runSelfUpdate(packageRoot);
+  if (!result.success) process.exitCode = 1;
+}
+
+async function runDoctor(): Promise<void> {
   const { summary, checks } = await runDoctorChecks();
   console.log(summary);
   for (const check of checks) {
@@ -44,7 +50,8 @@ function listTools(json: boolean): void {
     return;
   }
   for (const w of WORKFLOWS) {
-    console.log(`\n${w.name}:`);
+    console.log(`
+${w.name}:`);
     for (const t of w.tools) console.log(`  ${t.toolName}`);
   }
 }
@@ -76,7 +83,9 @@ function setupConfig(cwd: string, migrate: boolean): void {
   const examplePath = path.resolve(moduleDir, '..', '..', 'config.example.yaml');
   const contents = fs.existsSync(examplePath)
     ? fs.readFileSync(examplePath, 'utf8')
-    : 'schemaVersion: 1\nenabledWorkflows: [device, ui-automation, session-management, doctor, workflow-discovery]\n';
+    : 'schemaVersion: 1
+enabledWorkflows: [device, ui-automation, session-management, doctor, workflow-discovery]
+';
   fs.writeFileSync(canonicalPath, contents, { encoding: 'utf8', flag: 'wx' });
   console.log(`Wrote ${canonicalPath}.`);
   console.log('Edit enabledWorkflows and sessionDefaults for your project, then restart your MCP client.');
@@ -85,7 +94,8 @@ function setupConfig(cwd: string, migrate: boolean): void {
 await yargs(hideBin(process.argv))
   .scriptName('androidmcp-framework')
   .command('mcp', 'Start the MCP server over stdio (for MCP clients)', () => {}, runMcp)
-  .command('doctor', 'Check the local Android toolchain (adb, java, gradle, SDK, emulator)', () => {}, runDoctor)\n  .command('update', 'Update androidmcp-framework if a newer npm version exists and clear the npx execution cache', () => {}, runUpdate)
+  .command('doctor', 'Check the local Android toolchain (adb, java, gradle, SDK, emulator)', () => {}, runDoctor)
+  .command('update', 'Update androidmcp-framework if a newer npm version exists and clear the npx execution cache', () => {}, runUpdate)
   .command('workflows', 'List every workflow, its tool count, and whether it is on by default', () => {}, listWorkflows)
   .command(
     'tools',
