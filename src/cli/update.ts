@@ -1,0 +1,156 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
+
+export type NpmRunner = (args: string[], inheritOutput?: boolean) => string;
+
+export function isPathInsideDirectory(candidatePath: string, parentPath: string): boolean {
+  const relative = path.relative(path.resolve(parentPath), path.resolve(candidatePath));
+  return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+}
+
+export function readPackageVersion(packageJsonText: string): string | undefined {
+  try {
+    const parsed = JSON.parse(packageJsonText) as { version?: unknown };
+    return typeof parsed.version === 'string' && parsed.version.trim() ? parsed.version : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function parseVersion(version: string): { major: number; minor: number; patch: number; prerelease: string[] } | undefined {
+  const match = version.trim().replace(/^v/, '').match(/^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-([0-9A-Za-z.-]+))?(?:\\+[0-9A-Za-z.-]+)?$/);
+  if (!match) return undefined;
+  return { major: Number(match[1]), minor: Number(match[2]), patch: Number(match[3]), prerelease: match[4] ? match[4].split('.') : [] };
+}
+
+export function compareVersions(left: string, right: string): number | undefined {
+  const a = parseVersion(left);
+  const b = parseVersion(right);
+  if (!a || !b) return undefined;
+  for (const key of ['major', 'minor', 'patch'] as const) {
+    if (a[key] !== b[key]) return a[key] > b[key] ? 1 : -1;
+  }
+  if (!a.prerelease.length && !b.prerelease.length) return 0;
+  if (!a.prerelease.length) return 1;
+  if (!b.prerelease.length) return -1;
+  for (let i = 0; i < Math.max(a.prerelease.length, b.prerelease.length); i++) {
+    const ai = a.prerelease[i];
+    const bi = b.prerelease[i];
+    if (ai === undefined) return -1;
+    if (bi === undefined) return 1;
+    if (ai === bi) continue;
+    const an = /^\\d+$/.test(ai);
+    const bn = /^\\d+$/.test(bi);
+    if (an && bn) return Number(ai) > Number(bi) ? 1 : -1;
+    if (an !== bn) return an ? -1 : 1;
+    return ai > bi ? 1 : -1;
+  }
+  return 0;
+}
+
+function defaultNpmRunner(args: string[], inheritOutput = false): string {
+  const command = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+  const output = execFileSync(command, args, {
+    encoding: 'utf8',
+    stdio: inheritOutput ? 'inherit' : ['ignore', 'pipe', 'pipe'],
+    shell: process.platform === 'win32',
+  });
+  return typeof output === 'string' ? output.trim() : '';
+}
+
+function canonicalPath(candidate: string): string {
+  try { return fs.realpathSync(candidate); } catch { return path.resolve(candidate); }
+}
+
+function clearNpxCache(runner: NpmRunner): void {
+  const cacheRoot = runner(['config', 'get', 'cache']).trim();
+  if (!cacheRoot || cacheRoot === 'undefined' || cacheRoot === 'null') throw new Error('npm did not return a valid cache directory');
+  fs.rmSync(path.join(cacheRoot, '_npx'), { recursive: true, force: true });
+}
+
+export interface UpdateResult {
+  success: boolean;
+  updated?: boolean;
+  currentVersion?: string;
+  latestVersion?: string;
+  installedVersion?: string;
+  message: string;
+}
+
+export function runSelfUpdate(
+  packageRoot: string,
+  runner: NpmRunner = defaultNpmRunner,
+  log: (message: string) => void = console.log,
+): UpdateResult {
+  let currentVersion: string | undefined;
+  try { currentVersion = readPackageVersion(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8')); } catch { /* checked below */ }
+
+  let globalRoot: string;
+  try { globalRoot = runner(['root', '--global']); } catch {
+    return { success: false, currentVersion, message: 'Could not locate the global npm installation. Ensure npm is installed and available on PATH.' };
+  }
+  if (!isPathInsideDirectory(canonicalPath(packageRoot), canonicalPath(globalRoot))) {
+    const message = 'This command is not running from the global npm installation. Install it globally first with: npm install -g androidmcp-framework@latest';
+    log(message);
+    return { success: false, currentVersion, message };
+  }
+
+  let latestVersion: string;
+  try {
+    latestVersion = runner(['view', 'androidmcp-framework', 'version']).trim();
+    if (!latestVersion) throw new Error('empty version response');
+  } catch {
+    const message = 'Could not reach the npm registry to determine the latest version. No update was attempted.';
+    log(message);
+    return { success: false, currentVersion, message };
+  }
+  if (!currentVersion) {
+    const message = 'Could not read the installed package version. No update was attempted.';
+    log(message);
+    return { success: false, latestVersion, message };
+  }
+  const comparison = compareVersions(latestVersion, currentVersion);
+  if (comparison === undefined) {
+    const message = `Could not compare installed version ${currentVersion} with registry version ${latestVersion}; no update was attempted.`;
+    log(message);
+    return { success: false, currentVersion, latestVersion, message };
+  }
+  if (comparison <= 0) {
+    const message = `androidmcp-framework ${currentVersion} is already up to date (registry latest: ${latestVersion}). No installation or cache cleanup was needed.`;
+    log(message);
+    return { success: true, updated: false, currentVersion, latestVersion, installedVersion: currentVersion, message };
+  }
+
+  log(`Updating androidmcp-framework: ${currentVersion} -> ${latestVersion}...`);
+  try { runner(['install', '--global', 'androidmcp-framework@latest'], true); } catch {
+    const message = 'npm could not install the latest version. Check npm permissions/network and retry.';
+    log(message);
+    return { success: false, currentVersion, latestVersion, message };
+  }
+
+  let cacheWarning = '';
+  try { clearNpxCache(runner); } catch (err) {
+    cacheWarning = ` Warning: update succeeded, but npx cache cleanup failed: ${(err as Error).message}`;
+  }
+  let installedVersion: string | undefined;
+  try {
+    const parsed = JSON.parse(runner(['list', '--global', '--depth=0', '--json'])) as { dependencies?: Record<string, { version?: string }> };
+    installedVersion = parsed.dependencies?.['androidmcp-framework']?.version;
+  } catch {
+    try { installedVersion = readPackageVersion(fs.readFileSync(path.join(globalRoot, 'androidmcp-framework', 'package.json'), 'utf8')); } catch { /* verification below */ }
+  }
+  if (!installedVersion) {
+    const message = 'The install command completed, but the installed version could not be verified.' + cacheWarning;
+    log(message);
+    return { success: false, updated: true, currentVersion, latestVersion, message };
+  }
+  if (installedVersion !== latestVersion) {
+    const message = `Installed version ${installedVersion} does not match npm latest ${latestVersion}. Retry and inspect npm permissions or registry configuration.` + cacheWarning;
+    log(message);
+    return { success: false, updated: true, currentVersion, latestVersion, installedVersion, message };
+  }
+  const message = `Updated androidmcp-framework from ${currentVersion} to ${installedVersion}. Cleared the npx execution cache.` + cacheWarning;
+  log(message);
+  return { success: true, updated: true, currentVersion, latestVersion, installedVersion, message };
+}
