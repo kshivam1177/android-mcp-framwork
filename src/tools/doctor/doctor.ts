@@ -34,6 +34,7 @@ export async function runDoctorChecks(): Promise<{ summary: string; checks: Chec
   checks.push(await checkBinary('adb', getAdbPath(), ['version'], true));
   checks.push(await checkBinary('java', 'java', ['-version'], true));
   checks.push(await checkBinary('gradle', config.paths.gradlePath ?? 'gradle', ['--version'], false));
+  checks.push(await checkBinary('tesseract OCR', process.env.TESSERACT_PATH || 'tesseract', ['--version'], false));
 
   const androidHome = config.paths.androidHome || process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT;
   checks.push({
