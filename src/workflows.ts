@@ -2,7 +2,6 @@ import { deviceTools } from './tools/device/index.js';
 import { emulatorManagementTools } from './tools/emulator-management/index.js';
 import { uiAutomationTools } from './tools/ui-automation/index.js';
 import { debuggingTools } from './tools/debugging/index.js';
-import { coverageTools } from './tools/coverage/index.js';
 import { projectDiscoveryTools } from './tools/project-discovery/index.js';
 import { projectScaffoldingTools } from './tools/project-scaffolding/index.js';
 import { gradleModuleTools } from './tools/gradle-module/index.js';
@@ -46,12 +45,6 @@ export const WORKFLOWS: WorkflowDefinition[] = [
     description: 'Logcat streaming, crash and ANR extraction, log clearing, full adb bugreport. Log/crash-focused by design - no JDWP breakpoint debugging in this version.',
     defaultEnabled: false,
     tools: debuggingTools,
-  },
-  {
-    name: 'coverage',
-    description: 'Read JaCoco XML coverage reports, overall and per source file.',
-    defaultEnabled: false,
-    tools: coverageTools,
   },
   {
     name: 'project-discovery',
