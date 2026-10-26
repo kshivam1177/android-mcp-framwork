@@ -55,8 +55,22 @@ export function resolveProjectRoot(startDir: string = process.cwd()): string {
   try {
     if (fs.statSync(dir).isFile()) dir = path.dirname(dir);
   } catch {
-    // Keep an explicit, possibly not-yet-created project path intact.
-    return initial;
+    // If a nested path has not been created yet, walk from its nearest
+    // existing ancestor for a workspace marker, but keep initial as fallback.
+    let probe = dir;
+    while (!fs.existsSync(probe)) {
+      const parent = path.dirname(probe);
+      if (parent === probe) break;
+      probe = parent;
+    }
+    if (fs.existsSync(probe)) {
+      try {
+        if (fs.statSync(probe).isFile()) probe = path.dirname(probe);
+      } catch {
+        // Fall back to the supplied path below if the ancestor is inaccessible.
+      }
+      dir = probe;
+    }
   }
 
   for (;;) {
