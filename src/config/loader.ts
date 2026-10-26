@@ -3,7 +3,7 @@ import path from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { ConfigSchema, DEFAULT_CONFIG } from './schema.js';
 import type { Config } from './schema.js';
-import { findProjectConfigPath, PROJECT_CONFIG_DIR } from '../utils/paths.js';
+import { findProjectConfigPath, PROJECT_CONFIG_DIR, resolveProjectRoot } from '../utils/paths.js';
 import { AndroidBuildMcpError } from '../types.js';
 
 let cachedConfig: Config | null = null;
@@ -54,18 +54,20 @@ export function loadConfig(options: LoadConfigOptions = {}): Config {
 }
 
 export function getConfigPath(cwd: string = process.cwd()): string {
-  return findProjectConfigPath(cwd) ?? path.join(cwd, PROJECT_CONFIG_DIR, 'config.yaml');
+  const projectRoot = resolveProjectRoot(path.resolve(cwd));
+  return findProjectConfigPath(projectRoot) ?? path.join(projectRoot, PROJECT_CONFIG_DIR, 'config.yaml');
 }
 
 export function getConfigDir(cwd: string = process.cwd()): string {
-  const configPath = findProjectConfigPath(cwd);
+  const projectRoot = resolveProjectRoot(path.resolve(cwd));
+  const configPath = findProjectConfigPath(projectRoot);
   if (configPath && path.basename(path.dirname(configPath)) === PROJECT_CONFIG_DIR) {
     return path.dirname(configPath);
   }
   // Read legacy config values if present, but put all new framework data in
   // the canonical directory until the explicit setup --migrate copies old files.
-  const projectRoot = configPath ? path.dirname(path.dirname(configPath)) : cwd;
-  return path.join(projectRoot, PROJECT_CONFIG_DIR);
+  const resolvedRoot = configPath ? path.dirname(path.dirname(configPath)) : projectRoot;
+  return path.join(resolvedRoot, PROJECT_CONFIG_DIR);
 }
 
 /** Mostly for tests: drop the cache so the next loadConfig() re-reads disk. */
