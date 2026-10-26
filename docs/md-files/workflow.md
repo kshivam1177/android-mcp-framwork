@@ -16,7 +16,6 @@ Everything else (`emulator-management`, `debugging`, `project-discovery`, `proje
 | `emulator-management` | 10 | off | Create, boot, wipe, and configure AVDs: location, dark/light appearance, status-bar demo mode, screen recording. |
 | `ui-automation` | 15 | on | Semantic UI snapshots, screenshot OCR coordinates, selector-based form filling, and tap/swipe/drag/type/key/gesture/wait/batch. |
 | `debugging` | 6 | off | Logcat streaming, crash and ANR extraction, log clearing, full adb bugreport. Log/crash-focused by design - no JDWP breakpoint debugging in this version. |
-| `coverage` | 2 | off | Read JaCoco XML coverage reports, overall and per source file. |
 | `project-discovery` | 4 | off | Find Gradle project roots, list modules and build variants, inspect build configuration. |
 | `project-scaffolding` | 1 | off | Generate a new minimal Kotlin + Compose Android project from a bundled template. |
 | `gradle-module` | 5 | off | Build/test/run/list/stop a standalone Gradle module (pure-JVM/Kotlin library or CLI) - the roughest analogy in this project to Xcode's swift-package workflow; Android has no exact equivalent to a runnable SPM target. |
@@ -40,7 +39,6 @@ enabledWorkflows:
   - workflow-discovery
   - android-cli # optional: requires Google Android CLI installed separately
   - emulator-management   # <- added
-  - coverage              # <- added
 ```
 
 An explicit `enabledWorkflows: []` means *nothing* is enabled - it does not fall back to the defaults. Restart your MCP client after editing.
@@ -76,6 +74,4 @@ Any tool listed under a custom workflow is enabled even if its real workflow isn
 ## CLI
 
 `androidmcp-framework workflows` prints this same table from the command line, no MCP client needed.
-
-
-| `testing-intelligence` | Disabled | Repository analysis, persistent test instructions, timestamped reports; foundation for change-aware testing. |
+\n
