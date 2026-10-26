@@ -30,8 +30,7 @@ export function register(server: McpServer) {
       try {
         const { target, backend } = await resolveTargetAndBackend(args.targetId);
         const { data, mimeType } = await backend.screenshot(target.id);
-        const defaults = getEffectiveSessionDefaults().defaults;
-        const projectRoot = resolveProjectRoot(args.projectPath ?? defaults.projectPath ?? process.cwd());
+        const projectRoot = resolveProjectRoot(args.projectPath ?? getEffectiveSessionDefaults().defaults.projectPath ?? process.cwd());
         const artifactPath = createArtifactPath(
           projectRoot,
           'screenshots',
