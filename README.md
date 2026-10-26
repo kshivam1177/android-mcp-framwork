@@ -13,6 +13,12 @@ androidmcp-framework doctor
 
 Or run on demand with no install: `npx -y androidmcp-framework@latest mcp`.
 
+## MCP documentation
+
+- [MCP integration guide](docs/md-files/mcp-guide.md) - protocol behavior, client setup, project context, tool discovery, troubleshooting, and security.
+- [Supported clients and transports](docs/md-files/supportedclients.md) - verified integration scope and current limitations.
+- [Complete tool reference](docs/md-files/tools.md) - tool descriptions, parameters, and annotations.
+
 ## Connect an MCP client
 
 ```json
