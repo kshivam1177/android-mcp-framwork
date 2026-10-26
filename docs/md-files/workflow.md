@@ -29,7 +29,7 @@ See [tools.md](./tools.md) for every individual tool.
 
 ## Turning workflows on persistently
 
-Edit `.androidmcp-framework/config.yaml`:
+Edit `.android-build-mcp/config.yaml`:
 
 ```yaml
 enabledWorkflows:
