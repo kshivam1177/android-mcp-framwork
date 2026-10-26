@@ -5,6 +5,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { createScreenMap } from '../../automation/screenMap.js';
 import { parseUiHierarchy, cacheSnapshot } from '../../automation/uiHierarchy.js';
 import { resolveTargetAndBackend } from './_shared.js';
+import { runAdbShell } from '../../utils/adb.js';
 import { withErrorHandling, textResult } from '../../utils/response.js';
 import type { ToolModule } from '../types.js';
 
@@ -39,8 +40,10 @@ export function register(server: McpServer) {
       const imageExtension = screenshot.mimeType === 'image/jpeg' ? 'jpg' : 'png';
       const screenshotPath = path.join(imageDir, `${args.screenId}.${imageExtension}`);
       const mapPath = path.join(mapDir, `${args.screenId}.json`);
-      const width = screenshot.width ?? Math.max(0, ...nodes.map((node) => node.bounds.right));
-      const height = screenshot.height ?? Math.max(0, ...nodes.map((node) => node.bounds.bottom));
+      const display = await runAdbShell(target.id, ['wm', 'size']);
+      const sizeMatch = display.stdout.match(/(?:Physical|Override) size:\\s*(\\d+)x(\\d+)/);
+      const width = sizeMatch ? Number(sizeMatch[1]) : Math.max(0, ...nodes.map((node) => node.bounds.right));
+      const height = sizeMatch ? Number(sizeMatch[2]) : Math.max(0, ...nodes.map((node) => node.bounds.bottom));
       if (width <= 0 || height <= 0) throw new Error('Could not determine screenshot dimensions for screen map.');
       const screenMap = createScreenMap({
         screenId: args.screenId,
