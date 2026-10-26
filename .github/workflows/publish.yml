@@ -118,7 +118,7 @@ jobs:
 
   publish-mcp-registry:
     name: Publish to Official MCP Registry
-    if: ${{ always() && needs.verify-package.result == 'success' && (github.event_name == 'push' || inputs.publish_mcp_registry) && (needs.publish-npm.result == 'success' || needs.publish-npm.result == 'skipped') }}
+    if: ${{ always() && needs.verify-package.result == 'success' && (github.event_name == 'push' || inputs.publish_mcp_registry) && (needs.publish-npm.result == 'success' || needs.publish-npm.result == 'skipped' || needs.publish-npm.outputs.published_version != '') }}
     runs-on: ubuntu-latest
     needs:
       - verify-package
