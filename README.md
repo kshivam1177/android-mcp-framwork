@@ -20,7 +20,7 @@ Or run on demand with no install: `npx -y androidmcp-framework@latest mcp`.
   "mcpServers": {
     "androidmcp-framework": {
       "command": "npx",
-      "args": ["-y", "androidbuildmcp@latest", "mcp"]
+      "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
   }
 }
