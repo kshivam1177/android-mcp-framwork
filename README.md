@@ -1,4 +1,4 @@
-# AndroidBuildMCP
+# AndroidMCP Framework
 
 A Model Context Protocol (MCP) server and CLI that gives coding agents Android development capabilities: build, install, and launch on emulators and physical devices; semantic UI automation; logcat/crash diagnostics; JaCoco coverage; project discovery and scaffolding. Modeled on [XcodeBuildMCP](https://github.com/cameroncooke/XcodeBuildMCP)'s tool naming and workflow conventions, translated to the Android/Gradle/adb toolchain.
 
@@ -7,18 +7,18 @@ A Model Context Protocol (MCP) server and CLI that gives coding agents Android d
 ## Install
 
 ```bash
-npm install -g androidbuildmcp@latest
-androidbuildmcp doctor
+npm install -g androidmcp-framework@latest
+androidmcp-framework doctor
 ```
 
-Or run on demand with no install: `npx -y androidbuildmcp@latest mcp`.
+Or run on demand with no install: `npx -y androidmcp-framework@latest mcp`.
 
 ## Connect an MCP client
 
 ```json
 {
   "mcpServers": {
-    "androidbuildmcp": {
+    "androidmcp-framework": {
       "command": "npx",
       "args": ["-y", "androidbuildmcp@latest", "mcp"]
     }
@@ -32,7 +32,7 @@ See [docs/md-files/agent-setup.md](docs/md-files/agent-setup.md) for copy/paste 
 
 ```bash
 cd your-android-project
-androidbuildmcp setup
+androidmcp-framework setup
 ```
 
 Then either edit `.androidbuildmcp/config.yaml`'s `sessionDefaults`, or call `session_set_defaults` from your agent once connected. Full details: [docs/md-files/setup.md](docs/md-files/setup.md).
