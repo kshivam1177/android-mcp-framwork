@@ -1,6 +1,6 @@
 # Coding-agent setup guide
 
-This guide explains how to install AndroidMCP Framwork and connect it to coding agents. It covers the current MCP server and its implemented tools; it does **not** imply that the full natural-language test generation/execution roadmap is already complete.
+This guide explains how to install AndroidMCP Framework and connect it to coding agents. It covers the current MCP server and its implemented tools; it does **not** imply that the full natural-language test generation/execution roadmap is already complete.
 
 ## 1. Prerequisites
 
@@ -12,9 +12,9 @@ Install the normal development tools for the project you want to test:
 - For Flutter: Flutter SDK and Dart. Run `flutter doctor` and resolve the requirements for the targets you intend to test.
 - For Google's Android CLI integration: install the official CLI by following the [Android CLI setup guide](https://developer.android.com/tools/agents/android-cli). Confirm `android --help` works and the executable is on `PATH`, or configure `paths.androidCliPath`.
 
-AndroidMCP Framwork does not install Android Studio, Android SDK, Flutter, JDK, emulator images, or Google Android CLI on your behalf.
+AndroidMCP Framework does not install Android Studio, Android SDK, Flutter, JDK, emulator images, or Google Android CLI on your behalf.
 
-## 2. Install AndroidMCP Framwork
+## 2. Install AndroidMCP Framework
 
 ### Recommended: npm package
 
@@ -46,7 +46,7 @@ npm run typecheck
 Then configure the MCP client to launch the local built entry point:
 
 - macOS/Linux: `node /absolute/path/to/android-mcp-framwork/build/cli/index.js mcp`
-- Windows: `node C:\absolute\path\to\AndroidMCP Framwork\build\cli\index.js mcp`
+- Windows: `node C:\absolute\path\to\AndroidMCP Framework\build\cli\index.js mcp`
 
 Use absolute paths in client configuration where possible. Keep the Node executable and all toolchain paths available to the environment that starts the MCP server.
 
@@ -80,7 +80,7 @@ The Android CLI integration is optional. To use it, enable the `android-cli` wor
 From the application repository root:
 
 ```bash
-claude mcp add androidmcp-framwork -- npx -y androidmcp-framework@latest mcp
+claude mcp add androidmcp-framework -- npx -y androidmcp-framework@latest mcp
 claude mcp list
 ```
 
@@ -89,7 +89,7 @@ This is project-local when run in a project context according to Claude Code's M
 ```json
 {
   "mcpServers": {
-    "androidmcp-framwork": {
+    "androidmcp-framework": {
       "command": "npx",
       "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
@@ -97,7 +97,7 @@ This is project-local when run in a project context according to Claude Code's M
 }
 ```
 
-Restart/reload Claude Code if needed, then ask it to list the AndroidMCP Framwork tools or run the `doctor` tool.
+Restart/reload Claude Code if needed, then ask it to list the AndroidMCP Framework tools or run the `doctor` tool.
 
 Official guide: [Claude Code MCP](https://docs.anthropic.com/en/docs/claude-code/mcp).
 
@@ -106,14 +106,14 @@ Official guide: [Claude Code MCP](https://docs.anthropic.com/en/docs/claude-code
 Codex CLI and its IDE extension share the Codex MCP configuration. From a terminal:
 
 ```bash
-codex mcp add androidmcp-framwork -- npx -y androidmcp-framework@latest mcp
+codex mcp add androidmcp-framework -- npx -y androidmcp-framework@latest mcp
 codex mcp list
 ```
 
 If your installed Codex version expects manual configuration, add this to `~/.codex/config.toml`:
 
 ```toml
-[mcp_servers.androidmcp-framwork]
+[mcp_servers.androidmcp-framework]
 command = "npx"
 args = ["-y", "androidmcp-framework@latest", "mcp"]
 ```
@@ -129,7 +129,7 @@ Gemini CLI supports MCP server definitions in its settings. For a project-scoped
 ```json
 {
   "mcpServers": {
-    "androidmcp-framwork": {
+    "androidmcp-framework": {
       "command": "npx",
       "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
@@ -148,7 +148,7 @@ Antigravity IDE/CLI uses `mcp_config.json` with a `mcpServers` object. For a wor
 ```json
 {
   "mcpServers": {
-    "androidmcp-framwork": {
+    "androidmcp-framework": {
       "command": "npx",
       "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
@@ -167,7 +167,7 @@ For new VS Code/Copilot setups, prefer a portable `.mcp.json` at the application
 ```json
 {
   "mcpServers": {
-    "androidmcp-framwork": {
+    "androidmcp-framework": {
       "command": "npx",
       "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
@@ -180,7 +180,7 @@ Alternatively, VS Code supports `.vscode/mcp.json`, which uses a different schem
 ```json
 {
   "servers": {
-    "androidmcp-framwork": {
+    "androidmcp-framework": {
       "type": "stdio",
       "command": "npx",
       "args": ["-y", "androidmcp-framework@latest", "mcp"]
@@ -189,29 +189,29 @@ Alternatively, VS Code supports `.vscode/mcp.json`, which uses a different schem
 }
 ```
 
-In VS Code, open the repository, open Copilot Chat, switch to Agent mode, and use **Configure Tools** / the MCP Servers view to enable the AndroidMCP Framwork tools. If you change the configuration, restart/reload the server from the MCP server management UI.
+In VS Code, open the repository, open Copilot Chat, switch to Agent mode, and use **Configure Tools** / the MCP Servers view to enable the AndroidMCP Framework tools. If you change the configuration, restart/reload the server from the MCP server management UI.
 
 Official reference: [VS Code MCP servers](https://code.visualstudio.com/docs/agent-customization/mcp-servers).
 
 ## 9. Android Studio with Gemini
 
-**Important transport limitation:** Android Studio's documented MCP integration currently does not support connecting to MCP servers over `stdio`; it supports HTTP-based MCP connections. AndroidMCP Framwork currently starts over `stdio` only. Therefore, the configurations above cannot be pasted directly into Android Studio's MCP Servers settings and expected to work.
+**Important transport limitation:** Android Studio's documented MCP integration currently does not support connecting to MCP servers over `stdio`; it supports HTTP-based MCP connections. AndroidMCP Framework currently starts over `stdio` only. Therefore, the configurations above cannot be pasted directly into Android Studio's MCP Servers settings and expected to work.
 
-To use AndroidMCP Framwork directly inside Android Studio, the project needs a supported Streamable HTTP transport (with local-only binding, authentication/access controls, and explicit security review), or a trusted stdio-to-HTTP bridge. This transport is not included in the current build, so do not follow an unofficial bridge recipe as if it were already supported.
+To use AndroidMCP Framework directly inside Android Studio, the project needs a supported Streamable HTTP transport (with local-only binding, authentication/access controls, and explicit security review), or a trusted stdio-to-HTTP bridge. This transport is not included in the current build, so do not follow an unofficial bridge recipe as if it were already supported.
 
 Once HTTP transport is implemented, the intended Android Studio setup location is **Settings > Tools > AI > MCP Servers**, enable MCP servers, and configure the local HTTP endpoint according to the Android Studio version's schema. See Google's [Add an MCP server to Android Studio](https://developer.android.com/studio/gemini/add-mcp-server) guide for the current UI and transport restrictions.
 
-You can still use AndroidMCP Framwork from Claude Code, Codex, Gemini CLI, Antigravity and VS Code while working on the same Android Studio project; the MCP client does not have to be the IDE itself.
+You can still use AndroidMCP Framework from Claude Code, Codex, Gemini CLI, Antigravity and VS Code while working on the same Android Studio project; the MCP client does not have to be the IDE itself.
 
 ## 10. Shared agent instructions
 
 For consistent behavior across agents, add the following guidance to the repository's agent instruction file (for example `AGENTS.md`, `CLAUDE.md`, or VS Code instructions). Keep it concise and commit it if the whole team should share the workflow:
 
 ```markdown
-## AndroidMCP Framwork testing workflow
+## AndroidMCP Framework testing workflow
 
 - Before testing a feature change, inspect the current Git diff and the project's `.android-build-mcp/knowledge/` and `.android-build-mcp/instructions/` if present.
-- Use AndroidMCP Framwork project-analysis and testing-intelligence tools when available; do not claim the full autonomous testing lifecycle is implemented unless the configured tools actually support it.
+- Use AndroidMCP Framework project-analysis and testing-intelligence tools when available; do not claim the full autonomous testing lifecycle is implemented unless the configured tools actually support it.
 - Prefer existing tests and project scripts before generating new tests.
 - For Native Android, use the project's Gradle wrapper and the installed Google Android CLI capabilities when relevant. For Flutter, use the project's documented Flutter/Dart test commands.
 - Prepare a test plan based on the requested scope and affected code. Ask before destructive actions, production-data use, or changing important existing assertions.
@@ -231,7 +231,7 @@ Use these after connecting the MCP server. They are prompts for the agent, not c
 
 **Plan regression tests:**
 
-> Inspect the current Git diff and saved AndroidMCP Framwork testing instructions. Propose a test plan for the changed behavior and related regression risks. Reuse existing tests first. Clearly label any suggested tests that have not been generated or executed.
+> Inspect the current Git diff and saved AndroidMCP Framework testing instructions. Propose a test plan for the changed behavior and related regression risks. Reuse existing tests first. Clearly label any suggested tests that have not been generated or executed.
 
 **Run a targeted test (when execution adapters are available):**
 
@@ -248,7 +248,7 @@ Use these after connecting the MCP server. They are prompts for the agent, not c
 - **Wrong project is targeted:** start the agent from the app repository root, run `androidmcp-framework setup`, and inspect `.android-build-mcp/config.yaml` and session defaults.
 - **`adb` or Gradle unavailable:** check Android SDK environment variables, `adb devices`, JDK, and `./gradlew tasks` (or `gradlew.bat tasks` on Windows).
 - **Flutter tests unavailable:** check `flutter doctor`, `flutter --version`, and `flutter test` manually in the Flutter project before expecting an agent to orchestrate them.
-- **Android Studio cannot connect:** remember that the current AndroidMCP Framwork server is stdio-only; direct Android Studio connection requires HTTP transport or a reviewed bridge.
+- **Android Studio cannot connect:** remember that the current AndroidMCP Framework server is stdio-only; direct Android Studio connection requires HTTP transport or a reviewed bridge.
 - **Tests were not executed:** the current testing-intelligence tools do not yet provide the complete test-plan generation and execution lifecycle. Treat reports as records of supplied results, not proof of automatic testing.
 
 ## 13. Security notes
@@ -264,11 +264,11 @@ Some MCP clients or MCP-hosting applications accept additional configuration fie
 - `alwaysAllow` is a client-side approval allowlist in clients that support it. Entries are tool names, not commands. Keep the list minimal and use the exact names exposed by the connected server.
 - Tools such as `uninstall_app_device`, `clear_app_data`, `grant_permissions`, and `reset_permissions` can alter device/app state. Do not auto-approve them unless that behavior is intentional for your development device.
 
-A reusable configuration example is available at [`examples/mcp-config.example.json`](../../examples/mcp-config.example.json). It uses placeholder paths; replace them with paths on your machine. The README also includes a local-checkout example. The server's npm package name is `androidmcp-framework`; the recommended MCP client alias is `androidmcp-framwork`, and the display name is **AndroidMCP Framwork**.
+A reusable configuration example is available at [`examples/mcp-config.example.json`](../../examples/mcp-config.example.json). It uses placeholder paths; replace them with paths on your machine. The README also includes a local-checkout example. The server's npm package name is `androidmcp-framework`; the recommended MCP client alias is `androidmcp-framework`, and the display name is **AndroidMCP Framework**.
 
 ### Client-specific setup
 
-- **Claude Code:** use `claude mcp add androidmcp-framwork -- npx -y androidmcp-framework@latest mcp`, or the `.mcp.json` entry in [Section 4](#4-claude-code). Use only config fields accepted by Claude Code.
-- **Codex:** use `codex mcp add androidmcp-framwork -- npx -y androidmcp-framework@latest mcp`, or the TOML entry in [Section 5](#5-openai-codex-cli-and-ide-extension). Do not paste JSON-only fields such as `alwaysAllow` into `config.toml`.
+- **Claude Code:** use `claude mcp add androidmcp-framework -- npx -y androidmcp-framework@latest mcp`, or the `.mcp.json` entry in [Section 4](#4-claude-code). Use only config fields accepted by Claude Code.
+- **Codex:** use `codex mcp add androidmcp-framework -- npx -y androidmcp-framework@latest mcp`, or the TOML entry in [Section 5](#5-openai-codex-cli-and-ide-extension). Do not paste JSON-only fields such as `alwaysAllow` into `config.toml`.
 - **Antigravity:** use the `mcpServers` entry in [Section 7](#7-google-antigravity) and merge it into your existing `mcp_config.json`. Check the installed version's schema before adding `trust` or `alwaysAllow`.
 - **VS Code / GitHub Copilot:** use the `.mcp.json` or `.vscode/mcp.json` schema in [Section 8](#8-vs-code-with-github-copilot). Configure approval behavior through VS Code's supported MCP UI/settings rather than assuming `alwaysAllow` is recognized.
