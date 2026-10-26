@@ -79,7 +79,7 @@ export const WORKFLOWS: WorkflowDefinition[] = [
   {
     name: 'testing-intelligence',
     description: 'Project test discovery, saved test cases/instructions, screen QA audits, change-impact analysis, layered instruction resolution, plan validation, and test reports.',
-    defaultEnabled: false,
+    defaultEnabled: true,
     tools: testingIntelligenceTools,
   },
   {
