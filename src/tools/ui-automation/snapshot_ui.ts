@@ -55,8 +55,7 @@ export function register(server: McpServer) {
 
       let artifactPath: string | undefined;
       if (args.persist !== false) {
-        const defaults = getEffectiveSessionDefaults().defaults;
-        const projectRoot = resolveProjectRoot(args.projectPath ?? defaults.projectPath ?? process.cwd());
+        const projectRoot = resolveProjectRoot(args.projectPath ?? getEffectiveSessionDefaults().defaults.projectPath ?? process.cwd());
         artifactPath = createArtifactPath(
           projectRoot,
           'snapshots',
