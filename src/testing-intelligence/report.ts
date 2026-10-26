@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { resolveProjectRoot } from '../utils/paths.js';
 
 export type TestStatus = 'planned' | 'generated' | 'executed' | 'passed' | 'failed' | 'skipped' | 'blocked';
 export interface TestStepResult {
@@ -88,7 +89,7 @@ function markdown(report: TestRunReport, runId: string, createdAt: string): stri
 }
 
 export async function writeTestRunReport(projectRoot: string, input: TestRunReport, now = new Date()): Promise<{ runId: string; directory: string; markdownPath: string; jsonPath: string }> {
-  const root = path.resolve(projectRoot);
+  const root = resolveProjectRoot(path.resolve(projectRoot));
   const date = now.toISOString().slice(0, 10);
   const time = now.toISOString().slice(11, 23).replace(/:/g, '-');
   const runId = `${time}-${randomUUID().slice(0, 8)}`;
