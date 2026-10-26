@@ -51,3 +51,31 @@ export function findProjectConfigPath(startDir: string = process.cwd()): string 
     dir = parent;
   }
 }
+
+
+/**
+ * Discover the nearest framework project root by walking upward from a daemon's
+ * working directory. Supports Git worktrees, canonical config, and legacy config.
+ */
+export function findProjectRoot(startDir: string = process.cwd()): string {
+  const initial = path.resolve(startDir);
+  let dir = initial;
+  try {
+    if (fs.statSync(dir).isFile()) dir = path.dirname(dir);
+  } catch {
+    // Keep the supplied path as the fallback if it doesn't exist yet.
+  }
+  for (;;) {
+    if (fs.existsSync(path.join(dir, PROJECT_CONFIG_DIR, 'config.yaml'))) return dir;
+    if (LEGACY_CONFIG_DIRS.some((name) => fs.existsSync(path.join(dir, name, 'config.yaml')))) return dir;
+    try {
+      const git = fs.lstatSync(path.join(dir, '.git'));
+      if (git.isDirectory() || git.isFile()) return dir;
+    } catch {
+      // No Git marker at this level.
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) return initial;
+    dir = parent;
+  }
+}

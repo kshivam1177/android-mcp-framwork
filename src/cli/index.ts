@@ -10,6 +10,7 @@ import { WORKFLOWS } from '../workflows.js';
 import { runDoctorChecks } from '../tools/doctor/doctor.js';
 import { getConfigDir } from '../config/loader.js';
 import { PROJECT_CONFIG_DIR, findProjectConfigPath } from '../utils/paths.js';
+import { runSelfUpdate } from './update.js';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 
@@ -19,7 +20,7 @@ async function runMcp(): Promise<void> {
   await server.connect(transport);
 }
 
-async function runDoctor(): Promise<void> {
+function runUpdate(): void {\n  const packageRoot = path.resolve(moduleDir, '..', '..');\n  const result = runSelfUpdate(packageRoot);\n  if (!result.success) process.exitCode = 1;\n}\n\nasync function runDoctor(): Promise<void> {
   const { summary, checks } = await runDoctorChecks();
   console.log(summary);
   for (const check of checks) {
@@ -84,7 +85,7 @@ function setupConfig(cwd: string, migrate: boolean): void {
 await yargs(hideBin(process.argv))
   .scriptName('androidmcp-framework')
   .command('mcp', 'Start the MCP server over stdio (for MCP clients)', () => {}, runMcp)
-  .command('doctor', 'Check the local Android toolchain (adb, java, gradle, SDK, emulator)', () => {}, runDoctor)
+  .command('doctor', 'Check the local Android toolchain (adb, java, gradle, SDK, emulator)', () => {}, runDoctor)\n  .command('update', 'Update androidmcp-framework if a newer npm version exists and clear the npx execution cache', () => {}, runUpdate)
   .command('workflows', 'List every workflow, its tool count, and whether it is on by default', () => {}, listWorkflows)
   .command(
     'tools',
