@@ -25,7 +25,7 @@ From an Android or Flutter repository root, run:
 androidmcp-framework setup
 ```
 
-This creates `.androidmcp-framework/config.yaml`. Legacy `.androidmcp-framework/` and `.androidbuildmcp/` data can be copied using `androidmcp-framework setup --migrate`; migration preserves the old files and fails rather than overwriting existing destination files.
+This creates `.androidmcp-framework/config.yaml`. Legacy `.android-build-mcp/` and `.androidbuildmcp/` data can be copied using `androidmcp-framework setup --migrate`; migration preserves the old files and fails rather than overwriting existing destination files.
 
 ## Requirements and troubleshooting
 
