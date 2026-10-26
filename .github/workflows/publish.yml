@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - ".github/workflows/**"
+      - "README.md"
+      - "docs/**"
+      - "server.json"
   workflow_dispatch:
     inputs:
       publish_npm:
