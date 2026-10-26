@@ -56,8 +56,8 @@ export interface EffectiveSessionDefaults {
   source: 'config-only' | 'config+overrides';
 }
 
-function resolveProjectPath(defaults: SessionDefaults): SessionDefaults {
-  const workspaceRoot = resolveProjectRoot(process.cwd());
+export function resolveSessionProjectPath(defaults: SessionDefaults, startDir: string = process.cwd()): SessionDefaults {
+  const workspaceRoot = resolveProjectRoot(startDir);
   const configured = defaults.projectPath?.trim();
   const candidate = configured
     ? path.resolve(path.isAbsolute(configured) ? configured : path.join(workspaceRoot, configured))
@@ -93,14 +93,14 @@ export function getEffectiveSessionDefaults(): EffectiveSessionDefaults {
   if (config.disableSessionDefaults) {
     return {
       profile,
-      defaults: resolveProjectPath(config.sessionDefaults),
+      defaults: resolveSessionProjectPath(config.sessionDefaults),
       disabled: true,
       source: 'config-only',
     };
   }
   const overrides = readProfileOverrides(profile);
   const hasOverrides = Object.keys(overrides).length > 0;
-  const defaults = resolveProjectPath({ ...config.sessionDefaults, ...overrides });
+  const defaults = resolveSessionProjectPath({ ...config.sessionDefaults, ...overrides });
   return {
     profile,
     defaults,
