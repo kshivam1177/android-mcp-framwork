@@ -26,7 +26,7 @@ permissions:
 
 jobs:
   verify-package:
-    if: ${{ github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'chore: record published npm version') }}
+    if: "github.event_name != 'push' || !startsWith(github.event.head_commit.message, 'chore: record published npm version')"
     name: Build and test
     runs-on: ubuntu-latest
     steps:
