@@ -75,7 +75,7 @@ function setupConfig(cwd: string, migrate: boolean): void {
   const examplePath = path.resolve(moduleDir, '..', '..', 'config.example.yaml');
   const contents = fs.existsSync(examplePath)
     ? fs.readFileSync(examplePath, 'utf8')
-    : 'schemaVersion: 1\nenabledWorkflows: [device, ui-automation, session-management, doctor, workflow-discovery]\n';
+    : 'schemaVersion: 1\nenabledWorkflows: [device, ui-automation, session-management, doctor, workflow-discovery, testing-intelligence]\n';
   fs.writeFileSync(canonicalPath, contents, { encoding: 'utf8', flag: 'wx' });
   console.log(`Wrote ${canonicalPath}.`);
   console.log('Edit enabledWorkflows and sessionDefaults for your project, then restart your MCP client.');
