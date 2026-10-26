@@ -3,7 +3,7 @@
   "name": "io.github.kshivam1177/androidmcp-framework",
   "title": "AndroidMCP Framework",
   "description": "MCP server and CLI for Android development and change-aware Android and Flutter testing workflows.",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "websiteUrl": "https://github.com/kshivam1177/android-mcp-framwork",
   "repository": {
     "url": "https://github.com/kshivam1177/android-mcp-framwork",
@@ -13,7 +13,7 @@
     {
       "registryType": "npm",
       "identifier": "androidmcp-framework",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "transport": {
         "type": "stdio"
       },
