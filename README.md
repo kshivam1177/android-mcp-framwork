@@ -16,6 +16,7 @@ Or run on demand with no install: `npx -y androidmcp-framework@latest mcp`.
 ## MCP documentation
 
 - [Screenshot OCR and coordinate analysis](docs/screenshot-analysis.md) - local OCR that returns text bounding boxes and center coordinates as JSON.
+- [Dev branch sync and architecture decisions](docs/dev-branch-sync.md) - what was ported, why the branches were not merged wholesale, and validation steps.
 
 - [MCP integration guide](docs/md-files/mcp-guide.md) - protocol behavior, client setup, project context, tool discovery, troubleshooting, and security.
 - [Supported clients and transports](docs/md-files/supportedclients.md) - verified integration scope and current limitations.
