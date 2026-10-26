@@ -33,7 +33,7 @@ Use an absolute path in client configuration. Configure `ANDROID_HOME` or `ANDRO
 
 1. Ensure `package.json` version is incremented and `package-lock.json` matches.
 2. Run `npm ci`, `npm run typecheck`, `npm test`, and `npm run build` in CI.
-3. Run `npm pack --dry-run` and confirm `build/`, `scripts/`, `templates/`, examples/, README, and license are included as intended. The Python UI-automation bridge in `scripts/` must be present in the published package.
+3. Run `npm pack --dry-run` and confirm `build/`, `templates/`, examples/, README, and license are included as intended. The Python UI-automation bridge has been removed and is not part of the published package.
 4. Publish using the project's release credentials and normal npm provenance/release policy.
 5. Smoke-test the published package in a clean environment with `npx -y androidmcp-framework@<version> doctor` and a real MCP client.
 

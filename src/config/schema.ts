@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
-export const AutomationBackendSchema = z.enum(['adb', 'uiautomator2', 'auto']);
+// Older project configs may still say `auto` or `uiautomator2`.
+// Normalize those legacy values to the supported ADB-only backend instead of
+// making existing projects fail config parsing after the Python helper removal.
+export const AutomationBackendSchema = z.enum(['adb', 'uiautomator2', 'auto']).transform(() => 'adb' as const);
 
 export const SessionDefaultsSchema = z
   .object({
@@ -20,7 +23,6 @@ export const PathsSchema = z
     gradlePath: z.string().nullable().default(null),
     androidHome: z.string().nullable().default(null),
     javaHome: z.string().nullable().default(null),
-    u2cliPath: z.string().default('u2cli'),
     androidCliPath: z.string().default('android'),
   })
   .default({});
@@ -31,7 +33,7 @@ export const ConfigSchema = z.object({
     .array(z.string())
     .default(['device', 'ui-automation', 'session-management', 'doctor', 'workflow-discovery']),
   customWorkflows: z.record(z.array(z.string())).default({}),
-  automationBackend: AutomationBackendSchema.default('auto'),
+  automationBackend: AutomationBackendSchema.default('adb'),
   disableSessionDefaults: z.boolean().default(false),
   debug: z.boolean().default(false),
   sessionDefaults: SessionDefaultsSchema,

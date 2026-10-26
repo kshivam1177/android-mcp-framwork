@@ -50,7 +50,7 @@ export function register(server: McpServer) {
     {
       title: 'Run Test Case',
       description:
-        'Quickly and effortlessly execute a saved test case from .android-build-mcp/testcases/. Automatically executes each step, continuously audits UI responsiveness, design/layout issues, data anomalies (null/NaN/undefined), and logcat exceptions along the way, and generates a timestamped report.',
+        'Quickly and effortlessly execute a saved test case from .androidmcp-framework/testcases/. Automatically executes each step, continuously audits UI responsiveness, design/layout issues, data anomalies (null/NaN/undefined), and logcat exceptions along the way, and generates a timestamped report.',
       inputSchema: {
         id: z.string().describe('Test case ID, e.g. "TC-FURNITURE-001".'),
         targetId: z.string().optional().describe('Target Android device ID; defaults to session default.'),

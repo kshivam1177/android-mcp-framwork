@@ -53,7 +53,7 @@ The MCP client configuration only starts the server. It does not configure which
 npx -y androidmcp-framework@latest setup
 ```
 
-Review the generated `.android-build-mcp/config.yaml`, especially `enabledWorkflows` and `sessionDefaults`. Restart the MCP client after changing configuration.
+Review the generated `.androidmcp-framework/config.yaml`, especially `enabledWorkflows` and `sessionDefaults`. If the repository has legacy `.android-build-mcp/` or `.androidbuildmcp/` data, use `androidmcp-framework setup --migrate` after reviewing it. Restart the MCP client after changing configuration.
 
 ## Current transport limitation
 

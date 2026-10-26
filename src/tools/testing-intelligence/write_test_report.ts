@@ -10,7 +10,7 @@ export const workflow = 'testing-intelligence';
 export function register(server: McpServer) {
   return server.registerTool(toolName, {
     title: 'Write Test Report',
-    description: 'Write a Markdown report and machine-readable JSON results into .android-build-mcp/test-reports/YYYY-MM-DD/HHmmss. Does not claim tests passed unless the supplied results say so.',
+    description: 'Write a Markdown report and machine-readable JSON results into .androidmcp-framework/test-reports/YYYY-MM-DD/HHmmss. Does not claim tests passed unless the supplied results say so.',
     inputSchema: { projectPath: z.string().optional(), title: z.string().min(1).max(200), summary: z.string().min(1).max(20000), resultsJson: z.string().optional().describe('Optional JSON string with test cases, statuses, evidence, and environment details.') },
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, withErrorHandling(async (args: { projectPath?: string; title: string; summary: string; resultsJson?: string }) => {

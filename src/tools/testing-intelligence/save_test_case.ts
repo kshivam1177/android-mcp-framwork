@@ -23,7 +23,7 @@ export function register(server: McpServer) {
     {
       title: 'Save Test Case',
       description:
-        'Save or update a structured, machine-readable test case definition under .android-build-mcp/testcases/. Stores pre-conditions, step actions, targets, assertions, and metadata.',
+        'Save or update a structured, machine-readable test case definition under .androidmcp-framework/testcases/. Stores pre-conditions, step actions, targets, assertions, and metadata.',
       inputSchema: {
         projectPath: z.string().optional().describe('Project root; defaults to cwd.'),
         id: z.string().min(1).max(100).describe('Unique test case identifier, e.g. "TC-FURNITURE-001".'),

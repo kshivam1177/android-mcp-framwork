@@ -58,9 +58,9 @@ Open the **application repository root** in your agent/IDE. Run:
 androidmcp-framework setup
 ```
 
-This creates `.android-build-mcp/config.yaml` and does not overwrite an existing file. For native Android, configure `sessionDefaults.projectPath`, `module`, and `variant` for your Gradle project. For Flutter, point tools at the Flutter repository root when applicable; note that the current framework has only initial project analysis/instructions/reporting tools for the natural-language testing workflow, and the complete Flutter test execution adapter is not implemented yet.
+This creates `.androidmcp-framework/config.yaml` and does not overwrite an existing file. For projects with legacy `.android-build-mcp/` or `.androidbuildmcp/` data, inspect it and run `androidmcp-framework setup --migrate` to copy files without overwriting existing content. For native Android, configure `sessionDefaults.projectPath`, `module`, and `variant` for your Gradle project. For Flutter, point tools at the Flutter repository root when applicable; note that the current framework has only initial project analysis/instructions/reporting tools for the natural-language testing workflow, and the complete Flutter test execution adapter is not implemented yet.
 
-Enable the relevant workflows in `.android-build-mcp/config.yaml`. Workflow names and tools can be checked with:
+Enable the relevant workflows in `.androidmcp-framework/config.yaml`. Workflow names and tools can be checked with:
 
 ```bash
 androidmcp-framework workflows
@@ -210,14 +210,14 @@ For consistent behavior across agents, add the following guidance to the reposit
 ```markdown
 ## AndroidMCP Framework testing workflow
 
-- Before testing a feature change, inspect the current Git diff and the project's `.android-build-mcp/knowledge/` and `.android-build-mcp/instructions/` if present.
+- Before testing a feature change, inspect the current Git diff and the project's `.androidmcp-framework/knowledge/` and `.androidmcp-framework/instructions/` if present.
 - Use AndroidMCP Framework project-analysis and testing-intelligence tools when available; do not claim the full autonomous testing lifecycle is implemented unless the configured tools actually support it.
 - Prefer existing tests and project scripts before generating new tests.
 - For Native Android, use the project's Gradle wrapper and the installed Google Android CLI capabilities when relevant. For Flutter, use the project's documented Flutter/Dart test commands.
 - Prepare a test plan based on the requested scope and affected code. Ask before destructive actions, production-data use, or changing important existing assertions.
 - Do not execute arbitrary generated shell commands without reviewing their purpose and safety.
 - Report pass, fail, blocked, skipped, and inconclusive separately. Never mark a test passed without executing it and validating its assertions.
-- Save each run's report and machine-readable results under `.android-build-mcp/test-reports/YYYY-MM-DD/HHmmss/` when the reporting tool is available.
+- Save each run's report and machine-readable results under `.androidmcp-framework/test-reports/YYYY-MM-DD/HHmmss/` when the reporting tool is available.
 - Do not silently overwrite user-authored test instructions. Propose updates and preserve prior reports.
 ```
 
@@ -235,7 +235,7 @@ Use these after connecting the MCP server. They are prompts for the agent, not c
 
 **Run a targeted test (when execution adapters are available):**
 
-> Test the changed login flow and its direct regressions. Use a disposable test account and a debug build. Show me the planned commands and any device/emulator actions before running them. Save a timestamped report and evidence under `.android-build-mcp/test-reports/`.
+> Test the changed login flow and its direct regressions. Use a disposable test account and a debug build. Show me the planned commands and any device/emulator actions before running them. Save a timestamped report and evidence under `.androidmcp-framework/test-reports/`.
 
 **Custom scenario:**
 
@@ -244,8 +244,8 @@ Use these after connecting the MCP server. They are prompts for the agent, not c
 ## 12. Troubleshooting
 
 - **Server does not start:** run `node --version`, `npx -y androidmcp-framework@latest --help`, and `androidmcp-framework doctor` separately. Check client logs.
-- **No tools visible:** confirm the config JSON is valid, restart/reload the MCP server, and check that `.android-build-mcp/config.yaml` has the desired workflow names in `enabledWorkflows`.
-- **Wrong project is targeted:** start the agent from the app repository root, run `androidmcp-framework setup`, and inspect `.android-build-mcp/config.yaml` and session defaults.
+- **No tools visible:** confirm the config JSON is valid, restart/reload the MCP server, and check that `.androidmcp-framework/config.yaml` has the desired workflow names in `enabledWorkflows`.
+- **Wrong project is targeted:** start the agent from the app repository root, run `androidmcp-framework setup`, and inspect `.androidmcp-framework/config.yaml` and session defaults.
 - **`adb` or Gradle unavailable:** check Android SDK environment variables, `adb devices`, JDK, and `./gradlew tasks` (or `gradlew.bat tasks` on Windows).
 - **Flutter tests unavailable:** check `flutter doctor`, `flutter --version`, and `flutter test` manually in the Flutter project before expecting an agent to orchestrate them.
 - **Android Studio cannot connect:** remember that the current AndroidMCP Framework server is stdio-only; direct Android Studio connection requires HTTP transport or a reviewed bridge.
