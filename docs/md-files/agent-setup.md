@@ -58,7 +58,7 @@ Open the **application repository root** in your agent/IDE. Run:
 androidmcp-framework setup
 ```
 
-This creates `.androidmcp-framework/config.yaml` and does not overwrite an existing file. For projects with legacy `.androidmcp-framework/` or `.androidbuildmcp/` data, inspect it and run `androidmcp-framework setup --migrate` to copy files without overwriting existing content. For native Android, configure `sessionDefaults.projectPath`, `module`, and `variant` for your Gradle project. For Flutter, point tools at the Flutter repository root when applicable; note that the current framework has only initial project analysis/instructions/reporting tools for the natural-language testing workflow, and the complete Flutter test execution adapter is not implemented yet.
+This creates `.androidmcp-framework/config.yaml` and does not overwrite an existing file. For projects with legacy `.android-build-mcp/` or `.androidbuildmcp/` data, inspect it and run `androidmcp-framework setup --migrate` to copy files without overwriting existing content. For native Android, configure `sessionDefaults.projectPath`, `module`, and `variant` for your Gradle project. For Flutter, point tools at the Flutter repository root when applicable; note that the current framework has only initial project analysis/instructions/reporting tools for the natural-language testing workflow, and the complete Flutter test execution adapter is not implemented yet.
 
 Enable the relevant workflows in `.androidmcp-framework/config.yaml`. Workflow names and tools can be checked with:
 
