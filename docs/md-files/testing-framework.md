@@ -42,12 +42,22 @@ Provide a change-aware testing lifecycle that reads a repository, maintains huma
 - `save_test_case`: stores structured test-case JSON with overwrite protection.
 - `write_test_report`: writes Markdown and JSON reports, without inferring success from missing results.
 
+- `analyze_changes`: maps Git changes to targeted test suites and recommends broad regression when impact is uncertain.
+- `resolve_test_instructions`: combines global, project, feature, and run-specific instructions with deterministic precedence.
+- `validate_test_plan`: blocks incomplete or malformed test plans before execution.
+- `audit_screen`: checks visible UI nodes for potential UI issues and relevant log errors.
+- `analyze_screenshot`: optional local Tesseract OCR returning text bounds and centers in screenshot-pixel coordinates.
+- `fill_form`: fills fields using unique semantic selectors and fails safely for ambiguous or missing targets.
+- `run_ui_workflow`: executes a reusable JSON screen/action workflow through the installed official Android CLI, with bounded waits and structured per-run reports.
+
+See [Declarative UI workflows](../ui-workflows.md) and [Screenshot OCR](../screenshot-analysis.md) for JSON formats, prerequisites, and limitations.
+
 ## Not implemented yet
 
 - Persistent semantic feature/dependency graph.
-- LLM-backed natural-language-to-test-plan generation and impact analysis.
-- Test script/journey generation and validation.
-- Safe, allowlisted test-command execution and platform adapters.
+- LLM-backed natural-language-to-test-plan generation (change-impact recommendations and deterministic plan validation are implemented, but not LLM-generated plans).
+- Test script/journey generation (JSON workflow execution is implemented; natural-language generation remains future work).
+- A general allowlisted test-command runner and full Flutter execution adapter; Android UI workflow actions currently delegate to the official Android CLI with a limited ADB coordinate fallback.
 - Verified end-to-end execution against real Native Android and Flutter repositories.
 - Evidence collection and report aggregation across retries.
 

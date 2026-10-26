@@ -5,6 +5,9 @@ import saveTestCase from './save_test_case.js';
 import listTestCases from './list_test_cases.js';
 import auditScreen from './audit_screen.js';
 import runTestCase from './run_test_case.js';
+import analyzeChanges from './analyze_changes.js';
+import resolveTestInstructions from './resolve_test_instructions.js';
+import validateTestPlan from './validate_test_plan.js';
 import type { ToolModule } from '../types.js';
 
 export const testingIntelligenceTools: ToolModule[] = [
@@ -15,4 +18,7 @@ export const testingIntelligenceTools: ToolModule[] = [
   listTestCases,
   auditScreen,
   runTestCase,
+  analyzeChanges,
+  resolveTestInstructions,
+  validateTestPlan,
 ];
