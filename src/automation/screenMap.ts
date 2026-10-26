@@ -6,7 +6,7 @@ export interface ScreenMapElement {
   selector: { resourceId?: string; text?: string; contentDesc?: string; className?: string };
   bounds: UiNode['bounds'];
   center: { x: number; y: number };
-  normalizedCenter: { x: number; y: number };
+  normalizedCoordinates: { x: number; y: number };
   clickable: boolean;
   enabled: boolean;
   focusable: boolean;
@@ -59,7 +59,7 @@ export function createScreenMap(options: {
       selector,
       bounds: node.bounds,
       center: { x: node.centerX, y: node.centerY },
-      normalizedCenter: {
+      normalizedCoordinates: {
         x: Number((node.centerX / options.width).toFixed(6)),
         y: Number((node.centerY / options.height).toFixed(6)),
       },
