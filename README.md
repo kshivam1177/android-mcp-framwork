@@ -91,7 +91,7 @@ cd your-android-project
 androidmcp-framework setup
 ```
 
-Then either edit `.androidmcp-framework/config.yaml`'s `sessionDefaults`, or call `session_set_defaults` from your agent once connected. Full details: [docs/md-files/setup.md](docs/md-files/setup.md).
+Then either edit `.android-build-mcp/config.yaml`'s `sessionDefaults`, or call `session_set_defaults` from your agent once connected. Full details: [docs/md-files/setup.md](docs/md-files/setup.md).
 
 ## What's here
 
