@@ -44,7 +44,7 @@ export const testingIntelligenceTools: ToolDefinition[] = [
     description: 'Resolve global, project, feature, and run test instruction layers from least to most specific.',
     inputSchema: {
       type: 'object',
-      properties: { layers: { type: 'array', items: { type: 'object', properties: { scope: { type: 'string', enum: ['global', 'project', 'feature', 'run'] }, values: { type: 'object' } }, required: ['scope', 'values'] } },
+      properties: { layers: { type: 'array', items: { type: 'object', properties: { scope: { type: 'string', enum: ['global', 'project', 'feature', 'run'] }, values: { type: 'object' } }, required: ['scope', 'values'] } } },
       required: ['layers'],
     },
     handler: async input => {
