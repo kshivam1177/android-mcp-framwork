@@ -124,12 +124,21 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
-      - name: Read package version
+      - name: Resolve registry version
         id: package-version
-        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+        env:
+          NPM_RELEASE_VERSION: ${{ needs.publish-npm.outputs.published_version }}
+        run: |
+          set -euo pipefail
+          if [ -n "$NPM_RELEASE_VERSION" ]; then
+            VERSION="$NPM_RELEASE_VERSION"
+          else
+            VERSION="$(node -p "require('./package.json').version")"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Synchronize registry metadata with package version
         env:
-          PUBLISHED_VERSION: ${{ needs.publish-npm.outputs.published_version || steps.package-version.outputs.version }}
+          PUBLISHED_VERSION: ${{ steps.package-version.outputs.version }}
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -137,7 +146,7 @@ jobs:
           const manifest = JSON.parse(fs.readFileSync('server.json', 'utf8'));
           manifest.version = version;
           for (const item of manifest.packages ?? []) item.version = version;
-          fs.writeFileSync('server.json', JSON.stringify(manifest, null, 2) + '\\n');
+          fs.writeFileSync('server.json', JSON.stringify(manifest, null, 2) + '\n');
           NODE
       - name: Install cosign
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
