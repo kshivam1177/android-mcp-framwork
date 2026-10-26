@@ -1,4 +1,5 @@
 import type { ToolDefinition } from '../tools/types.js';
+import { registerTestingIntelligenceTools } from '../tools/testingIntelligence.js';
 
 const tools: ToolDefinition[] = [];
 let registered = false;
@@ -11,6 +12,7 @@ export function registerTool(tool: ToolDefinition): void {
 export function registerTools(): void {
   if (registered) return;
   registered = true;
+  registerTestingIntelligenceTools(registerTool);
 }
 
 export function getTools(): ToolDefinition[] { return [...tools]; }
