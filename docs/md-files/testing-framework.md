@@ -24,16 +24,27 @@ Provide a change-aware testing lifecycle that reads a repository, maintains huma
 
 ## On-disk layout
 
+All project-local framework data is rooted at `.androidmcp-framework/`:
+
 ```text
 .androidmcp-framework/
   config.yaml
-  knowledge/          # feature map and dependency/test inventory (planned)
   instructions/       # user-authored and reviewed testing instructions
+  testcases/          # saved structured test-case JSON
+  test-reports/       # immutable timestamped Markdown reports and results.json
+  artifacts/
+    screenshots/      # screenshot PNG/JPEG files
+    ui-snapshots/     # captured semantic UI hierarchy JSON
+    recordings/       # emulator/device screen recordings
+    bugreports/       # adb bugreport ZIP archives
+  knowledge/          # feature map and dependency/test inventory (planned)
   journeys/           # generated/reviewed journeys (planned)
   generated-tests/    # generated scripts and assets (planned)
-  test-reports/       # immutable timestamped run results
-  testcases/          # saved structured test cases
 ```
+
+The `screenshot`, `snapshot_ui`, `record_emulator_video`, and `bug_report` tools save their outputs to the matching `artifacts/` subdirectory by default. They accept `projectPath` to select the application root and preserve explicit output-path overrides where available. File names are timestamped to avoid replacing earlier evidence.
+
+The repository's `.gitignore` ignores `.androidmcp-framework/` by default, so screenshots, recordings, bug reports, and test outputs remain local unless a project owner intentionally changes that policy.
 
 ## Implemented
 
@@ -41,6 +52,8 @@ Provide a change-aware testing lifecycle that reads a repository, maintains huma
 - `save_test_instructions`: stores Markdown instructions without overwriting unless explicitly authorized.
 - `save_test_case`: stores structured test-case JSON with overwrite protection.
 - `write_test_report`: writes Markdown and JSON reports, without inferring success from missing results.
+- UI screenshot and semantic hierarchy capture persist local evidence under the project artifact directory.
+- Screen recordings and adb bug reports default to project-local artifact paths.
 
 ## Not implemented yet
 
