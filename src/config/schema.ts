@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
-export const AutomationBackendSchema = z.literal('adb');
+// Older project configs may still say `auto` or `uiautomator2`.
+// Normalize those legacy values to the supported ADB-only backend instead of
+// making existing projects fail config parsing after the Python helper removal.
+export const AutomationBackendSchema = z.enum(['adb', 'uiautomator2', 'auto']).transform(() => 'adb' as const);
 
 export const SessionDefaultsSchema = z
   .object({
