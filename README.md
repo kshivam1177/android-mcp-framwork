@@ -1,4 +1,4 @@
-# AndroidMCP Framwork
+# AndroidMCP Framework
 
 A Model Context Protocol (MCP) server and CLI that gives coding agents Android development capabilities: build, install, and launch on emulators and physical devices; semantic UI automation; logcat/crash diagnostics; JaCoco coverage; project discovery and scaffolding. Modeled on [XcodeBuildMCP](https://github.com/cameroncooke/XcodeBuildMCP)'s tool naming and workflow conventions, translated to the Android/Gradle/adb toolchain.
 
@@ -24,7 +24,7 @@ Or run on demand with no install: `npx -y androidmcp-framework@latest mcp`.
 ```json
 {
   "mcpServers": {
-    "androidmcp-framwork": {
+    "androidmcp-framework": {
       "command": "npx",
       "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
@@ -37,12 +37,12 @@ See [docs/md-files/agent-setup.md](docs/md-files/agent-setup.md) for setup instr
 
 ### Local checkout config (Node + Android SDK)
 
-For a local source checkout, build the project first with `npm ci` and `npm run build`, then configure your MCP client to launch the built entry point. This example uses the local paths you supplied; replace them if your checkout or Android SDK is elsewhere. The recommended client alias is `androidmcp-framwork`.
+For a local source checkout, build the project first with `npm ci` and `npm run build`, then configure your MCP client to launch the built entry point. This example uses the local paths you supplied; replace them if your checkout or Android SDK is elsewhere. The recommended client alias is `androidmcp-framework`.
 
 ```json
 {
   "mcpServers": {
-    "androidmcp-framwork": {
+    "androidmcp-framework": {
       "command": "node",
       "args": [
         "/Users/kshivam117/MyStorage/devArea/projects/savera/AndroidBuildMCP/build/cli/index.js",
