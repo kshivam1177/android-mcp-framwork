@@ -59,7 +59,13 @@ export function getConfigPath(cwd: string = process.cwd()): string {
 
 export function getConfigDir(cwd: string = process.cwd()): string {
   const configPath = findProjectConfigPath(cwd);
-  return configPath ? path.dirname(configPath) : path.join(cwd, PROJECT_CONFIG_DIR);
+  if (configPath && path.basename(path.dirname(configPath)) === PROJECT_CONFIG_DIR) {
+    return path.dirname(configPath);
+  }
+  // Read legacy config values if present, but put all new framework data in
+  // the canonical directory until the explicit setup --migrate copies old files.
+  const projectRoot = configPath ? path.dirname(path.dirname(configPath)) : cwd;
+  return path.join(projectRoot, PROJECT_CONFIG_DIR);
 }
 
 /** Mostly for tests: drop the cache so the next loadConfig() re-reads disk. */
