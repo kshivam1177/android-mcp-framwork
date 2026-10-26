@@ -36,7 +36,7 @@ From the Android or Flutter repository root:
 androidmcp-framework setup
 ```
 
-This creates `.androidmcp-framework/config.yaml`. If existing data remains under `.androidmcp-framework/` or `.androidbuildmcp/`, inspect it and run `androidmcp-framework setup --migrate` to copy files without overwriting existing content. The old directory is not deleted automatically.
+This creates `.androidmcp-framework/config.yaml`. If existing data remains under `.android-build-mcp/` or `.androidbuildmcp/`, inspect it and run `androidmcp-framework setup --migrate` to copy files without overwriting existing content. The old directory is not deleted automatically.
 
 Project testing instructions, saved test cases, and generated reports live inside `.androidmcp-framework/`.
 
@@ -46,7 +46,7 @@ Build with `npm ci && npm run build`, then configure the MCP client to launch th
 
 ## How it's built
 
-- **UI automation:** JavaScript/TypeScript plus Android SDK platform-tools (`adb`) only. The optional tooling `uiautomator2` bridge has been removed; no Python runtime or `scripts/` directory is required.
+- **UI automation:** JavaScript/TypeScript plus Android SDK platform-tools (`adb`) only. The optional Python `uiautomator2` bridge has been removed; no Python runtime or `scripts/` directory is required.
 - **Device targeting:** emulators and physical devices are unified through ADB. Explicit target, session default, then single connected target are tried in that order.
 - **MCP transport:** stdio for local coding agents. Streamable HTTP is not implemented yet.
 - **Tools:** one TypeScript module per tool under `src/tools/<workflow>/`.
