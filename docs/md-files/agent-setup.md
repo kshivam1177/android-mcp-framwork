@@ -36,7 +36,7 @@ The `mcp` command is a stdio server process. Do not run it in a terminal and exp
 
 ```bash
 git clone <your-androidmcp-framework-repository-url>
-cd AndroidMCP Framwork
+cd android-mcp-framwork
 npm ci
 npm run build
 npm test
@@ -45,7 +45,7 @@ npm run typecheck
 
 Then configure the MCP client to launch the local built entry point:
 
-- macOS/Linux: `node /absolute/path/to/AndroidMCP Framwork/build/cli/index.js mcp`
+- macOS/Linux: `node /absolute/path/to/android-mcp-framwork/build/cli/index.js mcp`
 - Windows: `node C:\absolute\path\to\AndroidMCP Framwork\build\cli\index.js mcp`
 
 Use absolute paths in client configuration where possible. Keep the Node executable and all toolchain paths available to the environment that starts the MCP server.
@@ -58,9 +58,9 @@ Open the **application repository root** in your agent/IDE. Run:
 androidmcp-framework setup
 ```
 
-This creates `.androidmcp-framework/config.yaml` and does not overwrite an existing file. For native Android, configure `sessionDefaults.projectPath`, `module`, and `variant` for your Gradle project. For Flutter, point tools at the Flutter repository root when applicable; note that the current framework has only initial project analysis/instructions/reporting tools for the natural-language testing workflow, and the complete Flutter test execution adapter is not implemented yet.
+This creates `.android-build-mcp/config.yaml` and does not overwrite an existing file. For native Android, configure `sessionDefaults.projectPath`, `module`, and `variant` for your Gradle project. For Flutter, point tools at the Flutter repository root when applicable; note that the current framework has only initial project analysis/instructions/reporting tools for the natural-language testing workflow, and the complete Flutter test execution adapter is not implemented yet.
 
-Enable the relevant workflows in `.androidmcp-framework/config.yaml`. Workflow names and tools can be checked with:
+Enable the relevant workflows in `.android-build-mcp/config.yaml`. Workflow names and tools can be checked with:
 
 ```bash
 androidmcp-framework workflows
@@ -244,8 +244,8 @@ Use these after connecting the MCP server. They are prompts for the agent, not c
 ## 12. Troubleshooting
 
 - **Server does not start:** run `node --version`, `npx -y androidmcp-framework@latest --help`, and `androidmcp-framework doctor` separately. Check client logs.
-- **No tools visible:** confirm the config JSON is valid, restart/reload the MCP server, and check that `.androidmcp-framework/config.yaml` has the desired workflow names in `enabledWorkflows`.
-- **Wrong project is targeted:** start the agent from the app repository root, run `androidmcp-framework setup`, and inspect `.androidmcp-framework/config.yaml` and session defaults.
+- **No tools visible:** confirm the config JSON is valid, restart/reload the MCP server, and check that `.android-build-mcp/config.yaml` has the desired workflow names in `enabledWorkflows`.
+- **Wrong project is targeted:** start the agent from the app repository root, run `androidmcp-framework setup`, and inspect `.android-build-mcp/config.yaml` and session defaults.
 - **`adb` or Gradle unavailable:** check Android SDK environment variables, `adb devices`, JDK, and `./gradlew tasks` (or `gradlew.bat tasks` on Windows).
 - **Flutter tests unavailable:** check `flutter doctor`, `flutter --version`, and `flutter test` manually in the Flutter project before expecting an agent to orchestrate them.
 - **Android Studio cannot connect:** remember that the current AndroidMCP Framwork server is stdio-only; direct Android Studio connection requires HTTP transport or a reviewed bridge.
@@ -254,3 +254,21 @@ Use these after connecting the MCP server. They are prompts for the agent, not c
 ## 13. Security notes
 
 MCP tools may run local commands, access source files, interact with devices, or write reports. Connect only to trusted server builds. Do not run tests against production accounts or data by default. Review generated commands, protect secrets, redact tokens and personal data from logs, and use a disposable emulator/device and test accounts for destructive scenarios.
+
+
+## 14. `trust` and `alwaysAllow` configuration
+
+Some MCP clients or MCP-hosting applications accept additional configuration fields such as `trust` and `alwaysAllow`. These are **client-specific extensions, not standard MCP protocol fields**. Use them only in a client whose configuration schema documents them; other clients may reject or ignore them.
+
+- `trust: true` may mark a server as trusted in clients that support this extension. Only trust a local server you have reviewed.
+- `alwaysAllow` is a client-side approval allowlist in clients that support it. Entries are tool names, not commands. Keep the list minimal and use the exact names exposed by the connected server.
+- Tools such as `uninstall_app_device`, `clear_app_data`, `grant_permissions`, and `reset_permissions` can alter device/app state. Do not auto-approve them unless that behavior is intentional for your development device.
+
+A reusable configuration example is available at [`examples/mcp-config.example.json`](../../examples/mcp-config.example.json). It uses placeholder paths; replace them with paths on your machine. The README also includes a local-checkout example. The server's npm package name is `androidmcp-framework`; the recommended MCP client alias is `androidmcp-framwork`, and the display name is **AndroidMCP Framwork**.
+
+### Client-specific setup
+
+- **Claude Code:** use `claude mcp add androidmcp-framwork -- npx -y androidmcp-framework@latest mcp`, or the `.mcp.json` entry in [Section 4](#4-claude-code). Use only config fields accepted by Claude Code.
+- **Codex:** use `codex mcp add androidmcp-framwork -- npx -y androidmcp-framework@latest mcp`, or the TOML entry in [Section 5](#5-openai-codex-cli-and-ide-extension). Do not paste JSON-only fields such as `alwaysAllow` into `config.toml`.
+- **Antigravity:** use the `mcpServers` entry in [Section 7](#7-google-antigravity) and merge it into your existing `mcp_config.json`. Check the installed version's schema before adding `trust` or `alwaysAllow`.
+- **VS Code / GitHub Copilot:** use the `.mcp.json` or `.vscode/mcp.json` schema in [Section 8](#8-vs-code-with-github-copilot). Configure approval behavior through VS Code's supported MCP UI/settings rather than assuming `alwaysAllow` is recognized.
