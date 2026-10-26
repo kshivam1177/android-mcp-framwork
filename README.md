@@ -13,7 +13,7 @@ androidmcp-framework doctor
 amf doctor
 ```
 
-Or run on demand with no global install: `npx -y androidmcp-framework@latest mcp`.
+Or run on demand with no global install: `npx -y androidmcp-framework@latest mcp`. The `amf update` command updates a global installation only when npm has a newer version, then clears only npm's `_npx` execution cache (not the shared package-download cache).
 
 ## Connect an MCP client
 
