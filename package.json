@@ -20,6 +20,7 @@
     "build",
     "scripts",
     "examples",
+    "docs",
     "templates",
     "config.example.yaml",
     "README.md",
