@@ -31,7 +31,7 @@ export const ConfigSchema = z.object({
   schemaVersion: z.literal(1).default(1),
   enabledWorkflows: z
     .array(z.string())
-    .default(['device', 'ui-automation', 'session-management', 'doctor', 'workflow-discovery']),
+    .default(['device', 'ui-automation', 'session-management', 'doctor', 'workflow-discovery', 'testing-intelligence']),
   customWorkflows: z.record(z.array(z.string())).default({}),
   automationBackend: AutomationBackendSchema.default('adb'),
   disableSessionDefaults: z.boolean().default(false),
