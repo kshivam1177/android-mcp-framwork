@@ -12,6 +12,7 @@ describe('runUiWorkflow validation and path safety', () => {
     const workflows = path.join(root, 'workflows');
     const screens = path.join(root, 'screens');
     const callsFile = path.join(cwd, 'calls.json');
+    const callsJson = JSON.stringify(callsFile);
     const cliFile = path.join(cwd, 'fake-android-cli.mjs');
     const previousPath = process.env.ANDROID_CLI_PATH;
 
@@ -22,7 +23,7 @@ describe('runUiWorkflow validation and path safety', () => {
       await writeFile(cliFile, [
         "import fs from 'node:fs';",
         "const args = process.argv.slice(2);",
-        `fs.appendFileSync(${JSON.stringify(callsFile)}, JSON.stringify(args) + '\\n');`,
+        `fs.appendFileSync(${callsJson}, JSON.stringify(args) + '\\n');`,
         "if (args[0] === 'layout') process.stdout.write(JSON.stringify({ elements: [] }));",
       ].join('\n'));
       await writeFile(path.join(screens, 'home.json'), JSON.stringify({
