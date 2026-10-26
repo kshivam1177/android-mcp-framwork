@@ -1,4 +1,4 @@
-# AndroidBuildMCP project config.
+# AndroidMCP Framwork project config.
 # Copy to .android-build-mcp/config.yaml at your project root and edit.
 # Every field is optional; the whole file is optional. Defaults are shown below.
 
@@ -7,7 +7,7 @@ schemaVersion: 1
 # Which workflows are exposed as MCP tools. "device" ships enabled by default
 # so an agent isn't handed 60+ tools on first connect. Add more as you need
 # them, e.g. ["device", "ui-automation", "coverage"].
-# Run `androidbuildmcp workflows list` to see every workflow and its tools.
+# Run `androidmcp-framework workflows` to see every workflow and its tools.
 enabledWorkflows:
   - device
   - ui-automation
