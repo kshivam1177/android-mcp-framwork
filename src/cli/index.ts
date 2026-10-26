@@ -9,6 +9,7 @@ import { createServer } from '../mcp/server.js';
 import { WORKFLOWS } from '../workflows.js';
 import { runDoctorChecks } from '../tools/doctor/doctor.js';
 import { getConfigDir } from '../config/loader.js';
+import { PROJECT_CONFIG_DIR, findProjectConfigPath } from '../utils/paths.js';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 
@@ -16,8 +17,6 @@ async function runMcp(): Promise<void> {
   const server = createServer();
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  // Intentionally never resolves on its own - the stdio transport keeps the
-  // process alive until the MCP client disconnects.
 }
 
 async function runDoctor(): Promise<void> {
@@ -45,26 +44,40 @@ function listTools(json: boolean): void {
   }
   for (const w of WORKFLOWS) {
     console.log(`\n${w.name}:`);
-    for (const t of w.tools) {
-      console.log(`  ${t.toolName}`);
-    }
+    for (const t of w.tools) console.log(`  ${t.toolName}`);
   }
 }
 
-function setupConfig(cwd: string): void {
-  const dir = getConfigDir(cwd);
-  const configPath = path.join(dir, 'config.yaml');
-  if (fs.existsSync(configPath)) {
-    console.log(`${configPath} already exists - leaving it as-is.`);
+function setupConfig(cwd: string, migrate: boolean): void {
+  const canonicalDir = path.join(cwd, PROJECT_CONFIG_DIR);
+  const canonicalPath = path.join(canonicalDir, 'config.yaml');
+  const existingCanonical = fs.existsSync(canonicalPath);
+  const legacyPath = findProjectConfigPath(cwd);
+
+  if (existingCanonical) {
+    console.log(`${canonicalPath} already exists - leaving it as-is.`);
     return;
   }
-  fs.mkdirSync(dir, { recursive: true });
+
+  if (legacyPath && legacyPath !== canonicalPath) {
+    if (!migrate) {
+      console.log(`Found existing config at ${legacyPath}.`);
+      console.log(`Run "androidmcp-framework setup --migrate" to copy legacy project data into ${canonicalDir}; existing files will never be overwritten.`);
+      return;
+    }
+    fs.mkdirSync(canonicalDir, { recursive: true });
+    fs.cpSync(path.dirname(legacyPath), canonicalDir, { recursive: true, errorOnExist: true, force: false });
+    console.log(`Migrated project configuration from ${path.dirname(legacyPath)} to ${canonicalDir} without overwriting files.`);
+    return;
+  }
+
+  fs.mkdirSync(canonicalDir, { recursive: true });
   const examplePath = path.resolve(moduleDir, '..', '..', 'config.example.yaml');
   const contents = fs.existsSync(examplePath)
     ? fs.readFileSync(examplePath, 'utf8')
-    : 'schemaVersion: 1\nenabledWorkflows: [device, ui-automation, session-management, doctor]\n';
-  fs.writeFileSync(configPath, contents, 'utf8');
-  console.log(`Wrote ${configPath}.`);
+    : 'schemaVersion: 1\nenabledWorkflows: [device, ui-automation, session-management, doctor, workflow-discovery]\n';
+  fs.writeFileSync(canonicalPath, contents, { encoding: 'utf8', flag: 'wx' });
+  console.log(`Wrote ${canonicalPath}.`);
   console.log('Edit enabledWorkflows and sessionDefaults for your project, then restart your MCP client.');
 }
 
@@ -81,9 +94,9 @@ await yargs(hideBin(process.argv))
   )
   .command(
     'setup',
-    'Write a starter .android-build-mcp/config.yaml in the current directory',
-    () => {},
-    () => setupConfig(process.cwd())
+    'Initialize .androidmcp-framework/ in the current project; use --migrate to copy legacy files safely',
+    (y) => y.option('migrate', { type: 'boolean', default: false, describe: 'Copy files from a legacy project directory without overwriting existing files' }),
+    (argv) => setupConfig(process.cwd(), Boolean(argv.migrate))
   )
   .demandCommand(1, 'Pass a command - try "androidmcp-framework --help".')
   .strict()
