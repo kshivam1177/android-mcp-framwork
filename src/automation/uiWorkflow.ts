@@ -195,7 +195,24 @@ export async function runUiWorkflow(options: { cwd: string; workflowFile: string
   const reportDir = path.join(root, 'test-reports', date, `${time}-${randomUUID().slice(0,8)}`);
   await mkdir(reportDir, { recursive: true });
   const reportPath = path.join(reportDir, 'workflow-report.json');
-  const result: WorkflowResult = { workflowId: workflow.id, success, startedAt: startedAt.toISOString(), durationMs: Date.now() - started, steps, reportPath: path.relative(projectRoot, reportPath) };
+  const durationMs = Date.now() - started;
+  const result: WorkflowResult = { workflowId: workflow.id, success, startedAt: startedAt.toISOString(), durationMs, steps, reportPath: path.relative(projectRoot, reportPath) };
   await writeFile(reportPath, JSON.stringify(result, null, 2) + '\n', { encoding: 'utf8', flag: 'wx' });
+  if (success) {
+    await mkdir(sequenceDir, { recursive: true });
+    const sequenceCachePath = path.join(sequenceDir, `${workflow.id}.json`);
+    const sequence = {
+      ...workflow,
+      _cache: {
+        sourceWorkflow: path.relative(root, workflowPath).split(path.sep).join('/'),
+        lastSuccessfulRun: startedAt.toISOString(),
+        lastDurationMs: durationMs,
+        lastSuccessfulSteps: steps.map(({ id, type, durationMs: stepDurationMs }) => ({ id, type, durationMs: stepDurationMs })),
+        replayInstructions: 'Replay with run_ui_workflow using workflowFile action-sequences/<workflow-id>.json. Validate selectors and screen state before coordinate fallback.',
+      },
+    };
+    await writeFile(sequenceCachePath, JSON.stringify(sequence, null, 2) + '\n', 'utf8');
+    result.sequenceCachePath = path.relative(projectRoot, sequenceCachePath);
+  }
   return result;
 }
