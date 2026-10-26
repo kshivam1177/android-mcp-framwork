@@ -11,13 +11,13 @@ on:
   workflow_dispatch:
     inputs:
       publish_npm:
-        description: Publish the npm package
+        description: Publish from the selected dev or master branch (dev uses the dev npm tag; master uses latest)
         type: boolean
         required: true
         default: true
 
 concurrency:
-  group: release-master
+  group: release-${{ github.ref_name }}
   cancel-in-progress: false
 
 permissions:
@@ -44,7 +44,7 @@ jobs:
 
   publish-npm:
     name: Publish to npm
-    if: ${{ github.event_name == 'push' || inputs.publish_npm }}
+    if: ${{ (github.event_name == 'push' || inputs.publish_npm) && (github.ref_name == 'master' || (github.event_name == 'workflow_dispatch' && github.ref_name == 'dev')) }}
     runs-on: ubuntu-latest
     needs: verify-package
     environment: npm-publish
@@ -105,15 +105,30 @@ jobs:
           if [ "$NEXT_VERSION" != "$CURRENT_VERSION" ]; then
             npm version "$NEXT_VERSION" --no-git-tag-version
           fi
+          TARGET_BRANCH="$GITHUB_REF_NAME"
+          if [[ "$TARGET_BRANCH" != "master" && "$TARGET_BRANCH" != "dev" ]]; then
+            echo "Refusing to publish branch '$TARGET_BRANCH'. Select dev or master." >&2
+            exit 1
+          fi
+          if [[ "$TARGET_BRANCH" == "master" ]]; then
+            DIST_TAG="latest"
+          else
+            DIST_TAG="dev"
+          fi
           echo "version=$NEXT_VERSION" >> "$GITHUB_OUTPUT"
-          echo "Publishing AndroidMCP Framework $NEXT_VERSION"
+          echo "dist_tag=$DIST_TAG" >> "$GITHUB_OUTPUT"
+          echo "target_branch=$TARGET_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "Publishing AndroidMCP Framework $NEXT_VERSION from $TARGET_BRANCH using npm tag $DIST_TAG"
       - name: Build release package
         run: npm run build
       - name: Publish package using npm trusted publishing
-        run: npm publish --access public
-      - name: Commit published version to master
+        env:
+          DIST_TAG: ${{ steps.release-version.outputs.dist_tag }}
+        run: npm publish --access public --tag "$DIST_TAG"
+      - name: Commit published version to selected branch
         env:
           VERSION: ${{ steps.release-version.outputs.version }}
+          TARGET_BRANCH: ${{ steps.release-version.outputs.target_branch }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -123,5 +138,6 @@ jobs:
             exit 0
           fi
           git commit -m "chore: record published npm version v${VERSION}"
-          git push origin HEAD:master
+          # Never force-push and never push a dev build to master (or vice versa).
+          git push origin "HEAD:refs/heads/${TARGET_BRANCH}"
 
