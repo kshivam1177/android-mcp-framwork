@@ -155,7 +155,7 @@ export async function runUiWorkflow(options: { cwd: string; workflowFile: string
             const { x, y } = element.coordinates;
             const args = [...(options.deviceId ? ['-s', options.deviceId] : []), 'shell', 'input', 'tap', String(Math.round(x)), String(Math.round(y))];
             const adb = process.env.ADB_PATH || 'adb';
-            const { execCommand } = await import('../utils/exec.js');
+            const { execFile } = await import('../utils/exec.js');
             const result = await execFile(adb, args, { cwd: projectRoot, timeoutMs: 15000 });
             if (result.exitCode !== 0) throw new Error(result.stderr || 'ADB coordinate tap failed.');
           } else throw new Error(`Element ${element.id} needs a semantic selector or coordinates.`);
