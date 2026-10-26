@@ -10,6 +10,7 @@ import { WORKFLOWS } from '../workflows.js';
 import { runDoctorChecks } from '../tools/doctor/doctor.js';
 import { getConfigDir } from '../config/loader.js';
 import { PROJECT_CONFIG_DIR, findProjectConfigPath, resolveProjectRoot } from '../utils/paths.js';
+import { runSelfUpdate } from './update.js';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 
@@ -27,6 +28,12 @@ async function runDoctor(): Promise<void> {
     console.log(`  [${status}] ${check.name}: ${check.detail}`);
   }
   process.exitCode = checks.some((c) => c.required && !c.ok) ? 1 : 0;
+}
+
+function runUpdate(): void {
+  const packageRoot = path.resolve(moduleDir, '..', '..');
+  const result = runSelfUpdate(packageRoot);
+  if (!result.success) process.exitCode = 1;
 }
 
 function listWorkflows(): void {
@@ -86,6 +93,7 @@ await yargs(hideBin(process.argv))
   .scriptName('androidmcp-framework')
   .command('mcp', 'Start the MCP server over stdio (for MCP clients)', () => {}, runMcp)
   .command('doctor', 'Check the local Android toolchain (adb, java, gradle, SDK, emulator)', () => {}, runDoctor)
+  .command('update', 'Update the global androidmcp-framework installation to the latest npm version and clear npm cache', () => {}, runUpdate)
   .command('workflows', 'List every workflow, its tool count, and whether it is on by default', () => {}, listWorkflows)
   .command(
     'tools',
