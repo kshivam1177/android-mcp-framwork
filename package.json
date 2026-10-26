@@ -1,7 +1,7 @@
 {
   "name": "androidmcp-framework",
   "mcpName": "io.github.kshivam1177/androidmcp-framework",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "A Model Context Protocol (MCP) server and CLI that gives coding agents tools for Android development: emulator + physical device builds, installs, UI automation, logs, coverage and testing intelligence.",
   "type": "module",
   "license": "MIT",
