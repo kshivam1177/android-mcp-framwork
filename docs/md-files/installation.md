@@ -8,7 +8,7 @@
 - A Gradle wrapper in your Android project (recommended) or Gradle itself on `PATH`
 - Optional, for the richer UI-automation backend: Python 3.9+ with `pip install uiautomator2 && python -m uiautomator2 init`
 
-None of the above needs to be installed *for* AndroidMCP Framwork itself - they're the normal Android dev toolchain. Run `androidmcp-framework doctor` any time to check what's actually on this machine.
+None of the above needs to be installed *for* AndroidMCP Framework itself - they're the normal Android dev toolchain. Run `androidmcp-framework doctor` any time to check what's actually on this machine.
 
 ## Install
 
