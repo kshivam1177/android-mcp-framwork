@@ -2,7 +2,7 @@
 
 Every tool AndroidMCP Framework exposes, grouped by workflow. Only `device`, `ui-automation`, `session-management`, `doctor`, and `workflow-discovery` are enabled by default - see [workflow.md](./workflow.md) for how to turn the rest on. This file mirrors the actual registered tool metadata (title, description, parameters, annotations) - if you change a tool's description in source, regenerate this file rather than editing it by hand.
 
-**Total: 76 tools across 13 workflows.**
+**Total: 74 tools across 12 workflows.**
 
 ## device _(enabled by default)_
 
