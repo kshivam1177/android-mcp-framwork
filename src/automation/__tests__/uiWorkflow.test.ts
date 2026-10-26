@@ -14,18 +14,24 @@ describe('runUiWorkflow validation and path safety', () => {
     const callsFile = path.join(cwd, 'calls.json');
     const callsJson = JSON.stringify(callsFile);
     const cliFile = path.join(cwd, 'fake-android-cli.mjs');
+    const cliLauncher = path.join(cwd, 'fake-android-cli-launcher.mjs');
     const previousPath = process.env.ANDROID_CLI_PATH;
 
     try {
       await mkdir(workflows, { recursive: true });
       await mkdir(screens, { recursive: true });
-      await writeFile(path.join(root, 'config.yaml'), `schemaVersion: 1\npaths:\n  androidCliPath: ${JSON.stringify(cliFile)}\n`);
+      await writeFile(path.join(root, 'config.yaml'), `schemaVersion: 1\npaths:\n  androidCliPath: ${JSON.stringify(cliLauncher)}\n`);
       await writeFile(cliFile, [
         "import fs from 'node:fs';",
         "const args = process.argv.slice(2);",
         `fs.appendFileSync(${callsJson}, JSON.stringify(args) + '\\n');`,
         "if (args[0] === 'layout') process.stdout.write(JSON.stringify({ elements: [] }));",
       ].join('\n'));
+      await writeFile(cliLauncher, [
+        "import { spawn } from 'node:child_process';",
+        `const child = spawn(${JSON.stringify(process.execPath)}, [${JSON.stringify(cliFile)}, ...process.argv.slice(2)], { stdio: 'inherit' });`,
+        "child.on('exit', (code) => process.exit(code ?? 1));",
+      ].join('\\n'));
       await writeFile(path.join(screens, 'home.json'), JSON.stringify({
         id: 'home',
         form: [{ id: 'hello', selector: { text: 'Hello' }, required: true }],
@@ -36,7 +42,7 @@ describe('runUiWorkflow validation and path safety', () => {
         actions: [{ id: 'assert-home', type: 'assert_screen', screen: 'home', timeoutMs: 1000, intervalMs: 10 }],
       }));
 
-      delete process.env.ANDROID_CLI_PATH;
+      // Use a Node launcher script as a config value via a tiny portable shell-free wrapper is not possible cross-platform; test config selection via PATH fallback below.\n      delete process.env.ANDROID_CLI_PATH;
       resetConfigCache();
       const result = await runUiWorkflow({ cwd, workflowFile: 'smoke.json' });
       expect(result.success).toBe(false);
