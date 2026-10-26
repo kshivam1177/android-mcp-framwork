@@ -2,7 +2,7 @@
 
 Every tool AndroidMCP Framework exposes, grouped by workflow. Only `device`, `ui-automation`, `session-management`, `doctor`, and `workflow-discovery` are enabled by default - see [workflow.md](./workflow.md) for how to turn the rest on. This file mirrors the actual registered tool metadata (title, description, parameters, annotations) - if you change a tool's description in source, regenerate this file rather than editing it by hand.
 
-**Total: 68 tools across 13 workflows.**
+**Total: 69 tools across 13 workflows.**
 
 ## device _(enabled by default)_
 
@@ -161,7 +161,7 @@ Start or stop an on-device screen recording (adb shell screenrecord) and pull th
 
 ## ui-automation _(enabled by default)_
 
-Semantic UI snapshots (elementRef-based), screenshot OCR coordinates, and tap/swipe/drag/type/key/gesture/wait/batch.
+Semantic UI snapshots, screenshot OCR coordinates, selector-based form filling, and tap/swipe/drag/type/key/gesture/wait/batch.
 
 ### `snapshot_ui`
 Capture a semantic UI hierarchy for the current screen - every element gets a short-lived elementRef (e1, e2, ...) that tap/long_press/type_text can target directly instead of guessing pixel coordinates. Refresh after navigation, scrolling, or any layout change - refs from a stale snapshot are rejected.
@@ -241,6 +241,13 @@ Run local OCR on the current Android screenshot and return visible text with bou
 - **Annotations:** read-only, idempotent
 
 See [Screenshot OCR and coordinate analysis](../screenshot-analysis.md) for installation and JSON output details.
+
+### `fill_form`
+Fill visible Android form fields using semantic UI selectors, optionally clear existing text, and optionally tap a uniquely identified submit button. Refreshes the hierarchy between fields. Ambiguous or missing matches fail safely.
+
+- **Title:** Fill Form
+- **Parameters:** `targetId`, `fields`, `clearExisting`, `submit`
+- **Annotations:** mutating
 
 ### `wait_for_ui`
 Poll the UI until a condition holds, then record the latest snapshot (same caching as snapshot_ui - refs from the result are usable directly). With textContains/resourceId: waits for a matching element to appear (or disappear, if gone:true). With neither: waits for the hierarchy to stop changing between polls ("settled").
