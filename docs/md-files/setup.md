@@ -5,10 +5,10 @@
 From your Android project's root:
 
 ```bash
-androidbuildmcp setup
+androidmcp-framework setup
 ```
 
-This writes `.androidbuildmcp/config.yaml` (copied from the bundled `config.example.yaml`) if one doesn't already exist. It won't overwrite an existing config.
+This writes `.androidmcp-framework/config.yaml` (copied from the bundled `config.example.yaml`) if one doesn't already exist. It won't overwrite an existing config.
 
 Then set your session defaults so you don't have to pass `projectPath`/`module`/`variant` on every tool call - either edit the file directly, or do it live once your MCP client is connected by calling `session_set_defaults`:
 
@@ -20,7 +20,7 @@ Check what's active any time with `session_show_defaults`.
 
 ## The config file
 
-`.androidbuildmcp/config.yaml`, project-scoped (not global - a monorepo with several Android projects gets one per project). Every field is optional; see [`config.example.yaml`](../../config.example.yaml) in the repo root for the full annotated schema. The main sections:
+`.androidmcp-framework/config.yaml`, project-scoped (not global - a monorepo with several Android projects gets one per project). Every field is optional; see [`config.example.yaml`](../../config.example.yaml) in the repo root for the full annotated schema. The main sections:
 
 - **`enabledWorkflows`** - which tool groups are exposed. See [workflow.md](./workflow.md).
 - **`customWorkflows`** - enable individual tools outside their parent workflow.
@@ -40,7 +40,7 @@ If you work across multiple Android projects from the same MCP client, `session_
 ## Verifying the environment
 
 ```bash
-androidbuildmcp doctor
+androidmcp-framework doctor
 ```
 
 Checks `adb`, `java`, `gradle`, `ANDROID_HOME`/`ANDROID_SDK_ROOT`, the `emulator` binary, `build-tools` (for `aapt2`), and the optional `python3`/`u2cli` pair. Required checks (`adb`, `java`, `ANDROID_HOME`) failing exits non-zero - useful in a setup script or CI gate.
