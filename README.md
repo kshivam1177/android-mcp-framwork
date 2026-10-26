@@ -34,14 +34,26 @@ Configure your MCP client to launch the command above from this project director
 - UI hierarchy inspection, screenshots, gestures, and text input
 - Logs, crash/ANR diagnostics, and coverage tools
 - Test-case management, screen audits, and evidence-oriented reports
+- **Testing intelligence:** Git change impact recommendations, structured plan validation, scoped instruction merging, and redacted Markdown/JSON run reports
+
+## Testing intelligence
+
+The initial testing-intelligence MCP tools are:
+
+- `android_test_analyze_changes`
+- `android_test_validate_plan`
+- `android_test_resolve_instructions`
+- `android_test_write_report`
+
+They support planning and evidence-based reporting, but do not claim to execute tests or provide verified integration with Google's Android CLI. See [Testing intelligence documentation](docs/testing-intelligence.md) for schemas, report paths, behavior, and limitations.
 
 ## Documentation
 
-Start with `docs/md-files/README.md` for the documentation index. Inspect actual tool contracts for the checked-out version with the CLI after building.
+Start with `docs/md-files/README.md` for the existing documentation index. Inspect actual tool contracts for the checked-out version with the CLI after building.
 
 ## Development status
 
-This repository is being initialized from the existing AndroidBuildMCP project. Validate with a clean install, build, unit suite, and emulator/device tests before relying on a release build. The `dev` branch is the integration branch for current development.
+Testing-intelligence functionality is an initial orchestration layer. Its path-based impact mapping is heuristic and must fall back to broad regression when uncertain. Validate with a clean install, build, unit suite, and emulator/device tests before relying on a release build. The `dev` branch is the integration branch for current development.
 
 ## License
 
