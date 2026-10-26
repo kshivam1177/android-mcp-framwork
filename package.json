@@ -18,7 +18,6 @@
   },
   "files": [
     "build",
-    "scripts",
     "examples",
     "docs",
     "templates",
