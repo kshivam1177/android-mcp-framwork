@@ -10,7 +10,7 @@ type ScreenDefinition = { schemaVersion?: string; id: string; name?: string; for
 type WorkflowAction = { id: string; type: 'tap'|'type'|'wait'|'wait_for_screen'|'assert_screen'|'back'|'key'; screen?: string; element?: string; value?: string; timeoutMs?: number; intervalMs?: number; key?: string };
 type WorkflowDefinition = { schemaVersion?: string; id: string; name?: string; forms: Record<string,string>; actions: WorkflowAction[]; settings?: { stopOnFailure?: boolean; verifyAfterAction?: boolean } };
 export type StepResult = { id: string; type: string; status: 'passed'|'failed'; durationMs: number; message?: string };
-export type WorkflowResult = { workflowId: string; success: boolean; startedAt: string; durationMs: number; steps: StepResult[]; reportPath: string };
+export type WorkflowResult = { workflowId: string; success: boolean; startedAt: string; durationMs: number; steps: StepResult[]; reportPath: string; sequenceCachePath?: string };
 
 const ROOT = '.androidmcp-framework';
 const MAX_JSON_BYTES = 1024 * 1024;
@@ -118,8 +118,11 @@ async function waitForScreen(screen: ScreenDefinition, cwd: string, deviceId: st
 export async function runUiWorkflow(options: { cwd: string; workflowFile: string; deviceId?: string }): Promise<WorkflowResult> {
   const projectRoot = path.resolve(options.cwd);
   const root = path.resolve(projectRoot, ROOT);
-  const workflowDir = path.join(root, 'workflows');
-  const workflowPath = within(workflowDir, options.workflowFile);
+  const sequenceDir = path.join(root, 'action-sequences');
+  const isSequence = options.workflowFile.replace(/\\\\/g, '/').startsWith('action-sequences/');
+  const workflowDir = isSequence ? sequenceDir : path.join(root, 'workflows');
+  const relativeWorkflowPath = isSequence ? options.workflowFile.slice('action-sequences/'.length) : options.workflowFile;
+  const workflowPath = within(workflowDir, relativeWorkflowPath);
   if (!workflowPath.endsWith('.json')) throw new Error('Workflow file must end in .json.');
   const workflow = await readJson<WorkflowDefinition>(workflowPath);
   validateWorkflow(workflow);
