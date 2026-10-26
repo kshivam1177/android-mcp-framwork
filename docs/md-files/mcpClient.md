@@ -1,31 +1,31 @@
 # MCP client configuration
 
-AndroidBuildMCP currently runs as a local stdio MCP server. Most supported coding agents can launch it with `npx -y androidbuildmcp@latest mcp`. For complete setup instructions for Claude Code, Codex, Gemini CLI, Antigravity, VS Code/Copilot, and the Android Studio transport limitation, see [agent-setup.md](./agent-setup.md).
+AndroidMCP Framework currently runs as a local **stdio MCP server**. It uses the package/CLI name `androidmcp-framework` and starts with the `mcp` command. For a client-specific walkthrough, see [MCP integration guide](./mcp-guide.md).
 
-## Generic MCP configuration
+## Generic configuration
 
-For clients using the common `mcpServers` schema:
+Clients using the common `mcpServers` schema can use:
 
 ```json
 {
   "mcpServers": {
-    "androidbuildmcp": {
+    "androidmcp-framework": {
       "command": "npx",
-      "args": ["-y", "androidbuildmcp@latest", "mcp"]
+      "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
   }
 }
 ```
 
-For VS Code's legacy/workspace `.vscode/mcp.json` schema, use a top-level `servers` object:
+For VS Code's `.vscode/mcp.json` schema, use a top-level `servers` object:
 
 ```json
 {
   "servers": {
-    "androidbuildmcp": {
+    "androidmcp-framework": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "androidbuildmcp@latest", "mcp"]
+      "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
   }
 }
@@ -33,22 +33,28 @@ For VS Code's legacy/workspace `.vscode/mcp.json` schema, use a top-level `serve
 
 ## Verify installation
 
-Run these as normal terminal commands (not inside the MCP client config):
+Run these in a terminal, not inside the MCP configuration:
 
 ```bash
 node --version
-npx -y androidbuildmcp@latest --help
-androidbuildmcp doctor
-androidbuildmcp workflows
-androidbuildmcp tools
+npx -y androidmcp-framework@latest --help
+npx -y androidmcp-framework@latest doctor
+npx -y androidmcp-framework@latest workflows
+npx -y androidmcp-framework@latest tools
 ```
 
-After connecting, ask the agent to list AndroidBuildMCP tools or call the `doctor` tool. If tools are missing, confirm the project `.androidbuildmcp/config.yaml` enables their workflow, then restart the MCP server.
+Then restart/reload the MCP client and ask it to list the AndroidMCP Framework tools or call the available doctor tool.
 
-## Project configuration
+## Project configuration is separate
 
-The MCP client config determines how the server process starts. The application repository and enabled tools are configured separately by `.androidbuildmcp/config.yaml`. Run `androidbuildmcp setup` from the app repository root to create that file.
+The MCP client configuration only starts the server. It does not configure which project or workflows should be used. From the Android app repository root, run:
 
-## Android Studio limitation
+```bash
+npx -y androidmcp-framework@latest setup
+```
 
-Android Studio's documented MCP client currently does not support stdio connections, while AndroidBuildMCP currently provides stdio only. Direct Android Studio connection requires a future Streamable HTTP transport or a reviewed bridge. See [agent-setup.md](./agent-setup.md#9-android-studio-with-gemini).
+Review the generated `.android-build-mcp/config.yaml`, especially `enabledWorkflows` and `sessionDefaults`. Restart the MCP client after changing configuration.
+
+## Current transport limitation
+
+This release supports stdio only. Do not use an HTTP URL or assume a built-in HTTP listener exists. Direct Android Studio Gemini integration requires a supported HTTP transport or a separately reviewed bridge; see [Supported clients](./supportedclients.md#transport-and-protocol-scope).
