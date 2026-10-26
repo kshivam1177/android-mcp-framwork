@@ -1,10 +1,10 @@
-# AndroidMCP Framework — MCP integration guide
+# AndroidMCP Framwork — MCP integration guide
 
 This guide explains what the server exposes through the Model Context Protocol (MCP), how clients start it, how project/workflow configuration affects tool discovery, and how to troubleshoot a connection.
 
 ## 1. What MCP does here
 
-AndroidMCP Framework runs as a local MCP server. An MCP-compatible coding agent can discover and invoke tools to work with Android projects, devices, UI automation, build/test workflows, diagnostics, and project analysis.
+AndroidMCP Framwork runs as a local MCP server. An MCP-compatible coding agent can discover and invoke tools to work with Android projects, devices, UI automation, build/test workflows, diagnostics, and project analysis.
 
 The server currently exposes **tools over stdio**. It uses the official TypeScript MCP SDK. This is a local process integration—not a hosted remote service.
 
@@ -48,7 +48,7 @@ For clients that accept the common `mcpServers` shape:
 ```json
 {
   "mcpServers": {
-    "androidmcp-framework": {
+    "androidmcp-framwork": {
       "command": "npx",
       "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
@@ -61,7 +61,7 @@ For a local checkout during development, build first and configure the absolute 
 ```json
 {
   "mcpServers": {
-    "androidmcp-framework": {
+    "androidmcp-framwork": {
       "command": "node",
       "args": ["/absolute/path/to/android-mcp-framwork/build/cli/index.js", "mcp"]
     }
@@ -78,7 +78,7 @@ Use the configuration schema expected by your specific client. Do not paste the 
 From the target project directory:
 
 ```bash
-claude mcp add androidmcp-framework -- npx -y androidmcp-framework@latest mcp
+claude mcp add androidmcp-framwork -- npx -y androidmcp-framework@latest mcp
 claude mcp list
 ```
 
@@ -89,14 +89,14 @@ Alternatively, add the generic JSON entry to the project `.mcp.json`. Restart or
 Try the CLI command:
 
 ```bash
-codex mcp add androidmcp-framework -- npx -y androidmcp-framework@latest mcp
+codex mcp add androidmcp-framwork -- npx -y androidmcp-framework@latest mcp
 codex mcp list
 ```
 
 If configuring `~/.codex/config.toml` manually:
 
 ```toml
-[mcp_servers.androidmcp-framework]
+[mcp_servers.androidmcp-framwork]
 command = "npx"
 args = ["-y", "androidmcp-framework@latest", "mcp"]
 ```
@@ -110,7 +110,7 @@ Merge this server into `.gemini/settings.json` in the project, or the user-level
 ```json
 {
   "mcpServers": {
-    "androidmcp-framework": {
+    "androidmcp-framwork": {
       "command": "npx",
       "args": ["-y", "androidmcp-framework@latest", "mcp"]
     }
@@ -126,7 +126,7 @@ Use the MCP server configuration location and schema supported by your installed
 
 ```json
 {
-  "androidmcp-framework": {
+  "androidmcp-framwork": {
     "command": "npx",
     "args": ["-y", "androidmcp-framework@latest", "mcp"]
   }
@@ -142,7 +142,7 @@ For the workspace `.vscode/mcp.json` schema:
 ```json
 {
   "servers": {
-    "androidmcp-framework": {
+    "androidmcp-framwork": {
       "type": "stdio",
       "command": "npx",
       "args": ["-y", "androidmcp-framework@latest", "mcp"]
@@ -186,7 +186,7 @@ Some workflows are enabled by default; others are opt-in. If the agent cannot se
 3. Confirm `adb devices -l` lists the intended target.
 4. Run `androidmcp-framework setup` in the app repository.
 5. Configure the MCP client and restart/reload it.
-6. Ask the agent to enumerate AndroidMCP Framework tools.
+6. Ask the agent to enumerate AndroidMCP Framwork tools.
 7. Call a read-only tool such as device listing or project discovery before attempting build/install or destructive actions.
 8. Enable optional workflows deliberately and restart the server.
 
