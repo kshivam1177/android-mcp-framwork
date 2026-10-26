@@ -8,9 +8,7 @@ import keyPress from './key_press.js';
 import button from './button.js';
 import gesture from './gesture.js';
 import screenshot from './screenshot.js';
-import analyzeScreenshot from './analyze_screenshot.js';
-import fillForm from './fill_form.js';
-import runUiWorkflow from './run_ui_workflow.js';
+import analyzeScreenImage from './analyze_screen_image.js';
 import waitForUi from './wait_for_ui.js';
 import batch from './batch.js';
 import touch from './touch.js';
@@ -27,9 +25,7 @@ export const uiAutomationTools: ToolModule[] = [
   button,
   gesture,
   screenshot,
-  analyzeScreenshot,
-  fillForm,
-  runUiWorkflow,
+  analyzeScreenImage,
   waitForUi,
   batch,
   touch,
