@@ -2,13 +2,15 @@
 
 A Model Context Protocol (MCP) server and CLI that gives coding agents Android development capabilities: build, install, and launch on emulators and physical devices; semantic UI automation; logcat/crash diagnostics; project discovery; change-aware testing intelligence.
 
-74 tools across 11 workflows. Five are enabled by default (`device`, `ui-automation`, `session-management`, `doctor`, `workflow-discovery`); the rest are opt-in - see [workflow docs](docs/md-files/workflow.md).
+66 tools across 12 workflows. Five are enabled by default (`device`, `ui-automation`, `session-management`, `doctor`, `workflow-discovery`); the rest are opt-in - see [workflow docs](docs/md-files/workflow.md).
 
 ## Install
 
 ```bash
 npm install -g androidmcp-framework@latest
 androidmcp-framework doctor
+# Short alias (also installed by npm)
+amf doctor
 ```
 
 Or run on demand with no global install: `npx -y androidmcp-framework@latest mcp`.
@@ -46,7 +48,7 @@ Build with `npm ci && npm run build`, then configure the MCP client to launch th
 
 ## How it's built
 
-- **UI automation:** TypeScript with Node.js built-ins; the official Android CLI is reused for semantic layout/input, with ADB only as a coordinate-tap fallback. Tesseract OCR is an optional external executable for screenshot text analysis. No new runtime dependency is added.
+- **UI automation:** JavaScript/TypeScript plus Android SDK platform-tools (`adb`) only. The optional Python `uiautomator2` bridge has been removed; no Python runtime or `scripts/` directory is required.
 - **Device targeting:** emulators and physical devices are unified through ADB. Explicit target, session default, then single connected target are tried in that order.
 - **MCP transport:** stdio for local coding agents. Streamable HTTP is not implemented yet.
 - **Tools:** one TypeScript module per tool under `src/tools/<workflow>/`.
@@ -64,7 +66,7 @@ TypeScript compiles from `src/` to generated `build/`. Do not commit generated `
 
 ## Testing framework
 
-The `testing-intelligence` workflow analyzes project changes, resolves layered instructions, validates test plans, and writes redacted Markdown/JSON reports under `.androidmcp-framework/test-reports/`. The `ui-automation` workflow supports reusable screen definitions and JSON action sequences under `.androidmcp-framework/screens/` and `.androidmcp-framework/workflows/`. It does not claim autonomous natural-language test generation; see [Testing Framework](docs/md-files/testing-framework.md) and [Declarative UI workflows](docs/ui-workflows.md).
+The `testing-intelligence` workflow analyzes Native Android and Flutter projects, saves custom instructions and test cases, and writes timestamped Markdown/JSON reports under `.androidmcp-framework/test-reports/YYYY-MM-DD/HHmmss/`. It does not yet claim fully autonomous end-to-end test generation/execution; see [Testing Framework](docs/md-files/testing-framework.md).
 
 ## License
 
