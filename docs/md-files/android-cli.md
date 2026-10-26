@@ -15,7 +15,7 @@ android info
 android studio check
 ```
 
-The `android` executable must be on `PATH`, or set `paths.androidCliPath` in `.android-build-mcp/config.yaml`. Android CLI is an optional external dependency; AndroidMCP Framework does not download or bundle it.
+The `android` executable must be on `PATH`, or set `paths.androidCliPath` in `.androidmcp-framework/config.yaml`. Android CLI is an optional external dependency; AndroidMCP Framework does not download or bundle it.
 
 Example config:
 
