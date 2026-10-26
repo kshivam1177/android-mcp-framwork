@@ -1,9 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { resetConfigCache } from '../../config/loader.js';
+import { loadConfig, resetConfigCache } from '../../config/loader.js';
 import { runUiWorkflow } from '../uiWorkflow.js';
+
+function projectRootForTest(cwd: string): string { return path.resolve(cwd); }
 
 describe('runUiWorkflow validation and path safety', () => {
   it('uses paths.androidCliPath from project config unless ANDROID_CLI_PATH overrides it', async () => {
@@ -16,6 +18,7 @@ describe('runUiWorkflow validation and path safety', () => {
     const cliFile = path.join(cwd, 'fake-android-cli.mjs');
     const cliLauncher = path.join(cwd, 'fake-android-cli-launcher.mjs');
     const previousPath = process.env.ANDROID_CLI_PATH;
+    const execSpy = vi.spyOn(await import('../../utils/exec.js'), 'execCommand');
 
     try {
       await mkdir(workflows, { recursive: true });
@@ -45,14 +48,16 @@ describe('runUiWorkflow validation and path safety', () => {
 
       delete process.env.ANDROID_CLI_PATH;
       resetConfigCache();
+      const config = loadConfig({ cwd, forceReload: true });
+      expect(config.paths.androidCliPath).toBe(cliLauncher);
+      execSpy.mockResolvedValue({ stdout: JSON.stringify({ elements: [] }), stderr: '', exitCode: 0, command: 'fake-android', durationMs: 1 });
       const result = await runUiWorkflow({ cwd, workflowFile: 'smoke.json' });
       expect(result.success).toBe(false);
-      const calls = (await (await import('node:fs/promises')).readFile(callsFile, 'utf8')).trim().split('\n');
-      expect(calls.length).toBeGreaterThan(0);
-      expect(calls[0]).toContain('"layout"');
+      expect(execSpy).toHaveBeenCalledWith(cliLauncher, expect.arrayContaining(['layout', '--pretty']), expect.objectContaining({ cwd: projectRootForTest(cwd) }));
     } finally {
       if (previousPath === undefined) delete process.env.ANDROID_CLI_PATH;
       else process.env.ANDROID_CLI_PATH = previousPath;
+      execSpy.mockRestore();
       resetConfigCache();
       await rm(cwd, { recursive: true, force: true });
     }
