@@ -11,6 +11,7 @@ import validateTestPlan from './validate_test_plan.js';
 import refreshTestKnowledge from './refresh_test_knowledge.js';
 import planTestRun from './plan_test_run.js';
 import consolidateTestReports from './consolidate_test_reports.js';
+import runTestWorkflow from './run_test_workflow.js';
 import type { ToolModule } from '../types.js';
 
 export const testingIntelligenceTools: ToolModule[] = [
@@ -27,4 +28,5 @@ export const testingIntelligenceTools: ToolModule[] = [
   refreshTestKnowledge,
   planTestRun,
   consolidateTestReports,
+  runTestWorkflow,
 ];
