@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { analyzeChangedFiles, parseNameStatusDiff } from '../changeImpact.js';
+import { analyzeChangedFiles, analyzeTestCaseImpact, parseNameStatusDiff } from '../changeImpact.js';
 import { resolveInstructions, validateTestPlan } from '../instructions.js';
 import { redactSecrets } from '../report.js';
 
@@ -52,5 +52,46 @@ describe('secret redaction', () => {
       apiToken: '[REDACTED]',
       message: 'Authorization Bearer [REDACTED]',
     });
+  });
+});
+
+describe('saved test case impact mapping', () => {
+  it('selects test cases with explicit file mappings and reports unmapped changes', () => {
+    const result = analyzeTestCaseImpact(
+      [
+        { status: 'modified', path: 'lib/login.dart' },
+        { status: 'modified', path: 'lib/cart.dart' },
+      ],
+      [
+        { id: 'login-smoke', title: 'Login smoke', category: 'smoke', relatedFiles: ['lib/login.dart'] },
+        { id: 'checkout', title: 'Checkout', affectedPaths: ['lib/checkout/**'] },
+      ],
+    );
+    expect(result.selectedTestCases.map(testCase => testCase.id)).toEqual(['login-smoke']);
+    expect(result.selectedTestCases[0]?.matchedPaths).toEqual(['lib/login.dart']);
+    expect(result.unmappedChangedFiles).toEqual(['lib/cart.dart']);
+    expect(result.requiresBroadRegression).toBe(true);
+  });
+
+  it('supports directory prefixes and module mappings without treating titles as coverage', () => {
+    const result = analyzeTestCaseImpact(
+      [{ status: 'modified', path: 'app/src/main/java/com/example/Login.kt' }],
+      [
+        { id: 'android-login', title: 'Login', modules: ['app/src/main/java/com/example/**'] },
+        { id: 'same-name-only', title: 'Login test', description: 'Login behavior' },
+      ],
+    );
+    expect(result.selectedTestCases.map(testCase => testCase.id)).toEqual(['android-login']);
+    expect(result.requiresBroadRegression).toBe(false);
+  });
+
+  it('requires broad regression when saved test cases lack explicit mappings', () => {
+    const result = analyzeTestCaseImpact(
+      [{ status: 'modified', path: 'lib/login.dart' }],
+      [{ id: 'login', title: 'Login flow', category: 'smoke' }],
+    );
+    expect(result.selectedTestCases).toEqual([]);
+    expect(result.testCaseMappingAvailable).toBe(false);
+    expect(result.requiresBroadRegression).toBe(true);
   });
 });
