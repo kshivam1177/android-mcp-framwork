@@ -17,6 +17,10 @@ import runProjectTests from './run_project_tests.js';
 import generateTestCandidate from './generate_test_candidate.js';
 import aggregateTestEvidence from './aggregate_test_evidence.js';
 import evaluateTestGate from './evaluate_test_gate.js';
+import planIntelligentTests from './plan_intelligent_tests.js';
+import diagnoseTestFailures from './diagnose_test_failures.js';
+import proposeSelectorRepairs from './propose_selector_repairs.js';
+import runAutonomousTestCycle from './run_autonomous_test_cycle.js';
 import type { ToolModule } from '../types.js';
 
 export const testingIntelligenceTools: ToolModule[] = [
@@ -24,4 +28,5 @@ export const testingIntelligenceTools: ToolModule[] = [
   auditScreen, runTestCase, analyzeChanges, resolveTestInstructions, validateTestPlan,
   refreshTestKnowledge, planTestRun, consolidateTestReports, runTestWorkflow,
   validateTestEnvironment, runProjectTests, generateTestCandidate, aggregateTestEvidence, evaluateTestGate,
+  planIntelligentTests, diagnoseTestFailures, proposeSelectorRepairs, runAutonomousTestCycle,
 ];
