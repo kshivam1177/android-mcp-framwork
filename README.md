@@ -68,7 +68,7 @@ TypeScript compiles from `src/` to generated `build/`. Do not commit generated `
 
 ## Testing framework
 
-The `testing-intelligence` workflow is enabled by default: it analyzes Native Android and Flutter workspaces, discovers nested Flutter packages, saves custom instructions and test cases, audits screens, and writes timestamped Markdown/JSON reports under `.androidmcp-framework/test-reports/YYYY-MM-DD/HHmmss/`. `test_device` routes Flutter unit/widget tests through `flutter test` (`kind: "unit"`) and can run device integration tests with `flutter test -d <device-id> integration_test` when `integration_test/` exists. See [Testing Framework](docs/md-files/testing-framework.md) and [Phases 11–15](docs/testing-framework-phases-11-15.md).
+The `testing-intelligence` workflow is enabled by default: it analyzes Native Android and Flutter workspaces, discovers nested Flutter packages, saves custom instructions and test cases, audits screens, and writes timestamped Markdown/JSON reports under `.androidmcp-framework/test-reports/YYYY-MM-DD/HHmmss/`. `test_device` routes Flutter unit/widget tests through `flutter test` (`kind: "unit"`) and can run device integration tests with `flutter test -d <device-id> integration_test` when `integration_test/` exists. See [Testing Framework](docs/md-files/testing-framework.md), [Phases 11–15](docs/testing-framework-phases-11-15.md), and [Phases 16–20](docs/testing-framework-phases-16-20.md).
 
 ## License
 

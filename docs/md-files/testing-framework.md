@@ -72,3 +72,15 @@ See [Testing Framework Phases 11–15](../testing-framework-phases-11-15.md) for
 - Build success does not prove behavioral correctness; assertions must map to stated requirements.
 - Report environment failures separately from product failures.
 - No real emulator/device end-to-end validation is claimed until the documented sample matrix has actually been executed and its results recorded.
+
+
+## Phases 16–20 — intelligent and autonomous test cycle
+
+The next increments add explainable test selection, failure diagnosis, selector repair proposals, and a single orchestrating tool. See [Testing framework phases 16–20](../testing-framework-phases-16-20.md).
+
+- `plan_intelligent_tests` ranks saved test cases using request terms, explicit changed-file mappings, custom instruction lines, and previous failure reports. It exposes unmapped changes and recommends broad regression when coverage is uncertain.
+- `diagnose_test_failures` classifies evidence and gives bounded retry advice. Automatic retries are never recommended for assertion, application, or test-definition failures; retry permission requires explicit safe-to-repeat input.
+- `propose_selector_repairs` compares a stale selector with a supplied current UI hierarchy. Suggestions are review-required and never modify saved tests.
+- `run_autonomous_test_cycle` combines Git change discovery, explainable planning, safe project-native Flutter/Gradle test execution, attempt evidence, failure diagnosis, and a strict gate. It defaults to plan-only; execution requires `execute=true`. Retry count defaults to zero and is capped at two.
+
+The autonomous cycle executes the selected project-native suite. Saved test-case matches are recommendations only and are not separately executed by this tool; use `run_test_workflow` for saved UI cases. A successful unit suite is not represented as device E2E validation.
