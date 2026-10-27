@@ -12,4 +12,9 @@ describe('evaluateTestGate', () => {
   it('fails a report with explicit failures', () => {
     expect(evaluateTestGate({ status: 'failed', passed: 1, failed: 2, testCount: 3 }).decision).toBe('fail');
   });
+  it('rejects reports with unaccounted tests', () => {
+    const result = evaluateTestGate({ status: 'passed', passed: 1, failed: 0, skipped: 0, testCount: 3 });
+    expect(result.decision).toBe('incomplete');
+    expect(result.reasons.some(reason => reason.includes('count mismatch'))).toBe(true);
+  });
 });

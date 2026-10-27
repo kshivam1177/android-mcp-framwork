@@ -40,7 +40,8 @@ export function register(server: McpServer) {
     projectPath?: string; suite?: 'unit' | 'integration'; platform?: 'flutter' | 'android-gradle';
     module?: string; variant?: string; targetId?: string; execute?: boolean; timeoutMs?: number;
   }) => {
-    const root = resolveProjectRoot(path.resolve(args.projectPath ?? process.cwd()));
+    // An explicit projectPath is authoritative: monorepo package paths must not be promoted to the Git root.
+    const root = args.projectPath ? path.resolve(args.projectPath) : resolveProjectRoot(path.resolve(process.cwd()));
     const suite = args.suite ?? 'unit';
     const detected = args.platform ?? detectTestPlatform(root);
     const plan = planSafeTestCommand({ projectRoot: root, platform: detected, suite, targetId: args.targetId, module: args.module, variant: args.variant ?? 'debug' });
@@ -48,8 +49,8 @@ export function register(server: McpServer) {
       const result = { mode: 'plan-only', status: 'ready-for-review', plan, executionRequires: 'Set execute=true after reviewing the selected project and suite.' };
       return textResult(JSON.stringify(result, null, 2), result);
     }
-    const target = suite === 'integration' ? await resolveTarget({ requestedId: args.targetId }) : undefined;
     const started = Date.now();
+    let target: Awaited<ReturnType<typeof resolveTarget>> | undefined;
     let exitCode: number | null = null;
     let stdout = '';
     let stderr = '';
@@ -57,6 +58,7 @@ export function register(server: McpServer) {
     let executionError: string | undefined;
     let environmentFailure = false;
     try {
+      if (suite === 'integration') target = await resolveTarget({ requestedId: args.targetId });
       if (plan.platform === 'flutter') {
         const argsList = suite === 'unit' ? ['test'] : ['test', '-d', target!.id, 'integration_test'];
         command = (process.env.FLUTTER_PATH || 'flutter') + ' ' + argsList.join(' ');
@@ -82,7 +84,7 @@ export function register(server: McpServer) {
       exitCode = typeof details.exitCode === 'number' ? details.exitCode : null;
       stdout = typeof details.stdout === 'string' ? details.stdout : '';
       stderr = typeof details.stderr === 'string' ? details.stderr : '';
-      environmentFailure = /not found|not installed|no such file|sdk location|no devices|device.*not found|cannot find/i.test(executionError);
+      environmentFailure = /not found|not installed|no such file|sdk location|no devices|device.*not found|cannot find|no (connected )?(target|emulator|device)|multiple targets|target.*not found|target offline|target unauthorized|not in state/i.test(executionError);
     }
     const status = environmentFailure ? 'blocked' : exitCode === 0 ? 'passed' : 'failed';
     const safeError = executionError ? redactCommandOutput(executionError) : undefined;

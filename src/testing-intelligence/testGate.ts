@@ -18,14 +18,20 @@ export function evaluateTestGate(input: GateInput): GateResult {
   const passed = count(input.passed);
   const failed = count(input.failed);
   const skipped = count(input.skipped);
-  const total = count(input.testCount) || passed + failed + skipped;
+  const accounted = passed + failed + skipped;
+  const total = count(input.testCount) || accounted;
   const reasons: string[] = [];
+  const countMismatch = typeof input.testCount === 'number' && Number.isFinite(input.testCount) && input.testCount !== accounted;
   if (total === 0) reasons.push('No tests were recorded; empty data cannot pass the gate.');
+  if (countMismatch) reasons.push('Test count mismatch: report declares ' + input.testCount + ' test(s), but only ' + accounted + ' outcome(s) are accounted for.');
   if (failed > 0) reasons.push(failed + ' test(s) explicitly failed.');
   if (skipped > 0 && !input.allowSkipped) reasons.push(skipped + ' test(s) are skipped or lack an explicit passing outcome.');
   const status = typeof input.status === 'string' ? input.status.toLowerCase() : '';
   if (['failed', 'no-data'].includes(status) && !reasons.some(reason => reason.includes('failed') || reason.includes('No tests'))) reasons.push('Report status is ' + status + '.');
   if (status === 'incomplete' && !input.allowSkipped) reasons.push('Report is incomplete.');
-  if (reasons.length) return { decision: total === 0 || (skipped > 0 && !input.allowSkipped) ? 'incomplete' : 'fail', reasons, counts: { total, passed, failed, skipped } };
+  if (reasons.length) {
+    const incomplete = total === 0 || countMismatch || (skipped > 0 && !input.allowSkipped);
+    return { decision: failed > 0 ? 'fail' : incomplete ? 'incomplete' : 'fail', reasons, counts: { total, passed, failed, skipped } };
+  }
   return { decision: 'pass', reasons: ['All recorded tests have explicit passing outcomes under the selected policy.'], counts: { total, passed, failed, skipped } };
 }
