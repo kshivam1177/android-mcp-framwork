@@ -60,7 +60,6 @@ function normalizeCase(testCase: StoredTestCase, index: number): RankedTestCase 
 }
 export function planFromRequest(input: PlanCandidate): NaturalLanguagePlanResult {
   const requestTokens = tokens(input.request);
-  const changedPathTokens = new Set(input.changedFiles.flatMap(file => tokens(file.path)));
   const ranked = input.testCases.map((testCase, index) => {
     const normalized = normalizeCase(testCase, index);
     const searchable = new Set(tokens([
