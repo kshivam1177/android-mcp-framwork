@@ -1,0 +1,63 @@
+name: Auto-merge green same-repository PRs
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: auto-merge-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    if: >-
+      ${{ github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.event == 'pull_request' &&
+          github.event.workflow_run.head_repository.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge only the exact green PR head
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          prs="$(gh api "repos/$REPOSITORY/actions/runs/$RUN_ID" --jq '.pull_requests[]?.number')"
+          if [[ -z "$prs" ]]; then
+            echo "No associated pull request; nothing to merge."
+            exit 0
+          fi
+
+          while read -r pr; do
+            [[ -n "$pr" ]] || continue
+            metadata="$(gh api "repos/$REPOSITORY/pulls/$pr")"
+            state="$(jq -r '.state' <<<"$metadata")"
+            draft="$(jq -r '.draft' <<<"$metadata")"
+            base="$(jq -r '.base.ref' <<<"$metadata")"
+            head_sha="$(jq -r '.head.sha' <<<"$metadata")"
+            head_repo="$(jq -r '.head.repo.full_name // ""' <<<"$metadata")"
+
+            if [[ "$state" != "open" || "$draft" == "true" || "$base" != "master" || "$head_repo" != "$REPOSITORY" ]]; then
+              echo "Skipping PR #$pr: must be open, non-draft, same-repository, targeting master."
+              continue
+            fi
+            if [[ "$head_sha" != "$HEAD_SHA" ]]; then
+              echo "Skipping PR #$pr: PR head moved since the successful CI run."
+              continue
+            fi
+
+            # The SHA precondition prevents merging a newer, untested head.
+            gh api --method PUT "repos/$REPOSITORY/pulls/$pr/merge" \
+              -f merge_method=squash \
+              -f sha="$HEAD_SHA"
+            echo "Merged PR #$pr at verified CI head $HEAD_SHA."
+          done <<<"$prs"
