@@ -22,7 +22,8 @@
     "docs",
     "config.example.yaml",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "scripts"
   ],
   "keywords": [
     "mcp",
