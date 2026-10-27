@@ -119,7 +119,7 @@ describe('Testing Intelligence: save_test_case and list_test_cases', () => {
   });
 
   it('findNodeByTarget matches element by text or contentDesc', async () => {
-    const { findNodeByTarget } = await import('../run_test_case.js');
+    const { findNodeByTarget, findNodesByTarget, recoverySuggestions } = await import('../run_test_case.js');
     const nodes = [
       {
         ref: 'e1',
@@ -156,5 +156,22 @@ describe('Testing Intelligence: save_test_case and list_test_cases', () => {
     expect(findNodeByTarget(nodes, 'checkout')?.ref).toBe('e1');
     expect(findNodeByTarget(nodes, 'shopping cart')?.ref).toBe('e2');
     expect(findNodeByTarget(nodes, 'Non-existent')).toBeUndefined();
+    expect(findNodesByTarget(nodes, 'checkout')).toHaveLength(1);
+    expect(recoverySuggestions('Could not locate target on screen: Login')).toContain('Refresh the learned screen definition and update the saved target to a currently visible semantic label or resource ID.');
+    expect(recoverySuggestions('Ambiguous target Login matched 2 elements.')).toContain('Replace the text target with a unique resource ID or content description; do not rely on the first matching element.');
+  });
+});
+
+describe('test execution recovery helpers', () => {
+  it('does not resolve ambiguous labels to the first matching element', async () => {
+    const { findNodeByTarget, findNodesByTarget } = await import('../run_test_case.js');
+    const node = (ref: string, text: string) => ({
+      ref, index: 0, text, bounds: { left: 0, top: 0, right: 100, bottom: 50 },
+      centerX: 50, centerY: 25, clickable: true, enabled: true, focusable: true,
+      scrollable: false, checkable: false, checked: false, depth: 1,
+    });
+    const nodes = [node('one', 'Login'), node('two', 'Login')];
+    expect(findNodesByTarget(nodes, 'Login')).toHaveLength(2);
+    expect(findNodeByTarget(nodes, 'Login')).toBeUndefined();
   });
 });
