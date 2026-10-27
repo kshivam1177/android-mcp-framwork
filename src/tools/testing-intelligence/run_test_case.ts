@@ -7,6 +7,7 @@ import { withErrorHandling, textResult } from '../../utils/response.js';
 import { getConfigDir } from '../../config/loader.js';
 import { resolveTargetAndBackend } from '../ui-automation/_shared.js';
 import { parseUiHierarchy, cacheSnapshot } from '../../automation/uiHierarchy.js';
+import { evaluateUiAssertion } from '../../automation/uiAssertions.js';
 import { auditScreen, type QaIssue } from '../../automation/qaAuditor.js';
 import type { ToolModule } from '../types.js';
 import type { UiNode } from '../../types.js';
@@ -195,8 +196,14 @@ export function register(server: McpServer) {
             throw new Error(`Unsupported test action "${action}". Supported actions: tap, type_text, key_press, button, wait_for_ui.`);
           }
 
-          // Small delay for animation
+          // Small delay for animation, then verify an explicit expected UI outcome when supplied.
           await new Promise((r) => setTimeout(r, 400));
+          const expectedOutcome = typeof step.expectedOutcome === 'string' ? step.expectedOutcome.trim() : '';
+          if (expectedOutcome) {
+            const observedNodes = parseUiHierarchy(await backend.dumpHierarchy(target.id));
+            const assertion = evaluateUiAssertion(observedNodes, expectedOutcome);
+            if (!assertion.passed) throw new Error('UI assertion failed: ' + assertion.message);
+          }
 
           stepResults.push({
             stepNumber: step.stepNumber ?? i + 1,
