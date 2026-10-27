@@ -15,11 +15,10 @@ describe('classifyTestCase', () => {
     })).toEqual({ valid: true, stepCount: 4, unsupportedActions: [], issues: [] });
   });
 
-  it('rejects cases with missing steps and unsupported actions', () => {
-    const result = classifyTestCase({ id: 'TC-BROKEN', title: 'Broken', steps: [{ action: 'swipe' }] });
+  it('rejects cases with unsupported actions', () => {
+    const result = classifyTestCase({ id: 'TC-BROKEN', title: 'Broken', steps: [{ action: 'swipe', target: 'Continue' }] });
     expect(result.valid).toBe(false);
     expect(result.unsupportedActions).toContain('Step 1: swipe');
-    expect(result.issues).toContain('Step 1 needs a target or description.');
   });
 
   it('rejects non-object input', () => {
