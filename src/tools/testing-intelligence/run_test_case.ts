@@ -7,7 +7,7 @@ import { withErrorHandling, textResult } from '../../utils/response.js';
 import { getConfigDir } from '../../config/loader.js';
 import { resolveTargetAndBackend } from '../ui-automation/_shared.js';
 import { parseUiHierarchy, cacheSnapshot } from '../../automation/uiHierarchy.js';
-import { evaluateUiAssertion } from '../../automation/uiAssertions.js';
+import { waitForUiAssertion } from '../../automation/waitForUiAssertion.js';
 import { auditScreen, type QaIssue } from '../../automation/qaAuditor.js';
 import type { ToolModule } from '../types.js';
 import type { UiNode } from '../../types.js';
@@ -74,6 +74,7 @@ export function register(server: McpServer) {
         stopOnFailure: z.boolean().optional().describe('Stop immediately if a step fails (default false).'),
         targetRetries: z.number().int().min(0).max(5).optional().describe('Retry semantic target lookup before an action; default 2. Actions are never blindly retried.'),
         captureFailureEvidence: z.boolean().optional().describe('Capture screenshot and hierarchy evidence for failed steps (default true).'),
+        assertionTimeoutMs: z.number().int().min(100).max(30_000).optional().default(3000).describe('How long to wait for an explicit expectedOutcome to appear; default 3000ms. UI actions are not retried.'),
       },
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     },
@@ -200,9 +201,12 @@ export function register(server: McpServer) {
           await new Promise((r) => setTimeout(r, 400));
           const expectedOutcome = typeof step.expectedOutcome === 'string' ? step.expectedOutcome.trim() : '';
           if (expectedOutcome) {
-            const observedNodes = parseUiHierarchy(await backend.dumpHierarchy(target.id));
-            const assertion = evaluateUiAssertion(observedNodes, expectedOutcome);
-            if (!assertion.passed) throw new Error('UI assertion failed: ' + assertion.message);
+            const assertion = await waitForUiAssertion(
+              async () => parseUiHierarchy(await backend.dumpHierarchy(target.id)),
+              expectedOutcome,
+              args.assertionTimeoutMs ?? 3000,
+            );
+            if (!assertion.passed) throw new Error('UI assertion failed: ' + assertion.assertion.message);
           }
 
           stepResults.push({
