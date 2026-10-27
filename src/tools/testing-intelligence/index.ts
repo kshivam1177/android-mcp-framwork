@@ -13,22 +13,15 @@ import planTestRun from './plan_test_run.js';
 import consolidateTestReports from './consolidate_test_reports.js';
 import runTestWorkflow from './run_test_workflow.js';
 import validateTestEnvironment from './validate_test_environment.js';
+import runProjectTests from './run_project_tests.js';
+import generateTestCandidate from './generate_test_candidate.js';
+import aggregateTestEvidence from './aggregate_test_evidence.js';
+import evaluateTestGate from './evaluate_test_gate.js';
 import type { ToolModule } from '../types.js';
 
 export const testingIntelligenceTools: ToolModule[] = [
-  analyzeTestProject,
-  saveTestInstructions,
-  writeTestReport,
-  saveTestCase,
-  listTestCases,
-  auditScreen,
-  runTestCase,
-  analyzeChanges,
-  resolveTestInstructions,
-  validateTestPlan,
-  refreshTestKnowledge,
-  planTestRun,
-  consolidateTestReports,
-  runTestWorkflow,
-  validateTestEnvironment,
+  analyzeTestProject, saveTestInstructions, writeTestReport, saveTestCase, listTestCases,
+  auditScreen, runTestCase, analyzeChanges, resolveTestInstructions, validateTestPlan,
+  refreshTestKnowledge, planTestRun, consolidateTestReports, runTestWorkflow,
+  validateTestEnvironment, runProjectTests, generateTestCandidate, aggregateTestEvidence, evaluateTestGate,
 ];
