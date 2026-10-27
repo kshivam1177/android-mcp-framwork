@@ -55,7 +55,7 @@ The screenshot, snapshot_ui, record_emulator_video, and bug_report tools save ou
 - consolidate_test_reports: creates Markdown, JSON, and JUnit XML summaries; missing outcomes are not treated as passing.
 - run_project_tests: previews or executes framework-selected Flutter and Native Android project-native test suites, with bounded logs and reports.
 - aggregate_test_evidence: creates a JSON/Markdown evidence index across reports, including missing artifact references.
-- generate_test_candidate: creates non-executable, review-required candidate JSON from explicit acceptance criteria.
+- generate_test_candidate: creates non-executable, review-required candidate JSON from explicit acceptance criteria and optional proposed UI actions from a coding agent.
 - evaluate_test_gate: evaluates consolidated report status under a strict CI gate policy.
 
 See [Testing Framework Phases 11–15](../testing-framework-phases-11-15.md) for usage and the Native Android/Flutter validation matrix. See Declarative UI workflows and Screenshot OCR for existing UI workflow formats and limitations.

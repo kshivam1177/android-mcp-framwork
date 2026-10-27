@@ -10,21 +10,42 @@ import type { ToolModule } from '../types.js';
 
 export const toolName = 'generate_test_candidate';
 export const workflow = 'testing-intelligence';
+const proposedStepSchema = z.object({
+  action: z.enum(['tap', 'type_text', 'key_press', 'button', 'wait_for_ui']),
+  target: z.string().max(500).optional(),
+  text: z.string().max(2000).optional(),
+  key: z.string().max(100).optional(),
+  description: z.string().max(500).optional(),
+  expectedOutcome: z.string().max(500).optional(),
+});
 export function register(server: McpServer) {
   return server.registerTool(toolName, {
     title: 'Generate a Reviewable Test Candidate',
-    description: 'Create a non-executable, review-required AndroidMCP test candidate from a natural-language request and explicit acceptance criteria. It does not invent criteria, modify source code, or claim to generate Google Android CLI Journey syntax.',
+    description: 'Create a review-required AndroidMCP test candidate from a natural-language request, explicit acceptance criteria, and optionally proposed UI steps from a coding agent that inspected the project. Candidate steps are not trusted or executable until reviewed. This does not claim to generate Google Android CLI Journey syntax.',
     inputSchema: {
       request: z.string().min(3).max(4000),
       acceptanceCriteria: z.array(z.string().min(1).max(500)).min(1).max(30),
+      proposedSteps: z.array(proposedStepSchema).max(50).optional().describe('Optional candidate actions/selectors derived by the calling agent after inspecting the project. Review is still required.'),
       platform: z.enum(['android', 'flutter', 'cross-platform']).optional().default('android'),
       projectPath: z.string().optional(),
       save: z.boolean().optional().default(true),
     },
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
-  }, withErrorHandling(async (args: { request: string; acceptanceCriteria: string[]; platform?: 'android' | 'flutter' | 'cross-platform'; projectPath?: string; save?: boolean }) => {
-    const root = resolveProjectRoot(path.resolve(args.projectPath ?? process.cwd()));
-    const candidate = createTestCandidate({ request: args.request, acceptanceCriteria: args.acceptanceCriteria, platform: args.platform ?? 'android' });
+  }, withErrorHandling(async (args: {
+    request: string;
+    acceptanceCriteria: string[];
+    proposedSteps?: Array<{ action: 'tap' | 'type_text' | 'key_press' | 'button' | 'wait_for_ui'; target?: string; text?: string; key?: string; description?: string; expectedOutcome?: string }>;
+    platform?: 'android' | 'flutter' | 'cross-platform';
+    projectPath?: string;
+    save?: boolean;
+  }) => {
+    const root = args.projectPath ? path.resolve(args.projectPath) : resolveProjectRoot(path.resolve(process.cwd()));
+    const candidate = createTestCandidate({
+      request: args.request,
+      acceptanceCriteria: args.acceptanceCriteria,
+      platform: args.platform ?? 'android',
+      proposedSteps: args.proposedSteps,
+    });
     if (args.save === false) return textResult(JSON.stringify(candidate, null, 2), { ...candidate });
     const dir = path.join(getConfigDir(root), 'generated-tests');
     await fs.mkdir(dir, { recursive: true });

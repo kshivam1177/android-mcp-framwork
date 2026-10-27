@@ -20,7 +20,7 @@ Use aggregate_test_evidence to build an immutable JSON/Markdown index of evidenc
 
 ## Phase 13 — Reviewable test candidate generation
 
-Use generate_test_candidate with a natural-language request and explicit acceptance criteria. The output is a draft JSON candidate with placeholder steps; it is not executable until a person reviews and converts the placeholders into verified interactions/selectors. This version does not claim to synthesize Google's Android CLI Journey syntax or infer missing acceptance criteria.
+Use generate_test_candidate with a natural-language request and explicit acceptance criteria. A coding agent that inspected the project may also provide proposedSteps with actions/selectors; those are preserved as unverified draft steps. If no proposed steps are supplied, the candidate contains placeholders. The candidate remains non-executable until a person reviews and saves it as a test case. This version does not claim to synthesize Google's Android CLI Journey syntax or infer missing acceptance criteria.
 
 ## Phase 14 — Sample-project validation
 
