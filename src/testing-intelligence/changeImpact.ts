@@ -123,7 +123,6 @@ function declaredPaths(testCase: StoredTestCase): string[] {
   for (const key of keys) {
     const raw = testCase[key];
     if (Array.isArray(raw)) values.push(...raw.filter((item): item is string => typeof item === 'string' && item.trim().length > 0));
-    else if (typeof raw === 'string' && raw.trim()) values.push(raw);
   }
   return [...new Set(values.map(value => value.replaceAll('\\\\', '/').replace(/^\.\//, '').trim()))];
 }
