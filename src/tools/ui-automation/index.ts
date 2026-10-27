@@ -19,6 +19,9 @@ import batch from './batch.js';
 import touch from './touch.js';
 import learnScreen from './learn_screen.js';
 import interactScreen from './interact_screen.js';
+import startRecording from './start_recording.js';
+import stopRecording from './stop_recording.js';
+import replayRecording from './replay_recording.js';
 import type { ToolModule } from '../types.js';
 
 export const uiAutomationTools: ToolModule[] = [
@@ -43,4 +46,7 @@ export const uiAutomationTools: ToolModule[] = [
   touch,
   learnScreen,
   interactScreen,
+  startRecording,
+  stopRecording,
+  replayRecording,
 ];
