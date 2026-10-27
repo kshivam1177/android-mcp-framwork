@@ -3,6 +3,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { withErrorHandling, textResult } from '../../utils/response.js';
 import { resolveTargetAndBackend, getScreenSize, directionToCoords } from './_shared.js';
 import { AndroidBuildMcpError } from '../../types.js';
+import { isRecording, recordAction } from '../../automation/recorder.js';
 import type { ToolModule } from '../types.js';
 
 export const toolName = 'swipe';
@@ -37,6 +38,7 @@ export function register(server: McpServer) {
         durationMs?: number;
         targetId?: string;
       }) => {
+        const stepStart = Date.now();
         const { target, backend } = await resolveTargetAndBackend(args.targetId);
         let { startX, startY, endX, endY } = args;
         if (args.direction) {
@@ -47,6 +49,21 @@ export function register(server: McpServer) {
           throw new AndroidBuildMcpError('INVALID_CONFIG', 'Provide either direction, or all of startX/startY/endX/endY.');
         }
         await backend.swipe(target.id, startX, startY, endX, endY, args.durationMs);
+        if (isRecording(target.id)) {
+          const screenSize = await getScreenSize(target.id);
+          recordAction({
+            type: 'swipe',
+            durationMs: Date.now() - stepStart,
+            swipe: { startX, startY, endX, endY },
+            normalizedSwipe: {
+              startX: startX / screenSize.width,
+              startY: startY / screenSize.height,
+              endX: endX / screenSize.width,
+              endY: endY / screenSize.height,
+            },
+            screenSize,
+          });
+        }
         return textResult(`Swiped (${startX},${startY}) -> (${endX},${endY}) on ${target.id}.`, {
           target,
           startX,

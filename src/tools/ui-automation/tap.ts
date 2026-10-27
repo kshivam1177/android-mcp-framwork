@@ -2,7 +2,8 @@ import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { withErrorHandling, textResult } from '../../utils/response.js';
 import { resolveElementRef } from '../../automation/uiHierarchy.js';
-import { resolveTargetAndBackend } from './_shared.js';
+import { resolveTargetAndBackend, getScreenSize } from './_shared.js';
+import { isRecording, recordAction, type RecordedSelector } from '../../automation/recorder.js';
 import { AndroidBuildMcpError } from '../../types.js';
 import type { ToolModule } from '../types.js';
 
@@ -24,18 +25,37 @@ export function register(server: McpServer) {
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     },
     withErrorHandling(async (args: { elementRef?: string; x?: number; y?: number; targetId?: string }) => {
+      const stepStart = Date.now();
       const { target, backend } = await resolveTargetAndBackend(args.targetId);
       let x = args.x;
       let y = args.y;
+      let selector: RecordedSelector | undefined;
       if (args.elementRef) {
         const node = resolveElementRef(target.id, args.elementRef);
         x = node.centerX;
         y = node.centerY;
+        selector = {
+          ...(node.resourceId ? { resourceId: node.resourceId } : {}),
+          ...(node.text ? { text: node.text } : {}),
+          ...(node.contentDesc ? { contentDesc: node.contentDesc } : {}),
+          ...(node.className ? { className: node.className } : {}),
+        };
       }
       if (x === undefined || y === undefined) {
         throw new AndroidBuildMcpError('INVALID_CONFIG', 'Provide either elementRef, or both x and y.');
       }
       await backend.tap(target.id, x, y);
+      if (isRecording(target.id)) {
+        const screenSize = await getScreenSize(target.id);
+        recordAction({
+          type: 'tap',
+          durationMs: Date.now() - stepStart,
+          selector,
+          coordinates: { x, y },
+          normalizedCoordinates: { x: x / screenSize.width, y: y / screenSize.height },
+          screenSize,
+        });
+      }
       return textResult(`Tapped (${x}, ${y}) on ${target.id}.`, { target, x, y, backend: backend.name });
     })
   );

@@ -2,7 +2,8 @@ import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { withErrorHandling, textResult } from '../../utils/response.js';
 import { resolveElementRef } from '../../automation/uiHierarchy.js';
-import { resolveTargetAndBackend } from './_shared.js';
+import { resolveTargetAndBackend, getScreenSize } from './_shared.js';
+import { isRecording, recordAction, type RecordedSelector } from '../../automation/recorder.js';
 import type { ToolModule } from '../types.js';
 
 export const toolName = 'type_text';
@@ -23,12 +24,24 @@ export function register(server: McpServer) {
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     },
     withErrorHandling(async (args: { text: string; elementRef?: string; targetId?: string }) => {
+      const stepStart = Date.now();
       const { target, backend } = await resolveTargetAndBackend(args.targetId);
+      let selector: RecordedSelector | undefined;
       if (args.elementRef) {
         const node = resolveElementRef(target.id, args.elementRef);
+        selector = {
+          ...(node.resourceId ? { resourceId: node.resourceId } : {}),
+          ...(node.text ? { text: node.text } : {}),
+          ...(node.contentDesc ? { contentDesc: node.contentDesc } : {}),
+          ...(node.className ? { className: node.className } : {}),
+        };
         await backend.tap(target.id, node.centerX, node.centerY);
       }
       await backend.typeText(target.id, args.text);
+      if (isRecording(target.id)) {
+        const screenSize = await getScreenSize(target.id);
+        recordAction({ type: 'type_text', durationMs: Date.now() - stepStart, text: args.text, selector, screenSize });
+      }
       return textResult(`Typed text into ${target.id}.`, { target, length: args.text.length });
     })
   );
