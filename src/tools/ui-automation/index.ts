@@ -17,6 +17,8 @@ import runUiWorkflow from './run_ui_workflow.js';
 import waitForUi from './wait_for_ui.js';
 import batch from './batch.js';
 import touch from './touch.js';
+import learnScreen from './learn_screen.js';
+import interactScreen from './interact_screen.js';
 import type { ToolModule } from '../types.js';
 
 export const uiAutomationTools: ToolModule[] = [
@@ -39,4 +41,6 @@ export const uiAutomationTools: ToolModule[] = [
   waitForUi,
   batch,
   touch,
+  learnScreen,
+  interactScreen,
 ];
