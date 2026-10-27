@@ -93,17 +93,22 @@ export type ErrorCode =
   | 'TIMEOUT'
   | 'COMMAND_FAILED';
 
-export class AndroidBuildMcpError extends Error {
+export class AndroidMcpFrameworkError extends Error {
   readonly code: ErrorCode;
   readonly details?: Record<string, unknown>;
 
   constructor(code: ErrorCode, message: string, details?: Record<string, unknown>) {
     super(message);
-    this.name = 'AndroidBuildMcpError';
+    this.name = 'AndroidMcpFrameworkError';
     this.code = code;
     this.details = details;
   }
 }
+
+/** @deprecated Use AndroidMcpFrameworkError instead. */
+export type AndroidBuildMcpError = AndroidMcpFrameworkError;
+/** @deprecated Use AndroidMcpFrameworkError instead. */
+export const AndroidBuildMcpError = AndroidMcpFrameworkError;
 
 export interface ToolAnnotations {
   title: string;

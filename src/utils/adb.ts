@@ -16,7 +16,7 @@ export async function runAdb(args: string[], options: Pick<ExecOptions, 'timeout
     if (err instanceof AndroidBuildMcpError && err.code === 'COMMAND_FAILED' && /not found on PATH/.test(err.message)) {
       throw new AndroidBuildMcpError(
         'ADB_NOT_FOUND',
-        `adb was not found (looked for "${getAdbPath()}"). Set paths.adbPath in .android-build-mcp/config.yaml, or add Android SDK platform-tools to PATH.`
+        `adb was not found (looked for "${getAdbPath()}"). Set paths.adbPath in .androidmcp-framework/config.yaml, or add Android SDK platform-tools to PATH.`
       );
     }
     throw err;

@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { withErrorHandling, textResult } from '../../utils/response.js';
-import { resolveElementRef } from '../../automation/uiHierarchy.js';
+import { parseUiHierarchy, resolveElementRef } from '../../automation/uiHierarchy.js';
+import { runAdbShell } from '../../utils/adb.js';
 import { resolveTargetAndBackend } from './_shared.js';
 import { AndroidBuildMcpError } from '../../types.js';
 import type { ToolModule } from '../types.js';
@@ -10,7 +11,7 @@ export const toolName = 'batch';
 export const workflow = 'ui-automation';
 
 const StepSchema = z.object({
-  action: z.enum(['tap', 'long_press', 'swipe', 'type_text', 'key_press']),
+  action: z.enum(['tap', 'long_press', 'swipe', 'type_text', 'key_press', 'wait', 'hide_keyboard', 'clear_and_type', 'assert_text_visible', 'assert_text_gone']),
   elementRef: z.string().optional(),
   x: z.number().optional(),
   y: z.number().optional(),
@@ -21,6 +22,8 @@ const StepSchema = z.object({
   durationMs: z.number().optional(),
   text: z.string().optional(),
   keyCode: z.string().optional(),
+  waitMs: z.number().min(0).max(30_000).optional(),
+  assertText: z.string().optional(),
 });
 
 export function register(server: McpServer) {
@@ -29,9 +32,9 @@ export function register(server: McpServer) {
     {
       title: 'Batch',
       description:
-        'Run several same-screen UI actions in one call, resolving the target once and reusing it for every step. Use for multiple taps/toggles with no intermediate assertion needed - if you need to check state between steps, call the individual tools instead so you can inspect each result.',
+        'Run a sequence of UI actions in one MCP call: taps, typing, waits, keyboard dismissal, clear-and-type, and text assertions. Stops at the first failed action or assertion so later steps never run against an unknown UI state.',
       inputSchema: {
-        steps: z.array(StepSchema).min(1),
+        steps: z.array(StepSchema).min(1).max(100),
         targetId: z.string().optional(),
       },
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
@@ -75,6 +78,43 @@ export function register(server: McpServer) {
               if (!step.keyCode) throw new AndroidBuildMcpError('INVALID_CONFIG', 'key_press needs keyCode.');
               await backend.keyEvent(target.id, step.keyCode);
               break;
+            case 'wait':
+              await new Promise((resolve) => setTimeout(resolve, step.waitMs ?? 500));
+              break;
+            case 'hide_keyboard':
+              await backend.keyEvent(target.id, '111'); // KEYCODE_ESCAPE
+              break;
+            case 'clear_and_type':
+              if (x === undefined || y === undefined) {
+                throw new AndroidBuildMcpError('INVALID_CONFIG', 'clear_and_type needs elementRef or x/y.');
+              }
+              if (step.text === undefined) {
+                throw new AndroidBuildMcpError('INVALID_CONFIG', 'clear_and_type needs text.');
+              }
+              await backend.tap(target.id, x, y);
+              await backend.keyEvent(target.id, 'KEYCODE_MOVE_END');
+              await runAdbShell(target.id, ['input', 'keyevent', ...Array.from({ length: 100 }, () => 'KEYCODE_DEL')], { timeoutMs: 15_000 });
+              await backend.typeText(target.id, step.text);
+              break;
+            case 'assert_text_visible':
+            case 'assert_text_gone': {
+              if (!step.assertText) {
+                throw new AndroidBuildMcpError('INVALID_CONFIG', `${step.action} needs assertText.`);
+              }
+              const xml = await backend.dumpHierarchy(target.id);
+              const nodes = parseUiHierarchy(xml);
+              const found = nodes.some((node) =>
+                (node.text ?? '').includes(step.assertText!) ||
+                (node.contentDesc ?? '').includes(step.assertText!)
+              );
+              if (step.action === 'assert_text_visible' && !found) {
+                throw new AndroidBuildMcpError('COMMAND_FAILED', `Assertion failed: "${step.assertText}" is not visible.`);
+              }
+              if (step.action === 'assert_text_gone' && found) {
+                throw new AndroidBuildMcpError('COMMAND_FAILED', `Assertion failed: "${step.assertText}" is still visible.`);
+              }
+              break;
+            }
           }
           results.push({ step: i, action: step.action, ok: true });
         } catch (err) {

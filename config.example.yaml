@@ -12,6 +12,7 @@ enabledWorkflows:
   - doctor
   - workflow-discovery
   - testing-intelligence
+  - debugging
 
 customWorkflows: {}
 

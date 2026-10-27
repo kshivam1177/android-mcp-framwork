@@ -3,7 +3,7 @@ import { execCommandBinary } from '../utils/exec.js';
 import { AndroidBuildMcpError } from '../types.js';
 import type { AutomationBackend } from './backend.js';
 
-const DUMP_PATH = '/data/local/tmp/androidbuildmcp_dump.xml';
+const DUMP_PATH = '/data/local/tmp/androidmcp_dump.xml';
 
 /**
  * `input text` interprets the literal sequence "%s" as a space. adb's shell
