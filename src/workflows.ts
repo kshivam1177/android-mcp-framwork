@@ -42,7 +42,7 @@ export const WORKFLOWS: WorkflowDefinition[] = [
   {
     name: 'debugging',
     description: 'Logcat streaming, crash and ANR extraction, log clearing, full adb bugreport. Log/crash-focused by design - no JDWP breakpoint debugging in this version.',
-    defaultEnabled: false,
+    defaultEnabled: true,
     tools: debuggingTools,
   },
   {

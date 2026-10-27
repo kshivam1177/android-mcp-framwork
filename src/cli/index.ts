@@ -55,6 +55,32 @@ function listTools(json: boolean): void {
   }
 }
 
+function writeSetupGuide(directory: string): void {
+  const guidePath = path.join(directory, 'SETUP.md');
+  if (fs.existsSync(guidePath)) {
+    console.log(`Setup guide already exists at ${guidePath} - leaving it unchanged.`);
+    return;
+  }
+
+  const packageRoot = path.resolve(moduleDir, '..', '..');
+  const packagedGuide = path.join(packageRoot, 'docs', 'project-setup-guide.md');
+  const fallbackGuide = [
+    '# AndroidMCP Framework — Project Setup',
+    '',
+    '1. Run `androidmcp-framework doctor` to check Android SDK, adb, Java, Gradle, and devices.',
+    '2. Configure `enabledWorkflows` and `sessionDefaults` in `config.yaml`.',
+    '3. Restart your MCP client after changing the configuration.',
+    '4. Use `androidmcp-framework tools` to list available MCP tools.',
+    '5. Reports and artifacts are stored under `.androidmcp-framework/` in your project.',
+    '',
+    'See the project README and docs for MCP client configuration examples.',
+    '',
+  ].join('\\n');
+  const contents = fs.existsSync(packagedGuide) ? fs.readFileSync(packagedGuide, 'utf8') : fallbackGuide;
+  fs.writeFileSync(guidePath, contents, { encoding: 'utf8', flag: 'wx' });
+  console.log(`Wrote setup guide: ${guidePath}`);
+}
+
 function setupConfig(cwd: string, migrate: boolean): void {
   const projectRoot = resolveProjectRoot(cwd);
   const canonicalDir = path.join(projectRoot, PROJECT_CONFIG_DIR);
@@ -64,6 +90,7 @@ function setupConfig(cwd: string, migrate: boolean): void {
 
   if (existingCanonical) {
     console.log(`${canonicalPath} already exists - leaving it as-is.`);
+    writeSetupGuide(canonicalDir);
     return;
   }
 
@@ -71,11 +98,13 @@ function setupConfig(cwd: string, migrate: boolean): void {
     if (!migrate) {
       console.log(`Found existing config at ${legacyPath}.`);
       console.log(`Run "androidmcp-framework setup --migrate" to copy legacy project data into ${canonicalDir}; existing files will never be overwritten.`);
+      writeSetupGuide(path.dirname(legacyPath));
       return;
     }
     fs.mkdirSync(canonicalDir, { recursive: true });
     fs.cpSync(path.dirname(legacyPath), canonicalDir, { recursive: true, errorOnExist: true, force: false });
     console.log(`Migrated project configuration from ${path.dirname(legacyPath)} to ${canonicalDir} without overwriting files.`);
+    writeSetupGuide(canonicalDir);
     return;
   }
 
@@ -83,9 +112,10 @@ function setupConfig(cwd: string, migrate: boolean): void {
   const examplePath = path.resolve(moduleDir, '..', '..', 'config.example.yaml');
   const contents = fs.existsSync(examplePath)
     ? fs.readFileSync(examplePath, 'utf8')
-    : 'schemaVersion: 1\nenabledWorkflows: [device, ui-automation, session-management, doctor, workflow-discovery, testing-intelligence]\n';
+    : 'schemaVersion: 1\\nenabledWorkflows: [device, ui-automation, session-management, doctor, workflow-discovery, testing-intelligence, debugging]\\n';
   fs.writeFileSync(canonicalPath, contents, { encoding: 'utf8', flag: 'wx' });
   console.log(`Wrote ${canonicalPath}.`);
+  writeSetupGuide(canonicalDir);
   console.log('Edit enabledWorkflows and sessionDefaults for your project, then restart your MCP client.');
 }
 
