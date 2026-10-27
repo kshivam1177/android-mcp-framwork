@@ -86,3 +86,104 @@ export async function collectGitChanges(cwd: string, base = 'HEAD~1'): Promise<I
     throw new Error(`Unable to analyze Git changes in ${root}. Ensure this is a Git repository and base ref "${base}" exists. Details: ${message}`);
   }
 }
+
+export interface StoredTestCase {
+  id?: string;
+  title?: string;
+  description?: string;
+  category?: string;
+  relatedFiles?: string[];
+  affectedPaths?: string[];
+  sourceFiles?: string[];
+  files?: string[];
+  paths?: string[];
+  modules?: string[];
+  tags?: string[];
+  [key: string]: unknown;
+}
+export interface TestCaseImpact {
+  id: string;
+  title: string;
+  category: string;
+  file?: string;
+  matchedPaths: string[];
+  rationale: string;
+}
+export interface TestCaseImpactResult {
+  selectedTestCases: TestCaseImpact[];
+  unmappedChangedFiles: string[];
+  testCaseMappingAvailable: boolean;
+  requiresBroadRegression: boolean;
+  rationale: string[];
+}
+
+function declaredPaths(testCase: StoredTestCase): string[] {
+  const keys = ['relatedFiles', 'affectedPaths', 'sourceFiles', 'files', 'paths', 'modules'] as const;
+  const values: string[] = [];
+  for (const key of keys) {
+    const raw = testCase[key];
+    if (Array.isArray(raw)) values.push(...raw.filter((item): item is string => typeof item === 'string' && item.trim().length > 0));
+  }
+  return [...new Set(values.map(value => value.replaceAll('\\\\', '/').replace(/^\.\//, '').trim()))];
+}
+
+function pathMatches(changedPath: string, declaredPattern: string): boolean {
+  const changed = changedPath.replaceAll('\\\\', '/').replace(/^\.\//, '');
+  const pattern = declaredPattern.replaceAll('\\\\', '/').replace(/^\.\//, '');
+  if (!pattern || pattern === '*') return false;
+  if (pattern.endsWith('/**')) {
+    const prefix = pattern.slice(0, -3).replace(/\/$/, '');
+    return changed === prefix || changed.startsWith(prefix + '/');
+  }
+  if (pattern.endsWith('*')) return changed.startsWith(pattern.slice(0, -1));
+  return changed === pattern || changed.startsWith(pattern.endsWith('/') ? pattern : pattern + '/');
+}
+
+/**
+ * Match saved test cases only when they declare a file/module relationship.
+ * Name/category similarity is deliberately not treated as proof of coverage.
+ */
+export function analyzeTestCaseImpact(changedFiles: ChangedFile[], testCases: StoredTestCase[]): TestCaseImpactResult {
+  const selectedTestCases: TestCaseImpact[] = [];
+  const mappedPaths = new Set<string>();
+  const rationale: string[] = [];
+  for (const testCase of testCases) {
+    const paths = declaredPaths(testCase);
+    if (!paths.length) continue;
+    const matchedPaths = changedFiles
+      .map(file => file.path)
+      .filter(file => paths.some(pattern => pathMatches(file, pattern)));
+    if (!matchedPaths.length) continue;
+    matchedPaths.forEach(file => mappedPaths.add(file));
+    const id = typeof testCase.id === 'string' && testCase.id.trim()
+      ? testCase.id.trim()
+      : typeof testCase.title === 'string' && testCase.title.trim()
+        ? testCase.title.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-').slice(0, 80)
+        : 'unnamed-test-case';
+    const title = typeof testCase.title === 'string' && testCase.title.trim() ? testCase.title.trim() : id;
+    const category = typeof testCase.category === 'string' && testCase.category.trim() ? testCase.category.trim() : 'general';
+    selectedTestCases.push({
+      id,
+      title,
+      category,
+      ...(typeof testCase.file === 'string' ? { file: testCase.file } : {}),
+      matchedPaths,
+      rationale: `Explicit test-case mapping matched: ${matchedPaths.join(', ')}.`,
+    });
+  }
+  const unmappedChangedFiles = changedFiles.map(file => file.path).filter(file => !mappedPaths.has(file));
+  const testCaseMappingAvailable = testCases.some(testCase => declaredPaths(testCase).length > 0);
+  const requiresBroadRegression = changedFiles.length === 0 || (testCases.length > 0 && selectedTestCases.length === 0) || unmappedChangedFiles.length > 0;
+  if (!testCases.length) rationale.push('No saved test cases were found; suite recommendations are not a substitute for project-specific coverage.');
+  else if (!testCaseMappingAvailable) rationale.push('Saved test cases do not declare relatedFiles, affectedPaths, sourceFiles, files, paths, or modules. No test case was assumed to cover the changed code.');
+  if (selectedTestCases.length) rationale.push(`Selected ${selectedTestCases.length} saved test case(s) using explicit file/module mappings.`);
+  if (unmappedChangedFiles.length) rationale.push(`No explicit test-case mapping covers: ${unmappedChangedFiles.join(', ')}.`);
+  if (requiresBroadRegression) rationale.push('Run broad regression coverage in addition to any mapped tests; impact analysis cannot prove that unselected areas are unaffected.');
+  return {
+    selectedTestCases: selectedTestCases.sort((a, b) => a.id.localeCompare(b.id)),
+    unmappedChangedFiles,
+    testCaseMappingAvailable,
+    requiresBroadRegression,
+    rationale,
+  };
+}
