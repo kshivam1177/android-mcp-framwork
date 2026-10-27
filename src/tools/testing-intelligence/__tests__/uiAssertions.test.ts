@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { evaluateUiAssertion } from '../../automation/uiAssertions.js';
-import type { UiNode } from '../../types.js';
+import { evaluateUiAssertion } from '../../../automation/uiAssertions.js';
+import type { UiNode } from '../../../types.js';
 
 const nodes = [
   { text: 'Welcome back', contentDesc: '', resourceId: 'com.example:id/title' },
