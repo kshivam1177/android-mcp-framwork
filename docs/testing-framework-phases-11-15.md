@@ -38,7 +38,7 @@ No real emulator/device validation is claimed by this PR unless a maintainer exe
 
 ## Phase 15 — Explicit CI test gate
 
-Use evaluate_test_gate on a consolidated summary.json. The default policy rejects empty data, failures, skipped/unreported tests, and incomplete summaries. Set allowSkipped=true only when the CI policy intentionally permits skipped tests. The tool reports a gate decision; CI wiring must explicitly fail the job when decision is not pass.
+Use evaluate_test_gate on a consolidated summary.json. The default policy rejects empty data, failures, skipped/unreported tests, and incomplete summaries. Set allowSkipped=true only when the CI policy intentionally permits skipped tests. The MCP tool reports a gate decision. For a shell/CI gate, build the package and run npm run test:gate -- --report path/to/summary.json; the script exits 0 only when decision is pass, 1 for a failing/incomplete report, and 2 for invalid input or unreadable data.
 
 Recommended agent/CI sequence:
 
