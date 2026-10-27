@@ -92,7 +92,7 @@ export async function readKnowledgeManifest(file: string): Promise<KnowledgeMani
 export async function writeKnowledgeManifest(file: string, manifest: KnowledgeManifest): Promise<void> {
   await mkdir(path.dirname(file), { recursive: true });
   const temporary = `${file}.${process.pid}.tmp`;
-  await writeFile(temporary, JSON.stringify(manifest, null, 2) + '\\n', { encoding: 'utf8', flag: 'wx' });
+  await writeFile(temporary, JSON.stringify(manifest, null, 2) + '\n', { encoding: 'utf8', flag: 'wx' });
   try { await rename(temporary, file); }
   catch (error) {
     const { unlink } = await import('node:fs/promises');
