@@ -58,7 +58,7 @@ The screenshot, snapshot_ui, record_emulator_video, and bug_report tools save ou
 - generate_test_candidate: creates non-executable, review-required candidate JSON from explicit acceptance criteria.
 - evaluate_test_gate: evaluates consolidated report status under a strict CI gate policy.
 
-See testing-framework-phases-11-15.md for usage and the Native Android/Flutter validation matrix. See Declarative UI workflows and Screenshot OCR for existing UI workflow formats and limitations.
+See [Testing Framework Phases 11–15](../testing-framework-phases-11-15.md) for usage and the Native Android/Flutter validation matrix. See Declarative UI workflows and Screenshot OCR for existing UI workflow formats and limitations.
 
 ## Test execution safety
 
