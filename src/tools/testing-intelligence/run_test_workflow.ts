@@ -9,6 +9,7 @@ import { planFromRequest } from '../../testing-intelligence/planner.js';
 import { resolveTargetAndBackend } from '../ui-automation/_shared.js';
 import { findNodesByTarget } from './run_test_case.js';
 import { parseUiHierarchy } from '../../automation/uiHierarchy.js';
+import { evaluateUiAssertion } from '../../automation/uiAssertions.js';
 import { resolveProjectRoot } from '../../utils/paths.js';
 import { withErrorHandling, textResult } from '../../utils/response.js';
 import type { UiNode } from '../../types.js';
@@ -165,6 +166,12 @@ export function register(server: McpServer) {
             throw new Error('Unsupported action "' + action + '". Supported actions: tap, type_text, key_press, button, wait_for_ui.');
           }
           await new Promise(resolve => setTimeout(resolve, 300));
+          const expectedOutcome = typeof raw.expectedOutcome === 'string' ? raw.expectedOutcome.trim() : '';
+          if (expectedOutcome) {
+            const observedNodes = parseUiHierarchy(await backend.dumpHierarchy(target.id));
+            const assertion = evaluateUiAssertion(observedNodes, expectedOutcome);
+            if (!assertion.passed) throw new Error('UI assertion failed: ' + assertion.message);
+          }
           stepResults.push({ stepNumber: i + 1, action, target: targetText || description, status: 'PASSED', durationMs: Date.now() - started });
         } catch (error) {
           const message = error instanceof Error ? error.message : String(error);
