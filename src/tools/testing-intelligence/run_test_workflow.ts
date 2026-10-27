@@ -9,7 +9,7 @@ import { planFromRequest } from '../../testing-intelligence/planner.js';
 import { resolveTargetAndBackend } from '../ui-automation/_shared.js';
 import { findNodesByTarget } from './run_test_case.js';
 import { parseUiHierarchy } from '../../automation/uiHierarchy.js';
-import { evaluateUiAssertion } from '../../automation/uiAssertions.js';
+import { waitForUiAssertion } from '../../automation/waitForUiAssertion.js';
 import { resolveProjectRoot } from '../../utils/paths.js';
 import { withErrorHandling, textResult } from '../../utils/response.js';
 import type { UiNode } from '../../types.js';
@@ -66,6 +66,7 @@ export function register(server: McpServer) {
       execute: z.boolean().optional().default(false).describe('Default false: return a reviewable plan only. Set true to execute selected saved cases.'),
       maxTestCases: z.number().int().min(1).max(30).optional().default(10),
       stopOnFailure: z.boolean().optional().default(false),
+      assertionTimeoutMs: z.number().int().min(100).max(30_000).optional().default(3000).describe('How long to wait for an explicit expectedOutcome to appear; default 3000ms. UI actions are not retried.'),
     },
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, withErrorHandling(async (args: {
@@ -76,6 +77,7 @@ export function register(server: McpServer) {
     execute?: boolean;
     maxTestCases?: number;
     stopOnFailure?: boolean;
+    assertionTimeoutMs?: number;
   }) => {
     const root = resolveProjectRoot(path.resolve(args.projectPath ?? process.cwd()));
     const configDir = getConfigDir(root);
@@ -168,9 +170,12 @@ export function register(server: McpServer) {
           await new Promise(resolve => setTimeout(resolve, 300));
           const expectedOutcome = typeof raw.expectedOutcome === 'string' ? raw.expectedOutcome.trim() : '';
           if (expectedOutcome) {
-            const observedNodes = parseUiHierarchy(await backend.dumpHierarchy(target.id));
-            const assertion = evaluateUiAssertion(observedNodes, expectedOutcome);
-            if (!assertion.passed) throw new Error('UI assertion failed: ' + assertion.message);
+            const assertion = await waitForUiAssertion(
+              async () => parseUiHierarchy(await backend.dumpHierarchy(target.id)),
+              expectedOutcome,
+              args.assertionTimeoutMs ?? 3000,
+            );
+            if (!assertion.passed) throw new Error('UI assertion failed: ' + assertion.assertion.message);
           }
           stepResults.push({ stepNumber: i + 1, action, target: targetText || description, status: 'PASSED', durationMs: Date.now() - started });
         } catch (error) {
