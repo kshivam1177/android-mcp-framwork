@@ -29,9 +29,10 @@ export function register(server: McpServer) {
       projectPath: z.string().optional(),
       reportPath: z.string().optional().describe('Path to a consolidated summary.json, relative to project root or absolute inside it. Defaults to the newest summary.'),
       allowSkipped: z.boolean().optional().default(false),
+      maxAgeMinutes: z.number().int().min(1).max(10080).optional().default(1440).describe('Maximum age of the consolidated report. Reports older than this are blocked; default 24 hours.'),
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
-  }, withErrorHandling(async (args: { projectPath?: string; reportPath?: string; allowSkipped?: boolean }) => {
+  }, withErrorHandling(async (args: { projectPath?: string; reportPath?: string; allowSkipped?: boolean; maxAgeMinutes?: number }) => {
     const root = resolveProjectRoot(path.resolve(args.projectPath ?? process.cwd()));
     let reportPath: string | undefined;
     if (args.reportPath) {
@@ -45,14 +46,18 @@ export function register(server: McpServer) {
     }
     if (!reportPath) {
       const gate = evaluateTestGate({ allowSkipped: args.allowSkipped });
-      const result = { ...gate, reportPath: null, message: 'No consolidated summary was found; create one with consolidate_test_reports first.' };
+      const result = { ...gate, reportPath: null, freshness: { status: 'missing', maxAgeMinutes: args.maxAgeMinutes ?? 1440 }, message: 'No consolidated summary was found; create one with consolidate_test_reports first.' };
       return textResult(JSON.stringify(result, null, 2), result);
     }
     const raw: unknown = JSON.parse(await fs.readFile(reportPath, 'utf8'));
     if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('Report JSON must contain an object.');
     const value = raw as Record<string, unknown>;
-    const gate = evaluateTestGate({ status: value.status, passed: value.passed, failed: value.failed, skipped: value.skipped, testCount: value.testCount, allowSkipped: args.allowSkipped });
-    const result = { ...gate, reportPath: path.relative(root, reportPath).split(path.sep).join('/'), policy: { allowSkipped: args.allowSkipped ?? false, requiresNonEmptyResults: true, explicitPassRequired: true } };
+    const maxAgeMinutes = args.maxAgeMinutes ?? 1440;
+    const generatedAt = typeof value.generatedAt === 'string' ? Date.parse(value.generatedAt) : Number.NaN;
+    const ageMs = Date.now() - generatedAt;
+    const freshnessStatus = !Number.isFinite(generatedAt) || ageMs < 0 ? 'unverifiable' : ageMs > maxAgeMinutes * 60_000 ? 'stale' : 'fresh';
+    const gate = evaluateTestGate({ status: freshnessStatus === 'fresh' ? value.status : 'incomplete', passed: value.passed, failed: value.failed, skipped: value.skipped, testCount: value.testCount, allowSkipped: args.allowSkipped });
+    const result = { ...gate, reportPath: path.relative(root, reportPath).split(path.sep).join('/'), freshness: { status: freshnessStatus, generatedAt: Number.isFinite(generatedAt) ? new Date(generatedAt).toISOString() : null, ageMinutes: Number.isFinite(ageMs) && ageMs >= 0 ? Math.floor(ageMs / 60_000) : null, maxAgeMinutes }, policy: { allowSkipped: args.allowSkipped ?? false, requiresNonEmptyResults: true, explicitPassRequired: true, staleReportsPass: false, missingTimestampPasses: false } };
     return textResult(JSON.stringify(result, null, 2), result);
   }));
 }
