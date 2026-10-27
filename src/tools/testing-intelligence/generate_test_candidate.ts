@@ -25,7 +25,7 @@ export function register(server: McpServer) {
   }, withErrorHandling(async (args: { request: string; acceptanceCriteria: string[]; platform?: 'android' | 'flutter' | 'cross-platform'; projectPath?: string; save?: boolean }) => {
     const root = resolveProjectRoot(path.resolve(args.projectPath ?? process.cwd()));
     const candidate = createTestCandidate({ request: args.request, acceptanceCriteria: args.acceptanceCriteria, platform: args.platform ?? 'android' });
-    if (args.save === false) return textResult(JSON.stringify(candidate, null, 2), candidate);
+    if (args.save === false) return textResult(JSON.stringify(candidate, null, 2), { ...candidate });
     const dir = path.join(getConfigDir(root), 'generated-tests');
     await fs.mkdir(dir, { recursive: true });
     const base = candidate.id + '.json';

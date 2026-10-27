@@ -45,7 +45,8 @@ export function register(server: McpServer) {
     }
     if (!reportPath) {
       const gate = evaluateTestGate({ allowSkipped: args.allowSkipped });
-      return textResult(JSON.stringify({ ...gate, reportPath: null, message: 'No consolidated summary was found; create one with consolidate_test_reports first.' }, null, 2), gate);
+      const result = { ...gate, reportPath: null, message: 'No consolidated summary was found; create one with consolidate_test_reports first.' };
+      return textResult(JSON.stringify(result, null, 2), result);
     }
     const raw: unknown = JSON.parse(await fs.readFile(reportPath, 'utf8'));
     if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('Report JSON must contain an object.');
