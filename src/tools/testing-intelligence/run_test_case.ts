@@ -122,11 +122,13 @@ export function register(server: McpServer) {
         const stepStart = Date.now();
         const action = (step.action || 'tap').toLowerCase();
         const targetDesc = step.target || step.description || '';
+        let latestNodes: UiNode[] = [];
 
         try {
           // 1. Snapshot UI for this step
           const xml = await backend.dumpHierarchy(target.id);
           const nodes = parseUiHierarchy(xml);
+          latestNodes = nodes;
           cacheSnapshot({ targetId: target.id, capturedAt: new Date().toISOString(), backend: backend.name, nodes });
 
           // 2. Audit screen if enabled
@@ -154,6 +156,7 @@ export function register(server: McpServer) {
               let lastCandidates: UiNode[] = [];
               for (let attempt = 0; attempt <= maxRetries; attempt++) {
                 const currentNodes = attempt === 0 ? nodes : parseUiHierarchy(await backend.dumpHierarchy(target.id));
+                latestNodes = currentNodes;
                 lastCandidates = findNodesByTarget(currentNodes, targetDesc);
                 if (lastCandidates.length === 1) { matchedNode = lastCandidates[0]; break; }
                 if (lastCandidates.length > 1) throw new Error(`Ambiguous target "${targetDesc}" matched ${lastCandidates.length} elements. Use a unique resource ID or content description.`);
@@ -222,7 +225,7 @@ export function register(server: McpServer) {
               evidence.push(path.relative(root, hierarchyPath).split(path.sep).join('/'));
             } catch { /* preserve failure details if hierarchy capture is unavailable */ }
           }
-          const visibleCandidates = nodes
+          const visibleCandidates = latestNodes
             .flatMap(node => [node.text, node.contentDesc].filter((value): value is string => Boolean(value && value.trim())))
             .filter((value, index, all) => all.indexOf(value) === index)
             .slice(0, 8);
