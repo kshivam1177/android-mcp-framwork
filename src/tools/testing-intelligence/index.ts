@@ -10,6 +10,7 @@ import resolveTestInstructions from './resolve_test_instructions.js';
 import validateTestPlan from './validate_test_plan.js';
 import refreshTestKnowledge from './refresh_test_knowledge.js';
 import planTestRun from './plan_test_run.js';
+import consolidateTestReports from './consolidate_test_reports.js';
 import type { ToolModule } from '../types.js';
 
 export const testingIntelligenceTools: ToolModule[] = [
@@ -25,4 +26,5 @@ export const testingIntelligenceTools: ToolModule[] = [
   validateTestPlan,
   refreshTestKnowledge,
   planTestRun,
+  consolidateTestReports,
 ];
