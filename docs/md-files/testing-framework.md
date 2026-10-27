@@ -2,7 +2,7 @@
 
 ## Product goal
 
-Provide a change-aware testing lifecycle that reads a repository, maintains human-readable test knowledge, converts natural-language requests into explicit plans, executes existing or generated tests through platform tools, and writes auditable reports. The shared intelligence/reporting layer supports Native Android and Flutter.
+Provide a change-aware testing lifecycle that reads a repository, maintains human-readable test knowledge, converts natural-language requests into explicit plans, reuses existing tests, and writes auditable reports. The shared intelligence/reporting layer supports Native Android and Flutter.
 
 ## Reuse instead of reinventing
 
@@ -16,69 +16,59 @@ Provide a change-aware testing lifecycle that reads a repository, maintains huma
 2. Analyze the Git diff and map changed files to affected features and dependencies.
 3. Combine the diff, saved testing knowledge and the natural-language request into a proposed test plan.
 4. Reuse existing tests first; propose generated tests/journeys for uncovered behavior.
-5. Validate assertions and preconditions before execution. Ask for confirmation before destructive actions or changes to important test assertions.
+5. Validate assertions and preconditions before execution. Require explicit execution opt-in before running project-native tests.
 6. Execute through Google Android CLI, Gradle, Flutter tooling or supported automation adapters.
 7. Capture structured outcomes, logs, screenshots and environment details. Distinguish pass, fail, blocked, skipped and inconclusive.
 8. Propose instruction updates based on verified changes; do not silently replace user-authored instructions.
-9. Save immutable run reports under `.androidmcp-framework/test-reports/YYYY-MM-DD/HHmmss/`.
+9. Save immutable run reports under .androidmcp-framework/test-reports/YYYY-MM-DD/HHmmss/.
 
 ## On-disk layout
 
-All project-local framework data is rooted at `.androidmcp-framework/`:
+All project-local framework data is rooted at .androidmcp-framework/:
 
-```text
-.androidmcp-framework/
-  config.yaml
-  instructions/       # user-authored and reviewed testing instructions
-  testcases/          # saved structured test-case JSON
-  test-reports/       # immutable timestamped Markdown reports and results.json
-  artifacts/
-    screenshots/      # screenshot PNG/JPEG files
-    ui-snapshots/     # captured semantic UI hierarchy JSON
-    recordings/       # emulator/device screen recordings
-    bugreports/       # adb bugreport ZIP archives
-  knowledge/          # feature map and dependency/test inventory (planned)
-  journeys/           # generated/reviewed journeys (planned)
-  generated-tests/    # generated scripts and assets (planned)
-```
+- config.yaml — framework settings
+- instructions/ — user-authored and reviewed testing instructions
+- testcases/ — saved structured test-case JSON
+- generated-tests/ — review-required candidate JSON; not executable by default
+- test-reports/ — immutable timestamped reports, summaries, JUnit XML, command logs, and evidence indexes
+- artifacts/screenshots/ — captured screenshot images
+- artifacts/ui-snapshots/ — captured semantic UI hierarchy JSON
+- artifacts/recordings/ — emulator/device screen recordings
+- artifacts/bugreports/ — adb bugreport ZIP archives
+- knowledge/ — test knowledge and inventory
 
-The `screenshot`, `snapshot_ui`, `record_emulator_video`, and `bug_report` tools save their outputs to the matching `artifacts/` subdirectory by default. They accept `projectPath` to select the application root and preserve explicit output-path overrides where available. File names are timestamped to avoid replacing earlier evidence.
+The screenshot, snapshot_ui, record_emulator_video, and bug_report tools save outputs to the matching artifacts subdirectory by default. File names are timestamped to avoid replacing earlier evidence. The repository's .gitignore ignores .androidmcp-framework/ by default, so evidence and reports remain local unless a project owner intentionally changes that policy.
 
-The repository's `.gitignore` ignores `.androidmcp-framework/` by default, so screenshots, recordings, bug reports, and test outputs remain local unless a project owner intentionally changes that policy.
+## Implemented capabilities
 
-## Implemented
+- analyze_test_project: read-only Native Android/Flutter scan and Git change summary.
+- save_test_instructions: stores Markdown instructions without overwriting unless explicitly authorized.
+- save_test_case: stores structured test-case JSON with overwrite protection.
+- write_test_report: writes Markdown and JSON reports, without inferring success from missing results.
+- analyze_changes: maps Git changes to targeted test suites and recommends broad regression when impact is uncertain.
+- resolve_test_instructions: combines global, project, feature, and run-specific instructions with deterministic precedence.
+- validate_test_plan: blocks incomplete or malformed test plans before execution.
+- audit_screen and analyze_screenshot: inspect visible UI nodes and optional local OCR results.
+- fill_form and run_ui_workflow: execute reusable selector-based form and JSON screen/action workflows through supported Android automation.
+- run_test_workflow: plans and optionally executes saved test cases with per-step assertions and reports.
+- validate_test_environment: read-only preflight for project markers, saved cases, ADB and target readiness.
+- consolidate_test_reports: creates Markdown, JSON, and JUnit XML summaries; missing outcomes are not treated as passing.
+- run_project_tests: previews or executes framework-selected Flutter and Native Android project-native test suites, with bounded logs and reports.
+- aggregate_test_evidence: creates a JSON/Markdown evidence index across reports, including missing artifact references.
+- generate_test_candidate: creates non-executable, review-required candidate JSON from explicit acceptance criteria and optional proposed UI actions from a coding agent.
+- evaluate_test_gate: evaluates consolidated report status under a strict CI gate policy.
 
-- `analyze_test_project`: read-only Native Android/Flutter scan and Git change summary.
-- `save_test_instructions`: stores Markdown instructions without overwriting unless explicitly authorized.
-- `save_test_case`: stores structured test-case JSON with overwrite protection.
-- `write_test_report`: writes Markdown and JSON reports, without inferring success from missing results.
-- UI screenshot and semantic hierarchy capture persist local evidence under the project artifact directory.
-- Screen recordings and adb bug reports default to project-local artifact paths.
+See [Testing Framework Phases 11–15](../testing-framework-phases-11-15.md) for usage and the Native Android/Flutter validation matrix. See Declarative UI workflows and Screenshot OCR for existing UI workflow formats and limitations.
 
-- `analyze_changes`: maps Git changes to targeted test suites and recommends broad regression when impact is uncertain.
-- `resolve_test_instructions`: combines global, project, feature, and run-specific instructions with deterministic precedence.
-- `validate_test_plan`: blocks incomplete or malformed test plans before execution.
-- `audit_screen`: checks visible UI nodes for potential UI issues and relevant log errors.
-- `analyze_screenshot`: optional local Tesseract OCR returning text bounds and centers in screenshot-pixel coordinates.
-- `fill_form`: fills fields using unique semantic selectors and fails safely for ambiguous or missing targets.
-- `run_ui_workflow`: executes a reusable JSON screen/action workflow through the installed official Android CLI, with bounded waits and structured per-run reports.
+## Test execution safety
 
-See [Declarative UI workflows](../ui-workflows.md) and [Screenshot OCR](../screenshot-analysis.md) for JSON formats, prerequisites, and limitations.
-
-## Not implemented yet
-
-- Persistent semantic feature/dependency graph.
-- LLM-backed natural-language-to-test-plan generation (change-impact recommendations and deterministic plan validation are implemented, but not LLM-generated plans).
-- Test script/journey generation (JSON workflow execution is implemented; natural-language generation remains future work).
-- A general allowlisted test-command runner and full Flutter execution adapter; Android UI workflow actions currently delegate to the official Android CLI with a limited ADB coordinate fallback.
-- Verified end-to-end execution against real Native Android and Flutter repositories.
-- Evidence collection and report aggregation across retries.
-
-## Safety and correctness
-
-- Never execute arbitrary model-generated shell commands without policy validation and configurable approval.
+- run_project_tests defaults to plan-only mode. Set execute=true only after reviewing the project root and selected suite.
+- Only framework-defined Flutter and Gradle test tasks are run. Arbitrary shell commands and arbitrary model-generated command strings are not accepted.
+- Flutter integration tests and native connected instrumentation tests require a selected, ready device.
+- A test candidate is not executable until a human reviews and converts its placeholder steps into verified interactions and selectors.
+- evaluate_test_gate rejects empty reports, explicit failures, and skipped/incomplete results by default. CI must fail the job when its decision is not pass.
+- Report output is bounded and secrets are redacted in the structured report. Inspect command logs before sharing them externally.
 - Do not delete or overwrite user tests silently.
 - Build success does not prove behavioral correctness; assertions must map to stated requirements.
 - Report environment failures separately from product failures.
-- Keep secrets and production user data out of reports; redact sensitive output.
-- Reports should record commit/ref, dirty working tree, test scope, commands, tool versions and exact outcomes.
+- No real emulator/device end-to-end validation is claimed until the documented sample matrix has actually been executed and its results recorded.

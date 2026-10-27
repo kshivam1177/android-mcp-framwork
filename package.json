@@ -22,7 +22,8 @@
     "docs",
     "config.example.yaml",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "scripts"
   ],
   "keywords": [
     "mcp",
@@ -46,7 +47,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "tsc --noEmit",
-    "docs:check": "npm run build && node build/cli/index.js tools --json > /dev/null"
+    "docs:check": "npm run build && node build/cli/index.js tools --json > /dev/null",
+    "test:gate": "node scripts/evaluate-test-gate.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
