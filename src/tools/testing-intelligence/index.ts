@@ -8,6 +8,7 @@ import runTestCase from './run_test_case.js';
 import analyzeChanges from './analyze_changes.js';
 import resolveTestInstructions from './resolve_test_instructions.js';
 import validateTestPlan from './validate_test_plan.js';
+import refreshTestKnowledge from './refresh_test_knowledge.js';
 import type { ToolModule } from '../types.js';
 
 export const testingIntelligenceTools: ToolModule[] = [
@@ -21,4 +22,5 @@ export const testingIntelligenceTools: ToolModule[] = [
   analyzeChanges,
   resolveTestInstructions,
   validateTestPlan,
+  refreshTestKnowledge,
 ];
