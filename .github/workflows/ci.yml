@@ -40,5 +40,7 @@ jobs:
         run: node build/cli/index.js --help
       - name: Verify tool metadata
         run: npm run docs:check
+      - name: Verify operational scripts
+        run: node --check scripts/generate-tool-inventory.mjs && node --check scripts/smoke-published-package.mjs && node --check scripts/run-samsung-device-regression.mjs
       - name: Verify package contents
         run: npm pack --dry-run

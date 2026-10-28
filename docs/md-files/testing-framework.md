@@ -84,3 +84,12 @@ The next increments add explainable test selection, failure diagnosis, selector 
 - `run_autonomous_test_cycle` combines Git change discovery, explainable planning, safe project-native Flutter/Gradle test execution, attempt evidence, failure diagnosis, and a strict gate. It defaults to plan-only; execution requires `execute=true`. Retry count defaults to zero and is capped at two.
 
 The autonomous cycle executes the selected project-native suite. Saved test-case matches are recommendations only and are not separately executed by this tool; use `run_test_workflow` for saved UI cases. A successful unit suite is not represented as device E2E validation.
+
+
+## Unified end-to-end run
+
+Use `run_unified_test_run` to coordinate Native Android Gradle or Flutter unit/integration suites and saved UI test cases under one run ID. The tool is plan-only unless `execute: true` is provided. It stores a durable manifest under `.androidmcp-framework/test-reports/.runs/<runId>.json`, saves one final Markdown/JSON report, captures screenshots and redacted logcat when UI actions fail, and applies a strict pass/fail/incomplete evidence gate.
+
+Resume with `resumeRunId`. The project root and Git HEAD must match. Passed items are preserved; interrupted native suites can resume. Interrupted UI cases are not replayed automatically because taps/submissions may have side effects. Native suite retries are capped at two and limited to classified transient infrastructure errors; UI actions and assertions are not retried automatically.
+
+See [Unified E2E and Samsung device regression](../unified-e2e-and-device-regression.md) for invocation and the local physical-device smoke procedure.

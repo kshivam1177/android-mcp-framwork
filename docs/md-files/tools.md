@@ -1,8 +1,6 @@
 # Tools Reference
 
-Every tool AndroidMCP Framework exposes, grouped by workflow. Only `device`, `ui-automation`, `session-management`, `doctor`, `workflow-discovery`, and `testing-intelligence` are enabled by default - see [workflow.md](./workflow.md) for how to turn the rest on. This file mirrors the actual registered tool metadata (title, description, parameters, annotations) - if you change a tool's description in source, regenerate this file rather than editing it by hand.
-
-**Total: 76 tools across 11 workflows.**
+Detailed tool descriptions grouped by workflow. The complete, current runtime registry is maintained in the [generated tool inventory](../generated-tool-inventory.md). Run `npm run docs:generate` after adding or removing tools; CI checks the generated inventory for drift. Only `device`, `ui-automation`, `session-management`, `doctor`, `workflow-discovery`, and `testing-intelligence` are enabled by default - see [workflow.md](./workflow.md).
 
 ## device _(enabled by default)_
 
