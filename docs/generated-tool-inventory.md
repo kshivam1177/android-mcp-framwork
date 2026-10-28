@@ -61,6 +61,7 @@ Generated from the registered MCP tool list. Run npm run docs:generate to refres
 | testing-intelligence | evaluate_test_gate |
 | testing-intelligence | evaluate_test_quality_gate |
 | testing-intelligence | generate_test_candidate |
+| testing-intelligence | inspect_test_runtime |
 | testing-intelligence | list_test_cases |
 | testing-intelligence | plan_intelligent_tests |
 | testing-intelligence | plan_test_run |
