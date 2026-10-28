@@ -60,8 +60,26 @@ jobs:
               -f merge_method=squash \
               -f sha="$HEAD_SHA"
             echo "Merged PR #$pr at verified CI head $HEAD_SHA."
-            # GITHUB_TOKEN-created merge commits do not trigger push workflows. Explicitly dispatch
-            # the npm publisher after the verified merge so the release cannot be silently skipped.
-            gh workflow run publish.yml --repo "$REPOSITORY" --ref master -f publish_npm=true
-            echo "Dispatched npm publish workflow for master after PR #$pr."
+
+            # Skip publishing for documentation/workflow-only changes and release-version bookkeeping.
+            title="$(jq -r '.title' <<<"$metadata")"
+            changed_files="$(gh api --paginate "repos/$REPOSITORY/pulls/$pr/files" --jq '.[].filename')"
+            release_needed=false
+            while IFS= read -r file; do
+              [[ -n "$file" ]] || continue
+              case "$file" in
+                .github/workflows/*|docs/*|README.md|package.json|package-lock.json) ;;
+                *) release_needed=true ;;
+              esac
+            done <<<"$changed_files"
+            if [[ "$title" == chore:\ record\ published\ npm\ version* ]]; then
+              release_needed=false
+            fi
+            if [[ "$release_needed" == true ]]; then
+              # GITHUB_TOKEN-created merge commits do not trigger push workflows.
+              gh workflow run publish.yml --repo "$REPOSITORY" --ref master -f publish_npm=true
+              echo "Dispatched npm publish workflow after source changes in PR #$pr."
+            else
+              echo "Skipping npm publish dispatch for metadata/documentation/workflow-only PR #$pr."
+            fi
           done <<<"$prs"
