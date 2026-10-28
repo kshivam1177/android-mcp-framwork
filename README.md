@@ -38,9 +38,11 @@ From the Android or Flutter repository root:
 
 ```bash
 androidmcp-framework setup
+# Generate the agent skill later, without rerunning setup
+androidmcp-framework skill-gen --agent claude
 ```
 
-This creates `.androidmcp-framework/config.yaml`. If existing data remains under `.android-build-mcp/` or `.androidbuildmcp/`, inspect it and run `androidmcp-framework setup --migrate` to copy files without overwriting existing content. The old directory is not deleted automatically.
+This creates `.androidmcp-framework/config.yaml`, asks which coding agent you use in an interactive terminal, and writes a project-local `SKILL.md` into that agent's skills folder. Supported choices include Claude Code, Codex, Gemini CLI, Antigravity, Cursor, GitHub Copilot, and a generic agent. Existing skill files are never overwritten. You can also run `androidmcp-framework skill-gen` or `npx -y androidmcp-framework@latest skill-gen --agent codex` independently. See [coding-agent skills](docs/md-files/coding-agent-skills.md). If existing data remains under `.android-build-mcp/` or `.androidbuildmcp/`, inspect it and run `androidmcp-framework setup --migrate` to copy files without overwriting existing content. The old directory is not deleted automatically.
 
 All project-specific framework data is kept inside `.androidmcp-framework/`. Screenshots are saved under `.androidmcp-framework/artifacts/screenshots/`, raw accessibility hierarchy snapshots under `.androidmcp-framework/artifacts/snapshots/`, and other evidence under `.androidmcp-framework/artifacts/`. `screenshot` returns the absolute saved image path with the image; `snapshot_ui` saves the full tree and returns a compact summary by default. Test-case definitions and timestamped reports remain under `testcases/` and `test-reports/`. The workspace root is discovered by walking upward to the nearest `.androidmcp-framework/config.yaml` or `.git` marker, with the current directory as fallback. Generated artifacts are local outputs and are ignored by Git by default.
 
