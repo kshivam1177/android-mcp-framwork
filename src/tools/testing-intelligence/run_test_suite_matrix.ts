@@ -116,11 +116,20 @@ export function register(server: McpServer) {
     }
 
     let target: Awaited<ReturnType<typeof resolveTarget>> | undefined;
-    if (matrix.some(item => item.suite === 'integration' && item.available)) target = await resolveTarget({ requestedId: args.targetId });
+    let targetError: string | undefined;
+    if (matrix.some(item => item.suite === 'integration' && item.available)) {
+      try { target = await resolveTarget({ requestedId: args.targetId }); }
+      catch (error) { targetError = redact(error instanceof Error ? error.message : String(error)); warnings.push('Device integration suite blocked: ' + targetError); }
+    }
+    const executionStartedAt = new Date().toISOString();
     const results: SuiteResult[] = [];
     for (const item of matrix) {
       if (!item.available || !item.commandPlan) {
         results.push({ suite: item.suite, status: 'unavailable', command: null, exitCode: null, durationMs: 0, error: item.evidence });
+        continue;
+      }
+      if (item.suite === 'integration' && !target) {
+        results.push({ suite: item.suite, status: 'blocked', command: item.commandPlan.executable + ' ' + item.commandPlan.args.join(' '), exitCode: null, durationMs: 0, error: targetError ?? 'A ready device target is required.' });
         continue;
       }
       const started = Date.now();
@@ -170,7 +179,7 @@ export function register(server: McpServer) {
     await fs.mkdir(reportDir, { recursive: true });
     const summary = {
       schemaVersion: 1, workflow: 'test-suite-matrix', mode: 'execute', generatedAt: now.toISOString(),
-      startedAt: new Date(now.getTime() - results.reduce((sum, row) => sum + row.durationMs, 0)).toISOString(),
+      startedAt: executionStartedAt,
       projectRoot: root, platform, gitHeadSha, workingTreeClean, dirtyPaths, ...counts,
       sourceReportCount: 1, sourceReportsWithHeadSha: gitHeadSha ? 1 : 0, sourceReportsWithoutHeadSha: gitHeadSha ? 0 : 1,
       tests: results.map(row => ({ name: row.suite, status: row.status === 'passed' ? 'passed' : row.status === 'failed' ? 'failed' : 'skipped', durationMs: row.durationMs, message: row.error ?? row.stderr ?? row.status, sourceReport: 'matrix', evidence: row.command ? [row.command] : [] })),
