@@ -97,7 +97,7 @@ export async function chooseCodingAgent(root: string, requested?: string): Promi
         }
         return 'other';
       }
-      return options[index - 1];
+      return options[index - 1]!;
     } finally {
       rl.close();
     }
