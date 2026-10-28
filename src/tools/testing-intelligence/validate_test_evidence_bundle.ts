@@ -51,6 +51,7 @@ export function assessEvidenceBundle(input: {
     const failed = report.tests.filter(test => ['failed', 'fail', 'failure', 'error'].includes(test.status.toLowerCase())).length;
     const skipped = report.tests.length - passed - failed;
     for (const test of report.tests) seen.add(test.name);
+    if (report.tests.length === 0) issues.push('Report contains no recognized test outcomes.');
     if (failed) issues.push(failed + ' test outcome(s) failed.');
     if (skipped) issues.push(skipped + ' test outcome(s) are skipped, blocked, or unrecognized.');
     const decision = issues.some(issue => /failed|does not match|future/.test(issue)) ? 'fail' : issues.length ? 'incomplete' : 'pass';
