@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createInterface } from 'node:readline/promises';
-import type { Interface } from 'node:readline';
 
 export const SUPPORTED_AGENTS = ['claude', 'codex', 'gemini', 'antigravity', 'cursor', 'copilot', 'other', 'auto'] as const;
 export type CodingAgent = typeof SUPPORTED_AGENTS[number];
@@ -16,7 +15,7 @@ const AGENTS: Record<Exclude<CodingAgent, 'auto'>, { label: string; markers: str
   other: { label: 'Other / generic agent', markers: ['.agents'], skillDir: '.agents/skills/androidmcp-framework' },
 };
 
-export function detectCodingAgents(root: string): CodingAgent[] {
+export function detectCodingAgents(root: string): Array<Exclude<CodingAgent, 'auto'>> {
   const found: CodingAgent[] = [];
   for (const agent of Object.keys(AGENTS) as Array<Exclude<CodingAgent, 'auto'>>) {
     if (AGENTS[agent].markers.some((marker) => fs.existsSync(path.join(root, marker)))) found.push(agent);
@@ -77,7 +76,7 @@ export async function chooseCodingAgent(root: string, requested?: string): Promi
   const detected = detectCodingAgents(root);
   if (requested === 'auto' && detected.length === 1) return detected[0] as Exclude<CodingAgent, 'auto'>;
   if (process.stdin.isTTY && process.stdout.isTTY) {
-    const rl: Interface = createInterface({ input: process.stdin, output: process.stdout });
+    const rl = createInterface({ input: process.stdin, output: process.stdout });
     try {
       console.log('Which coding agent do you use?');
       const options = SUPPORTED_AGENTS.filter((x) => x !== 'auto') as Array<Exclude<CodingAgent, 'auto'>>;
