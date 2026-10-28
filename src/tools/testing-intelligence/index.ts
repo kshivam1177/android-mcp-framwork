@@ -21,6 +21,7 @@ import planIntelligentTests from './plan_intelligent_tests.js';
 import diagnoseTestFailures from './diagnose_test_failures.js';
 import proposeSelectorRepairs from './propose_selector_repairs.js';
 import runAutonomousTestCycle from './run_autonomous_test_cycle.js';
+import analyzeTestQuality from './analyze_test_quality.js';
 import type { ToolModule } from '../types.js';
 
 export const testingIntelligenceTools: ToolModule[] = [
@@ -28,5 +29,5 @@ export const testingIntelligenceTools: ToolModule[] = [
   auditScreen, runTestCase, analyzeChanges, resolveTestInstructions, validateTestPlan,
   refreshTestKnowledge, planTestRun, consolidateTestReports, runTestWorkflow,
   validateTestEnvironment, runProjectTests, generateTestCandidate, aggregateTestEvidence, evaluateTestGate,
-  planIntelligentTests, diagnoseTestFailures, proposeSelectorRepairs, runAutonomousTestCycle,
+  planIntelligentTests, diagnoseTestFailures, proposeSelectorRepairs, runAutonomousTestCycle, analyzeTestQuality,
 ];
