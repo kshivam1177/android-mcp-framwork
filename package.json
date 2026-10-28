@@ -7,7 +7,7 @@
   "bin": {
     "androidmcp-framework": "build/cli/index.js",
     "amf": "build/cli/index.js",
-    "skill-gen": "build/cli/index.js"
+    "skill-gen": "build/cli/skill-gen.js"
   },
   "main": "build/mcp/server.js",
   "exports": {
