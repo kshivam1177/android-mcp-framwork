@@ -17,7 +17,7 @@ import { waitForUiAssertion } from '../../automation/waitForUiAssertion.js';
 import { withErrorHandling, textResult } from '../../utils/response.js';
 import type { ToolModule } from '../types.js';
 import type { UiNode } from '../../types.js';
-import { acquireProjectRunLock } from '../../testing-intelligence/runtimeSafety.js';
+import { acquireProjectRunLock, classifyRuntimeError, redactDiagnosticText } from '../../testing-intelligence/runtimeSafety.js';
 
 export const toolName = 'run_unified_test_run';
 export const workflow = 'testing-intelligence';
@@ -28,7 +28,7 @@ type Manifest = {
   startedAt: string; updatedAt: string; reportDirectory: string; targetId?: string; platform: TestPlatform;
   module?: string; variant: string; requestedSuites: Suite[]; includeSavedUiTests: boolean; work: UnifiedWorkResult[]; warnings: string[];
 };
-const redact = (s: string) => s.replace(/(password|passwd|secret|token|api[_-]?key|authorization|cookie|credential)\s*[:=]\s*[^\s,;]+/gi, '$1=[REDACTED]').replace(/Bearer\s+[A-Za-z0-9._~+\/-]+=*/gi, 'Bearer [REDACTED]').replace(/\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,})\b/g, '[REDACTED]');
+const redact = (s: string) => redactDiagnosticText(s);
 const rel = (root: string, file: string) => path.relative(root, file).split(path.sep).join('/');
 const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^-|-$/g, '').slice(0, 70) || 'item';
 async function gitValue(root: string, args: string[]): Promise<string | null> { try { const r = await execCommand('git', args, { cwd: root, timeoutMs: 5000 }); return r.exitCode === 0 ? r.stdout.trim() : null; } catch { return null; } }
@@ -178,7 +178,8 @@ export function register(server: McpServer) {
     if (finalHead !== manifest.gitHeadSha) { manifest.warnings.push('Git HEAD changed during the run; commit-bound evidence is invalid.'); manifest.gitHeadSha = null; }
     if (finalPorcelain !== '') { manifest.warnings.push('Working tree is dirty or unverifiable after execution.'); manifest.workingTreeClean = false; }
     const gate = evaluateUnifiedGate({ work: manifest.work, gitHeadSha: manifest.gitHeadSha, workingTreeClean: manifest.workingTreeClean });
-    const summary = { schemaVersion: 1, workflow: 'unified-test-run', mode: 'execute', runId: manifest.runId, status: gate.decision, gate, projectRoot: root, platform: manifest.platform, gitHeadSha: manifest.gitHeadSha, workingTreeClean: manifest.workingTreeClean, startedAt: manifest.startedAt, completedAt: new Date().toISOString(), target: target ? { id: target.id, model: target.model } : (manifest.targetId ? { id: manifest.targetId } : null), work: manifest.work, warnings: manifest.warnings, reportDirectory: manifest.reportDirectory };
+    const failureDiagnostics = manifest.work.filter((item) => item.status === 'failed' || item.status === 'blocked' || item.status === 'incomplete').map((item) => ({ id: item.id, status: item.status, ...classifyRuntimeError(item.error ?? item.stderr ?? item.name, { phase: item.kind === 'suite' ? 'test' : undefined }) }));
+    const summary = { schemaVersion: 1, workflow: 'unified-test-run', mode: 'execute', runId: manifest.runId, status: gate.decision, gate, projectRoot: root, platform: manifest.platform, gitHeadSha: manifest.gitHeadSha, workingTreeClean: manifest.workingTreeClean, startedAt: manifest.startedAt, completedAt: new Date().toISOString(), target: target ? { id: target.id, model: target.model } : (manifest.targetId ? { id: manifest.targetId } : null), work: manifest.work, failureDiagnostics, warnings: manifest.warnings, reportDirectory: manifest.reportDirectory };
     await fs.writeFile(path.join(reportDir, 'summary.json'), JSON.stringify(summary, null, 2) + '\n', { encoding: 'utf8', flag: 'w' });
     await fs.writeFile(path.join(reportDir, 'summary.md'), ['# Unified AndroidMCP Test Run', '', '- **Decision:** ' + gate.decision.toUpperCase(), '- **Reason:** ' + gate.reason, '- **Run ID:** ' + manifest.runId, '- **Platform:** ' + platform, '- **Git HEAD:** ' + (manifest.gitHeadSha ?? 'UNAVAILABLE'), '- **Working tree clean:** ' + String(manifest.workingTreeClean), '- **Passed:** ' + gate.passed, '- **Failed:** ' + gate.failed, '- **Incomplete:** ' + gate.incomplete, '', '## Work items', ...manifest.work.map((x) => '- **' + x.status.toUpperCase() + '** ' + x.id + ' — ' + x.name + (x.error ? ' — ' + x.error : '') + (x.evidence.length ? ' — Evidence: ' + x.evidence.join(', ') : '')), '', '## Warnings', ...(manifest.warnings.length ? manifest.warnings.map((x) => '- ' + x) : ['- None']), ''].join('\n'), { encoding: 'utf8', flag: 'w' });
     await saveManifest(config, manifest);
