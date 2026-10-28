@@ -2,7 +2,9 @@ import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { analyzeScreenshot } from '../../automation/screenshotAnalysis.js';
 import { withErrorHandling, textResult } from '../../utils/response.js';
-import { resolveTargetAndBackend } from './_shared.js';
+import { resolveTargetAndBackend, dumpHierarchyWithRetry } from './_shared.js';
+import { parseUiHierarchy } from '../../automation/uiHierarchy.js';
+import { getScreenSize } from './_shared.js';
 import type { ToolModule } from '../types.js';
 
 export const toolName = 'analyze_screenshot';
@@ -13,7 +15,7 @@ export function register(server: McpServer) {
     toolName,
     {
       title: 'Analyze Screenshot',
-      description: 'Run local OCR on the current Android screenshot and return visible text with bounding boxes and center coordinates in screenshot pixels as JSON. Requires Tesseract OCR installed locally. OCR detects text, not every icon or non-text control; use snapshot_ui for semantic Android element bounds.',
+      description: 'Prefer local Tesseract OCR on the current screenshot. If Tesseract is unavailable or fails, fall back to Android accessibility hierarchy text and bounds, so text inspection still works without OCR. Use snapshot_ui for semantic element refs.',
       inputSchema: {
         targetId: z.string().optional().describe('Target Android device ID; defaults to the active session target.'),
         language: z.string().regex(/^[a-zA-Z0-9_+-]+$/).optional().describe('Installed Tesseract language code (default: eng).'),
@@ -29,13 +31,41 @@ export function register(server: McpServer) {
     }) => {
       const { target, backend } = await resolveTargetAndBackend(args.targetId);
       const screenshot = await backend.screenshot(target.id);
-      const analysis = await analyzeScreenshot(screenshot.data, {
-        language: args.language, minConfidence: args.minConfidence,
-        mode: args.mode, timeoutMs: args.timeoutMs,
-      });
+      let analysis: Record<string, unknown>;
+      let fallbackReason: string | undefined;
+      try {
+        analysis = await analyzeScreenshot(screenshot.data, {
+          language: args.language, minConfidence: args.minConfidence,
+          mode: args.mode, timeoutMs: args.timeoutMs,
+        }) as unknown as Record<string, unknown>;
+      } catch (error) {
+        fallbackReason = error instanceof Error ? error.message : String(error);
+        const xml = await dumpHierarchyWithRetry(backend, target.id);
+        const screen = await getScreenSize(target.id);
+        const nodes = parseUiHierarchy(xml).filter((node) =>
+          Boolean(node.text || node.contentDesc) &&
+          node.bounds.right > node.bounds.left && node.bounds.bottom > node.bounds.top
+        );
+        analysis = {
+          engine: 'accessibility-hierarchy',
+          language: 'device-accessibility',
+          width: screen.width,
+          height: screen.height,
+          elements: nodes.map((node) => ({
+            text: node.text ?? node.contentDesc ?? '',
+            confidence: 100,
+            bounds: node.bounds,
+            center: { x: node.centerX, y: node.centerY },
+            resourceId: node.resourceId,
+            contentDesc: node.contentDesc,
+          })),
+        };
+      }
       const result = {
         targetId: target.id, backend: backend.name, mimeType: screenshot.mimeType,
-        coordinateSpace: 'screenshot-pixels', ...analysis,
+        coordinateSpace: 'device-screen-pixels',
+        ...(fallbackReason ? { fallback: true, fallbackReason } : { fallback: false }),
+        ...analysis,
       };
       return textResult(JSON.stringify(result, null, 2), result);
     })
