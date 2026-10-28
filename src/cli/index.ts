@@ -11,6 +11,7 @@ import { runDoctorChecks } from '../tools/doctor/doctor.js';
 import { getConfigDir } from '../config/loader.js';
 import { PROJECT_CONFIG_DIR, findProjectConfigPath, resolveProjectRoot } from '../utils/paths.js';
 import { runSelfUpdate } from './update.js';
+import { chooseCodingAgent, generateAgentSkill, SUPPORTED_AGENTS, type CodingAgent } from './skills.js';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 
@@ -119,6 +120,24 @@ function setupConfig(cwd: string, migrate: boolean): void {
   console.log('Edit enabledWorkflows and sessionDefaults for your project, then restart your MCP client.');
 }
 
+async function generateSkillCommand(cwd: string, requestedAgent?: string): Promise<void> {
+  const projectRoot = resolveProjectRoot(cwd);
+  try {
+    const agent = await chooseCodingAgent(projectRoot, requestedAgent);
+    const result = generateAgentSkill(projectRoot, agent);
+    console.log(result.created ? `Created coding-agent skill: ${result.filePath}` : `Skill already exists; left unchanged: ${result.filePath}`);
+    console.log(`Agent selected: ${agent}. The skill teaches the agent to use AndroidMCP Framework and preserve test evidence.`);
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  }
+}
+
+async function setupProject(cwd: string, migrate: boolean, requestedAgent?: string): Promise<void> {
+  setupConfig(cwd, migrate);
+  await generateSkillCommand(cwd, requestedAgent);
+}
+
 await yargs(hideBin(process.argv))
   .scriptName('androidmcp-framework')
   .command('mcp', 'Start the MCP server over stdio (for MCP clients)', () => {}, runMcp)
@@ -134,8 +153,16 @@ await yargs(hideBin(process.argv))
   .command(
     'setup',
     'Initialize .androidmcp-framework/ in the current project; use --migrate to copy legacy files safely',
-    (y) => y.option('migrate', { type: 'boolean', default: false, describe: 'Copy files from a legacy project directory without overwriting existing files' }),
-    (argv) => setupConfig(process.cwd(), Boolean(argv.migrate))
+    (y) => y
+      .option('migrate', { type: 'boolean', default: false, describe: 'Copy files from a legacy project directory without overwriting existing files' })
+      .option('agent', { type: 'string', choices: SUPPORTED_AGENTS as unknown as string[], describe: 'Coding agent to configure; otherwise ask in the terminal or auto-detect' }),
+    (argv) => setupProject(process.cwd(), Boolean(argv.migrate), argv.agent as CodingAgent | undefined)
+  )
+  .command(
+    'skill-gen',
+    'Generate an AndroidMCP Framework skill file for your coding agent',
+    (y) => y.option('agent', { type: 'string', choices: SUPPORTED_AGENTS as unknown as string[], describe: 'Agent: claude, codex, gemini, antigravity, cursor, copilot, other, or auto' }),
+    (argv) => generateSkillCommand(process.cwd(), argv.agent as CodingAgent | undefined)
   )
   .demandCommand(1, 'Pass a command - try "androidmcp-framework --help".')
   .strict()
