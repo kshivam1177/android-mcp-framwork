@@ -8,7 +8,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  actions: read
+  actions: write
 
 concurrency:
   group: auto-merge-${{ github.event.workflow_run.id }}
@@ -60,4 +60,8 @@ jobs:
               -f merge_method=squash \
               -f sha="$HEAD_SHA"
             echo "Merged PR #$pr at verified CI head $HEAD_SHA."
+            # GITHUB_TOKEN-created merge commits do not trigger push workflows. Explicitly dispatch
+            # the npm publisher after the verified merge so the release cannot be silently skipped.
+            gh workflow run publish.yml --repo "$REPOSITORY" --ref master -f publish_npm=true
+            echo "Dispatched npm publish workflow for master after PR #$pr."
           done <<<"$prs"
