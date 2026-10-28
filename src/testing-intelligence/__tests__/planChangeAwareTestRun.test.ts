@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { suggestCoverageIdeas } from '../plan_change_aware_test_run.js';
+import { suggestCoverageIdeas } from '../../tools/testing-intelligence/plan_change_aware_test_run.js';
 
 describe('suggestCoverageIdeas', () => {
   it('proposes a focused Flutter test for unmapped Dart source without claiming execution', () => {
