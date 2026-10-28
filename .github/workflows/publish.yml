@@ -132,7 +132,19 @@ jobs:
           set -euo pipefail
           SMOKE_DIR="$RUNNER_TEMP/androidmcp-smoke"
           mkdir -p "$SMOKE_DIR"
-          npm install --prefix "$SMOKE_DIR" "androidmcp-framework@${VERSION}" --registry=https://registry.npmjs.org
+          installed=false
+          for attempt in 1 2 3 4 5 6 7 8; do
+            if npm install --prefix "$SMOKE_DIR" "androidmcp-framework@${VERSION}" --registry=https://registry.npmjs.org; then
+              installed=true
+              break
+            fi
+            echo "npm registry has not propagated androidmcp-framework@${VERSION} yet (attempt ${attempt}/8); retrying in 5 seconds."
+            sleep 5
+          done
+          if [ "$installed" != true ]; then
+            echo "Could not install the exact published version after bounded retries." >&2
+            exit 1
+          fi
           node scripts/smoke-published-package.mjs "$SMOKE_DIR" "$VERSION"
 
       - name: Commit published version to selected branch
