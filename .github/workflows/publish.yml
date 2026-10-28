@@ -50,6 +50,7 @@ jobs:
     environment: npm-publish
     permissions:
       contents: write
+      actions: write
       id-token: write
     outputs:
       published_version: ${{ steps.release-version.outputs.version }}
@@ -159,6 +160,13 @@ jobs:
           fi
           node scripts/smoke-published-package.mjs "$SMOKE_DIR" "$VERSION"
 
+      - name: Dispatch exact-version npm registry verification
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.release-version.outputs.version }}
+        run: |
+          set -euo pipefail
+          gh workflow run verify-published-package.yml --repo "$GITHUB_REPOSITORY" --ref master -f version="$VERSION"
       - name: Commit published version to selected branch
         env:
           VERSION: ${{ steps.release-version.outputs.version }}
