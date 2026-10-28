@@ -23,6 +23,7 @@ import proposeSelectorRepairs from './propose_selector_repairs.js';
 import runAutonomousTestCycle from './run_autonomous_test_cycle.js';
 import analyzeTestQuality from './analyze_test_quality.js';
 import evaluateTestQualityGate from './evaluate_test_quality_gate.js';
+import runTestSuiteMatrix from './run_test_suite_matrix.js';
 import type { ToolModule } from '../types.js';
 
 export const testingIntelligenceTools: ToolModule[] = [
@@ -30,5 +31,5 @@ export const testingIntelligenceTools: ToolModule[] = [
   auditScreen, runTestCase, analyzeChanges, resolveTestInstructions, validateTestPlan,
   refreshTestKnowledge, planTestRun, consolidateTestReports, runTestWorkflow,
   validateTestEnvironment, runProjectTests, generateTestCandidate, aggregateTestEvidence, evaluateTestGate,
-  planIntelligentTests, diagnoseTestFailures, proposeSelectorRepairs, runAutonomousTestCycle, analyzeTestQuality, evaluateTestQualityGate,
+  planIntelligentTests, diagnoseTestFailures, proposeSelectorRepairs, runAutonomousTestCycle, analyzeTestQuality, evaluateTestQualityGate, runTestSuiteMatrix,
 ];
