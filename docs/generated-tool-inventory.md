@@ -1,8 +1,6 @@
 # Generated MCP Tool Inventory
 
 Generated from the registered MCP tool list. Run npm run docs:generate to refresh this file; CI checks for drift.
-
-| Workflow | Tool |
 |---|---|
 | android-cli | android_cli_info |
 | android-cli | android_cli_skills_list |
@@ -63,6 +61,7 @@ Generated from the registered MCP tool list. Run npm run docs:generate to refres
 | testing-intelligence | generate_test_candidate |
 | testing-intelligence | inspect_test_runtime |
 | testing-intelligence | list_test_cases |
+| testing-intelligence | plan_change_aware_test_run |
 | testing-intelligence | plan_intelligent_tests |
 | testing-intelligence | plan_test_run |
 | testing-intelligence | propose_selector_repairs |
@@ -107,4 +106,5 @@ Generated from the registered MCP tool list. Run npm run docs:generate to refres
 | ui-automation | touch |
 | ui-automation | type_text |
 | ui-automation | wait_for_ui |
+| Workflow | Tool |
 | workflow-discovery | manage_workflows |
