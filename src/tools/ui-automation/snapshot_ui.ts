@@ -3,7 +3,7 @@ import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { withErrorHandling, textResult } from '../../utils/response.js';
 import { parseUiHierarchy, cacheSnapshot } from '../../automation/uiHierarchy.js';
-import { resolveTargetAndBackend } from './_shared.js';
+import { resolveTargetAndBackend, dumpHierarchyWithRetry } from './_shared.js';
 import { createArtifactPath, timestampedArtifactName } from '../../utils/artifacts.js';
 import { resolveProjectRoot } from '../../utils/paths.js';
 import { getEffectiveSessionDefaults } from '../../session/defaults.js';
@@ -40,7 +40,7 @@ export function register(server: McpServer) {
       includeElements?: boolean;
     }) => {
       const { target, backend } = await resolveTargetAndBackend(args.targetId);
-      const xml = await backend.dumpHierarchy(target.id);
+      const xml = await dumpHierarchyWithRetry(backend, target.id);
       const allNodes = parseUiHierarchy(xml);
       const interactiveOnly = args.interactiveOnly !== false;
       const nodes = interactiveOnly

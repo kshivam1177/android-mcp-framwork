@@ -1,5 +1,8 @@
 import snapshotUi from './snapshot_ui.js';
 import tap from './tap.js';
+import tapText from './tap_text.js';
+import clearAndTypeText from './clear_and_type_text.js';
+import isKeyboardVisible from './is_keyboard_visible.js';
 import longPress from './long_press.js';
 import swipe from './swipe.js';
 import drag from './drag.js';
@@ -27,6 +30,9 @@ import type { ToolModule } from '../types.js';
 export const uiAutomationTools: ToolModule[] = [
   snapshotUi,
   tap,
+  tapText,
+  clearAndTypeText,
+  isKeyboardVisible,
   longPress,
   swipe,
   drag,

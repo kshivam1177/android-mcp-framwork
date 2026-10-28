@@ -19,6 +19,7 @@ export function register(server: McpServer) {
         "Launch an already-installed app on the resolved target. Provide packageId directly, or module/variant to look it up from the last build's APK. Uses the app's default launcher activity unless `activity` is given.",
       inputSchema: {
         packageId: z.string().optional().describe('Application id, e.g. "com.example.app". Resolved from the built APK if omitted.'),
+        package: z.string().optional().describe('Alias for packageId; launch an installed package without a local APK.'),
         module: z.string().optional(),
         variant: z.string().optional(),
         projectPath: z.string().optional(),
@@ -28,10 +29,10 @@ export function register(server: McpServer) {
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     },
     withErrorHandling(
-      async (args: { packageId?: string; module?: string; variant?: string; projectPath?: string; activity?: string; targetId?: string }) => {
+      async (args: { packageId?: string; package?: string; module?: string; variant?: string; projectPath?: string; activity?: string; targetId?: string }) => {
         const target = await resolveTarget({ requestedId: args.targetId });
 
-        let packageId = args.packageId;
+        let packageId = args.packageId ?? args.package;
         let launchableActivity = args.activity;
         if (!packageId) {
           const defaults = getEffectiveSessionDefaults().defaults;
