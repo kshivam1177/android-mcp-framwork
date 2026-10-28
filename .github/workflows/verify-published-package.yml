@@ -1,0 +1,64 @@
+name: Verify published npm package
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/verify-published-package.yml"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact published androidmcp-framework version to smoke-test (blank uses package.json)
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: published-smoke-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    name: Install exact npm release and verify CLI + MCP
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - name: Resolve published version
+        id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          VERSION="${INPUT_VERSION:-$(jq -r .version package.json)}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Wait for npm registry and smoke-test exact release
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          SMOKE_DIR="$RUNNER_TEMP/androidmcp-published-smoke"
+          mkdir -p "$SMOKE_DIR"
+          installed=false
+          for attempt in $(seq 1 24); do
+            if npm install --prefix "$SMOKE_DIR" "androidmcp-framework@${VERSION}" --registry=https://registry.npmjs.org; then
+              installed=true
+              break
+            fi
+            echo "Waiting for androidmcp-framework@${VERSION} to become visible from npm (attempt ${attempt}/24)."
+            sleep 10
+          done
+          if [ "$installed" != true ]; then
+            echo "Published version androidmcp-framework@${VERSION} could not be installed after 4 minutes." >&2
+            exit 1
+          fi
+          node scripts/smoke-published-package.mjs "$SMOKE_DIR" "$VERSION"
