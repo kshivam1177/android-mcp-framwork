@@ -30,7 +30,7 @@ export function getSkillPath(root: string, agent: Exclude<CodingAgent, 'auto'>):
 
 export function renderSkill(agent: Exclude<CodingAgent, 'auto'>): string {
   const label = AGENTS[agent].label;
-  return \`---
+  return `---
 name: androidmcp-framework
 description: Use AndroidMCP Framework to inspect, build, debug, and test Android or Flutter projects. Apply when working on app changes, UI flows, test planning, device validation, or test evidence.
 ---
