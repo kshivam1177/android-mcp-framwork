@@ -125,6 +125,16 @@ jobs:
         env:
           DIST_TAG: ${{ steps.release-version.outputs.dist_tag }}
         run: npm publish --access public --tag "$DIST_TAG"
+      - name: Smoke-test the published npm package
+        env:
+          VERSION: ${{ steps.release-version.outputs.version }}
+        run: |
+          set -euo pipefail
+          SMOKE_DIR="$RUNNER_TEMP/androidmcp-smoke"
+          mkdir -p "$SMOKE_DIR"
+          npm install --prefix "$SMOKE_DIR" "androidmcp-framework@${VERSION}" --registry=https://registry.npmjs.org
+          node scripts/smoke-published-package.mjs "$SMOKE_DIR" "$VERSION"
+
       - name: Commit published version to selected branch
         env:
           VERSION: ${{ steps.release-version.outputs.version }}

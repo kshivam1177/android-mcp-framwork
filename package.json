@@ -48,7 +48,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "tsc --noEmit",
-    "docs:check": "npm run build && node build/cli/index.js tools --json > /dev/null",
+    "docs:generate": "npm run build && node scripts/generate-tool-inventory.mjs --write",
+    "docs:check": "npm run build && node scripts/generate-tool-inventory.mjs --check",
     "test:gate": "node scripts/evaluate-test-gate.mjs"
   },
   "dependencies": {
