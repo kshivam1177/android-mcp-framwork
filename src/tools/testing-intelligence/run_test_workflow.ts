@@ -11,12 +11,21 @@ import { findNodesByTarget } from './run_test_case.js';
 import { parseUiHierarchy } from '../../automation/uiHierarchy.js';
 import { waitForUiAssertion } from '../../automation/waitForUiAssertion.js';
 import { resolveProjectRoot } from '../../utils/paths.js';
+import { execCommand } from '../../utils/exec.js';
 import { withErrorHandling, textResult } from '../../utils/response.js';
 import type { UiNode } from '../../types.js';
 import type { ToolModule } from '../types.js';
 
 export const toolName = 'run_test_workflow';
 export const workflow = 'testing-intelligence';
+
+async function getGitHeadSha(root: string): Promise<string | null> {
+  try {
+    const result = await execCommand('git', ['rev-parse', 'HEAD'], { cwd: root, timeoutMs: 5000 });
+    const sha = result.stdout.trim();
+    return result.exitCode === 0 && /^[a-f0-9]{40,64}$/i.test(sha) ? sha : null;
+  } catch { return null; }
+}
 
 type StepResult = {
   stepNumber: number;
@@ -206,8 +215,10 @@ export function register(server: McpServer) {
     const failedCount = caseResults.filter(item => item.status === 'FAILED').length;
     const incompleteCount = caseResults.filter(item => item.status === 'INCOMPLETE').length;
     const overall = failedCount ? 'failed' : incompleteCount ? 'incomplete' : 'passed';
+    const gitHeadSha = await getGitHeadSha(root);
+    if (!gitHeadSha) warnings.push('Git HEAD SHA unavailable; this run cannot provide commit-bound test evidence.');
     const summary = {
-      schemaVersion: 1, mode: 'execute', status: overall, request: args.request, target: { id: target.id, model: target.model },
+      schemaVersion: 1, mode: 'execute', status: overall, request: args.request, gitHeadSha, target: { id: target.id, model: target.model },
       runId, executedAt: now.toISOString(), selectedCount: plan.selectedTestCases.length,
       passed: caseResults.filter(item => item.status === 'PASSED').length, failed: failedCount, incomplete: incompleteCount,
       results: caseResults, warnings, coverageGaps: plan.missingCoverage,

@@ -5,6 +5,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { getConfigDir } from '../../config/loader.js';
 import { evaluateTestGate } from '../../testing-intelligence/testGate.js';
 import { resolveProjectRoot } from '../../utils/paths.js';
+import { execCommand } from '../../utils/exec.js';
 import { withErrorHandling, textResult } from '../../utils/response.js';
 import type { ToolModule } from '../types.js';
 
@@ -30,9 +31,10 @@ export function register(server: McpServer) {
       reportPath: z.string().optional().describe('Path to a consolidated summary.json, relative to project root or absolute inside it. Defaults to the newest summary.'),
       allowSkipped: z.boolean().optional().default(false),
       maxAgeMinutes: z.number().int().min(1).max(10080).optional().default(1440).describe('Maximum age of the consolidated report. Reports older than this are blocked; default 24 hours.'),
+      requireCurrentHead: z.boolean().optional().default(true).describe('Require complete source-report Git SHA provenance matching the current project HEAD; default true.'),
     },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
-  }, withErrorHandling(async (args: { projectPath?: string; reportPath?: string; allowSkipped?: boolean; maxAgeMinutes?: number }) => {
+  }, withErrorHandling(async (args: { projectPath?: string; reportPath?: string; allowSkipped?: boolean; maxAgeMinutes?: number; requireCurrentHead?: boolean }) => {
     const root = resolveProjectRoot(path.resolve(args.projectPath ?? process.cwd()));
     let reportPath: string | undefined;
     if (args.reportPath) {
@@ -56,8 +58,16 @@ export function register(server: McpServer) {
     const generatedAt = typeof value.generatedAt === 'string' ? Date.parse(value.generatedAt) : Number.NaN;
     const ageMs = Date.now() - generatedAt;
     const freshnessStatus = !Number.isFinite(generatedAt) || ageMs < 0 ? 'unverifiable' : ageMs > maxAgeMinutes * 60_000 ? 'stale' : 'fresh';
-    const gate = evaluateTestGate({ status: freshnessStatus === 'fresh' ? value.status : 'incomplete', passed: value.passed, failed: value.failed, skipped: value.skipped, testCount: value.testCount, allowSkipped: args.allowSkipped });
-    const result = { ...gate, reportPath: path.relative(root, reportPath).split(path.sep).join('/'), freshness: { status: freshnessStatus, generatedAt: Number.isFinite(generatedAt) ? new Date(generatedAt).toISOString() : null, ageMinutes: Number.isFinite(ageMs) && ageMs >= 0 ? Math.floor(ageMs / 60_000) : null, maxAgeMinutes }, policy: { allowSkipped: args.allowSkipped ?? false, requiresNonEmptyResults: true, explicitPassRequired: true, staleReportsPass: false, missingTimestampPasses: false } };
+    const requireCurrentHead = args.requireCurrentHead ?? true;
+    let currentHeadSha: string | null = null;
+    try { const head = await execCommand('git', ['rev-parse', 'HEAD'], { cwd: root, timeoutMs: 5000 }); const sha = head.stdout.trim(); if (head.exitCode === 0 && /^[a-f0-9]{40,64}$/i.test(sha)) currentHeadSha = sha; } catch { /* fail closed below */ }
+    const reportHeadSha = typeof value.gitHeadSha === 'string' && /^[a-f0-9]{40,64}$/i.test(value.gitHeadSha) ? value.gitHeadSha : null;
+    const missingSourceProvenance = typeof value.sourceReportsWithoutHeadSha !== 'number' || value.sourceReportsWithoutHeadSha !== 0;
+    const headMatches = !!currentHeadSha && !!reportHeadSha && currentHeadSha.toLowerCase() === reportHeadSha.toLowerCase() && !missingSourceProvenance;
+    const headStatus = !requireCurrentHead ? 'not-required' : !currentHeadSha || !reportHeadSha || missingSourceProvenance ? 'unverifiable' : headMatches ? 'match' : 'mismatch';
+    const canEvaluate = freshnessStatus === 'fresh' && (!requireCurrentHead || headMatches);
+    const gate = evaluateTestGate({ status: canEvaluate ? value.status : 'incomplete', passed: value.passed, failed: value.failed, skipped: value.skipped, testCount: value.testCount, allowSkipped: args.allowSkipped });
+    const result = { ...gate, reportPath: path.relative(root, reportPath).split(path.sep).join('/'), freshness: { status: freshnessStatus, generatedAt: Number.isFinite(generatedAt) ? new Date(generatedAt).toISOString() : null, ageMinutes: Number.isFinite(ageMs) && ageMs >= 0 ? Math.floor(ageMs / 60_000) : null, maxAgeMinutes }, provenance: { status: headStatus, required: requireCurrentHead, currentHeadSha, reportHeadSha, sourceReportsWithHeadSha: value.sourceReportsWithHeadSha ?? 0, sourceReportsWithoutHeadSha: value.sourceReportsWithoutHeadSha ?? null }, policy: { allowSkipped: args.allowSkipped ?? false, requiresNonEmptyResults: true, explicitPassRequired: true, staleReportsPass: false, missingTimestampPasses: false, currentGitHeadRequired: requireCurrentHead, missingSourceProvenancePasses: false } };
     return textResult(JSON.stringify(result, null, 2), result);
   }));
 }

@@ -53,18 +53,29 @@ export function register(server: McpServer) {
       selectedFiles.push(file);
     }
     const tests: ConsolidatedTest[] = [];
+    const sourceHeadShas: Array<string | null> = [];
     let parsedReportCount = 0;
     for (const file of selectedFiles) {
       const relative = path.relative(projectRoot, file).split(path.sep).join('/');
       try {
         const value: unknown = JSON.parse(await fs.readFile(file, 'utf8'));
-        tests.push(...normalizeReport(relative, redactSecrets(value)));
+        const sanitized = redactSecrets(value);
+        tests.push(...normalizeReport(relative, sanitized));
+        const reportValue = sanitized && typeof sanitized === 'object' && !Array.isArray(sanitized) ? sanitized as Record<string, unknown> : {};
+        const sourceSha = typeof reportValue.gitHeadSha === 'string' && /^[a-f0-9]{40,64}$/i.test(reportValue.gitHeadSha) ? reportValue.gitHeadSha : null;
+        sourceHeadShas.push(sourceSha);
         parsedReportCount += 1;
       } catch {
         warnings.push(`Could not parse report JSON: ${relative}`);
       }
     }
-    const summary = buildSummary(tests, parsedReportCount, warnings);
+    const distinctHeads = [...new Set(sourceHeadShas.filter((sha): sha is string => sha !== null))];
+    const reportsWithHeadSha = sourceHeadShas.filter(Boolean).length;
+    const reportsWithoutHeadSha = parsedReportCount - reportsWithHeadSha;
+    const gitHeadSha = parsedReportCount > 0 && reportsWithoutHeadSha === 0 && distinctHeads.length === 1 ? distinctHeads[0]! : null;
+    if (reportsWithoutHeadSha > 0) warnings.push(`${reportsWithoutHeadSha} source report(s) lack a Git HEAD SHA; the consolidated result cannot prove commit-bound coverage.`);
+    if (distinctHeads.length > 1) warnings.push('Source reports were produced from multiple Git HEAD SHAs; the consolidated result cannot prove coverage of one commit.');
+    const summary = buildSummary(tests, parsedReportCount, warnings, new Date().toISOString(), { gitHeadSha, sourceReportsWithHeadSha: reportsWithHeadSha, sourceReportsWithoutHeadSha: reportsWithoutHeadSha });
     const now = new Date();
     const date = now.toISOString().slice(0, 10);
     const time = now.toISOString().slice(11, 19).replace(/:/g, '');
@@ -85,6 +96,9 @@ export function register(server: McpServer) {
       passed: summary.passed,
       failed: summary.failed,
       skipped: summary.skipped,
+      gitHeadSha: summary.gitHeadSha,
+      sourceReportsWithHeadSha: summary.sourceReportsWithHeadSha,
+      sourceReportsWithoutHeadSha: summary.sourceReportsWithoutHeadSha,
       summaryJson: path.relative(projectRoot, summaryJson).split(path.sep).join('/'),
       summaryMarkdown: path.relative(projectRoot, summaryMarkdown).split(path.sep).join('/'),
       junitXml: path.relative(projectRoot, junitXml).split(path.sep).join('/'),
