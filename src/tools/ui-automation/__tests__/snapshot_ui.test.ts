@@ -6,7 +6,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { register } from '../snapshot_ui.js';
 
 const mocks = vi.hoisted(() => ({ resolveTargetAndBackend: vi.fn() }));
-vi.mock('../_shared.js', () => ({ resolveTargetAndBackend: mocks.resolveTargetAndBackend }));
+vi.mock('../_shared.js', () => ({ resolveTargetAndBackend: mocks.resolveTargetAndBackend, dumpHierarchyWithRetry: async (backend: { dumpHierarchy: (targetId: string) => Promise<string> }, targetId: string) => backend.dumpHierarchy(targetId) }));
 
 const XML = '<hierarchy><node index="0" text="Login" resource-id="com.example:id/login" class="android.widget.Button" package="com.example.app" content-desc="" clickable="true" enabled="true" focusable="true" scrollable="false" checkable="false" checked="false" bounds="[0,0][100,50]"></node></hierarchy>';
 

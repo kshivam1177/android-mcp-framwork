@@ -7,7 +7,7 @@ import type { ToolModule } from '../types.js';
 export const toolName = 'is_keyboard_visible';
 export const workflow = 'ui-automation';
 export function parseKeyboardVisibility(output: string): boolean | null {
-  for (const pattern of [/mInputShown\\s*=\\s*(true|false)/i, /mIsInputViewShown\\s*=\\s*(true|false)/i, /isInputViewShown\\s*=\\s*(true|false)/i, /showing\\s*=\\s*(true|false)/i]) {
+  for (const pattern of [/mInputShown\s*=\s*(true|false)/i, /mIsInputViewShown\s*=\s*(true|false)/i, /isInputViewShown\s*=\s*(true|false)/i, /showing\s*=\s*(true|false)/i]) {
     const match = output.match(pattern);
     if (match?.[1]) return match[1].toLowerCase() === 'true';
   }
