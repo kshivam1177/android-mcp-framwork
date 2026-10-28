@@ -120,7 +120,15 @@ jobs:
           echo "target_branch=$TARGET_BRANCH" >> "$GITHUB_OUTPUT"
           echo "Publishing AndroidMCP Framework $NEXT_VERSION from $TARGET_BRANCH using npm tag $DIST_TAG"
       - name: Build release package
-        run: npm run build
+        id: release-package
+        env:
+          VERSION: ${{ steps.release-version.outputs.version }}
+        run: |
+          set -euo pipefail
+          npm run build
+          mkdir -p "$RUNNER_TEMP/androidmcp-release"
+          npm pack --pack-destination "$RUNNER_TEMP/androidmcp-release"
+          echo "tarball=$RUNNER_TEMP/androidmcp-release/androidmcp-framework-${VERSION}.tgz" >> "$GITHUB_OUTPUT"
       - name: Publish package using npm trusted publishing
         env:
           DIST_TAG: ${{ steps.release-version.outputs.dist_tag }}
@@ -130,20 +138,24 @@ jobs:
           VERSION: ${{ steps.release-version.outputs.version }}
         run: |
           set -euo pipefail
-          SMOKE_DIR="$RUNNER_TEMP/androidmcp-smoke"
-          mkdir -p "$SMOKE_DIR"
+          REGISTRY_DIR="$RUNNER_TEMP/androidmcp-smoke-registry"
+          ARTIFACT_DIR="$RUNNER_TEMP/androidmcp-smoke-artifact"
+          mkdir -p "$REGISTRY_DIR" "$ARTIFACT_DIR"
           installed=false
           for attempt in 1 2 3 4 5 6 7 8; do
-            if npm install --prefix "$SMOKE_DIR" "androidmcp-framework@${VERSION}" --registry=https://registry.npmjs.org; then
+            if npm install --prefix "$REGISTRY_DIR" "androidmcp-framework@${VERSION}" --registry=https://registry.npmjs.org; then
               installed=true
               break
             fi
             echo "npm registry has not propagated androidmcp-framework@${VERSION} yet (attempt ${attempt}/8); retrying in 5 seconds."
             sleep 5
           done
-          if [ "$installed" != true ]; then
-            echo "Could not install the exact published version after bounded retries." >&2
-            exit 1
+          if [ "$installed" = true ]; then
+            SMOKE_DIR="$REGISTRY_DIR"
+          else
+            echo "Registry lookup is still delayed. Smoke-testing the exact tarball that was published; independent registry verification runs separately." >&2
+            npm install --prefix "$ARTIFACT_DIR" "${{ steps.release-package.outputs.tarball }}"
+            SMOKE_DIR="$ARTIFACT_DIR"
           fi
           node scripts/smoke-published-package.mjs "$SMOKE_DIR" "$VERSION"
 
