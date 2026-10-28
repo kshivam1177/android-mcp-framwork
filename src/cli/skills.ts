@@ -16,7 +16,7 @@ const AGENTS: Record<Exclude<CodingAgent, 'auto'>, { label: string; markers: str
 };
 
 export function detectCodingAgents(root: string): Array<Exclude<CodingAgent, 'auto'>> {
-  const found: CodingAgent[] = [];
+  const found: Array<Exclude<CodingAgent, 'auto'>> = [];
   for (const agent of Object.keys(AGENTS) as Array<Exclude<CodingAgent, 'auto'>>) {
     if (AGENTS[agent].markers.some((marker) => fs.existsSync(path.join(root, marker)))) found.push(agent);
   }
