@@ -91,8 +91,8 @@ export function register(server: McpServer) {
     const root = args.projectPath ? path.resolve(args.projectPath) : resolveProjectRoot(path.resolve(process.cwd()));
     const platform = args.platform ?? detectTestPlatform(root);
     if (!platform) throw new Error('No supported Flutter pubspec.yaml or Gradle settings file found at the selected project root.');
-    const suites = [...new Set(args.suites ?? ['unit'])];
-    const matrix = [];
+    const suites: Suite[] = [...new Set<Suite>(args.suites ?? ['unit'])];
+    const matrix: Array<{ suite: Suite; available: boolean; evidence: string; commandPlan: ReturnType<typeof planSafeTestCommand> | null }> = [];
     for (const suite of suites) {
       const availability = await suiteAvailable(root, platform, suite, args.module);
       let commandPlan: ReturnType<typeof planSafeTestCommand> | null = null;
