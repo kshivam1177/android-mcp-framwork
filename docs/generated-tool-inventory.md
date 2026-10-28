@@ -1,6 +1,8 @@
 # Generated MCP Tool Inventory
 
 Generated from the registered MCP tool list. Run npm run docs:generate to refresh this file; CI checks for drift.
+
+| Workflow | Tool |
 |---|---|
 | android-cli | android_cli_info |
 | android-cli | android_cli_skills_list |
@@ -106,5 +108,4 @@ Generated from the registered MCP tool list. Run npm run docs:generate to refres
 | ui-automation | touch |
 | ui-automation | type_text |
 | ui-automation | wait_for_ui |
-| Workflow | Tool |
 | workflow-discovery | manage_workflows |
