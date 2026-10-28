@@ -30,7 +30,7 @@ export function getSkillPath(root: string, agent: Exclude<CodingAgent, 'auto'>):
 
 export function renderSkill(agent: Exclude<CodingAgent, 'auto'>): string {
   const label = AGENTS[agent].label;
-  return `---
+  return \`---
 name: androidmcp-framework
 description: Use AndroidMCP Framework to inspect, build, debug, and test Android or Flutter projects. Apply when working on app changes, UI flows, test planning, device validation, or test evidence.
 ---
@@ -42,8 +42,8 @@ This skill is configured for ${label}. Use the framework's existing CLI and MCP 
 ## Before changing code
 1. Identify whether this repository is native Android, Flutter, or a multi-package workspace.
 2. Read project instructions and existing tests before proposing changes.
-3. Run `androidmcp-framework doctor` when toolchain or device readiness is uncertain.
-4. Check `.androidmcp-framework/` for project setup, custom test instructions, saved test cases, and previous reports.
+3. Run \`androidmcp-framework doctor\` when toolchain or device readiness is uncertain.
+4. Check \`.androidmcp-framework/\` for project setup, custom test instructions, saved test cases, and previous reports.
 
 ## After changing code
 1. Use change-aware test planning and project-native test suites where available.
@@ -54,9 +54,9 @@ This skill is configured for ${label}. Use the framework's existing CLI and MCP 
 6. Review the final report and explain any missing or blocked validation.
 
 ## Evidence and reports
-- Keep framework-generated data under `.androidmcp-framework/`.
-- Reports belong under `.androidmcp-framework/test-reports/YYYY-MM-DD/HHmmss/`.
-- Screenshots and hierarchy snapshots belong under `.androidmcp-framework/artifacts/`.
+- Keep framework-generated data under \`.androidmcp-framework/\`.
+- Reports belong under \`.androidmcp-framework/test-reports/YYYY-MM-DD/HHmmss/\`.
+- Screenshots and hierarchy snapshots belong under \`.androidmcp-framework/artifacts/\`.
 - Verify report freshness and Git HEAD provenance before treating reports as current evidence.
 - Never overwrite user-authored instructions, test cases, or reports without explicit approval.
 
