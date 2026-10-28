@@ -79,7 +79,7 @@ export interface ProjectRunLock {
  * Atomic directory creation provides a cross-process project lock. Never
  * silently steals a lock: an operator must inspect the owner before cleanup.
  */
-export async function acquireProjectRunLock(projectRoot: string, runId = randomUUID()): Promise<ProjectRunLock> {
+export async function acquireProjectRunLock(projectRoot: string, runId: string = randomUUID()): Promise<ProjectRunLock> {
   const root = path.resolve(projectRoot);
   const lockPath = path.join(root, '.androidmcp-framework', '.run-lock');
   await fs.mkdir(path.dirname(lockPath), { recursive: true });
