@@ -138,7 +138,10 @@ async function setupProject(cwd: string, migrate: boolean, requestedAgent?: stri
   await generateSkillCommand(cwd, requestedAgent);
 }
 
-await yargs(hideBin(process.argv))
+const cliArgs = hideBin(process.argv);
+if (path.basename(process.argv[1] ?? '') === 'skill-gen') cliArgs.unshift('skill-gen');
+
+await yargs(cliArgs)
   .scriptName('androidmcp-framework')
   .command('mcp', 'Start the MCP server over stdio (for MCP clients)', () => {}, runMcp)
   .command('doctor', 'Check the local Android toolchain (adb, java, gradle, SDK, emulator)', () => {}, runDoctor)
