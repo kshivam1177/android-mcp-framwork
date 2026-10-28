@@ -17,6 +17,7 @@ import { waitForUiAssertion } from '../../automation/waitForUiAssertion.js';
 import { withErrorHandling, textResult } from '../../utils/response.js';
 import type { ToolModule } from '../types.js';
 import type { UiNode } from '../../types.js';
+import { acquireProjectRunLock } from '../../testing-intelligence/runtimeSafety.js';
 
 export const toolName = 'run_unified_test_run';
 export const workflow = 'testing-intelligence';
@@ -128,6 +129,8 @@ export function register(server: McpServer) {
       await saveManifest(config, manifest);
     }
     if (!args.execute) { const preview = { mode: 'plan-only', runId: manifest.runId, projectRoot: root, platform: manifest.platform, reportDirectory: manifest.reportDirectory, work: manifest.work, warnings: manifest.warnings, executionRequires: 'Review the plan, then set execute=true. Resume with resumeRunId.' }; return textResult(JSON.stringify(preview, null, 2), preview as unknown as Record<string, unknown>); }
+    const runLock = await acquireProjectRunLock(root, manifest.runId);
+    try {
     await fs.mkdir(reportDir, { recursive: true });
     let target: Awaited<ReturnType<typeof resolveTarget>> | undefined; let backend: Awaited<ReturnType<typeof resolveTargetAndBackend>>['backend'] | undefined;
     const pending = selectResumableWork(manifest.work);
@@ -181,6 +184,9 @@ export function register(server: McpServer) {
     await saveManifest(config, manifest);
     const output = { ...summary, summaryJson: rel(root, path.join(reportDir, 'summary.json')), summaryMarkdown: rel(root, path.join(reportDir, 'summary.md')), resumableManifest: rel(root, path.join(reportRoot, '.runs', manifest.runId + '.json')) };
     return textResult(JSON.stringify(output, null, 2), output as unknown as Record<string, unknown>);
+    } finally {
+      await runLock.release();
+    }
   }));
 }
 const mod: ToolModule = { toolName, workflow, register };
