@@ -18,6 +18,9 @@ export interface ConsolidatedSummary {
   skipped: number;
   tests: ConsolidatedTest[];
   warnings: string[];
+  gitHeadSha?: string | null;
+  sourceReportsWithHeadSha?: number;
+  sourceReportsWithoutHeadSha?: number;
 }
 function record(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
@@ -88,7 +91,7 @@ export function normalizeReport(sourceReport: string, value: unknown): Consolida
     evidence: normalizeEvidence(report.evidence),
   }];
 }
-export function buildSummary(tests: ConsolidatedTest[], sourceReportCount: number, warnings: string[], generatedAt = new Date().toISOString()): ConsolidatedSummary {
+export function buildSummary(tests: ConsolidatedTest[], sourceReportCount: number, warnings: string[], generatedAt = new Date().toISOString(), provenance: { gitHeadSha?: string | null; sourceReportsWithHeadSha?: number; sourceReportsWithoutHeadSha?: number } = {}): ConsolidatedSummary {
   const passed = tests.filter(test => test.status === 'passed').length;
   const failed = tests.filter(test => test.status === 'failed').length;
   const skipped = tests.filter(test => test.status === 'skipped').length;
@@ -103,6 +106,9 @@ export function buildSummary(tests: ConsolidatedTest[], sourceReportCount: numbe
     skipped,
     tests,
     warnings,
+    gitHeadSha: provenance.gitHeadSha ?? null,
+    sourceReportsWithHeadSha: provenance.sourceReportsWithHeadSha ?? 0,
+    sourceReportsWithoutHeadSha: provenance.sourceReportsWithoutHeadSha ?? sourceReportCount,
   };
 }
 export function escapeXml(value: string): string {
@@ -135,6 +141,9 @@ export function buildSummaryMarkdown(summary: ConsolidatedSummary): string {
     `- **Failed:** ${summary.failed}`,
     `- **Skipped / not explicitly passed:** ${summary.skipped}`,
     `- **Generated:** ${summary.generatedAt}`,
+    `- **Tested Git HEAD:** ${summary.gitHeadSha ?? 'UNAVAILABLE'}`,
+    `- **Source reports with commit provenance:** ${summary.sourceReportsWithHeadSha ?? 0}`,
+    `- **Source reports missing commit provenance:** ${summary.sourceReportsWithoutHeadSha ?? summary.sourceReportCount}`,
     '',
     '## Results',
     ...(summary.tests.length ? summary.tests.map(test => `- **${test.status.toUpperCase()}** — ${test.name} (${test.sourceReport})${test.message ? `: ${test.message}` : ''}`) : ['- No recognized source reports were found. This is not a passing test run.']),
