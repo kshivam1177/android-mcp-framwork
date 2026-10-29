@@ -49,21 +49,31 @@ jobs:
           SMOKE_DIR="$RUNNER_TEMP/androidmcp-published-smoke"
           mkdir -p "$SMOKE_DIR"
           visible=false
-          # npm can acknowledge a publish before package metadata is available
-          # from the public registry. Poll metadata first to avoid noisy ETARGET
-          # install errors and allow up to 12 minutes for propagation.
+          META_FILE="$RUNNER_TEMP/published-version.json"
+          ERROR_FILE="$RUNNER_TEMP/npm-view-error.log"
+          # npm may acknowledge a publish before public metadata is readable.
+          # Parse the JSON response as JSON: comparing quoted/unquoted shell
+          # strings can incorrectly reject a version that is already visible.
           for attempt in $(seq 1 72); do
-            if npm view "androidmcp-framework@${VERSION}" version --json --registry=https://registry.npmjs.org > "$RUNNER_TEMP/published-version.json" 2>/dev/null; then
-              if [ "$(tr -d '"\r\n ' < "$RUNNER_TEMP/published-version.json")" = "\"$VERSION\"" ]; then
+            if npm view "androidmcp-framework@${VERSION}" version --json --prefer-online --registry=https://registry.npmjs.org > "$META_FILE" 2> "$ERROR_FILE"; then
+              if node -e '
+                const fs = require("node:fs");
+                const actual = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+                process.exit(actual === process.argv[2] ? 0 : 1);
+              ' "$META_FILE" "$VERSION"; then
+                echo "Verified public npm metadata for androidmcp-framework@${VERSION}."
                 visible=true
                 break
               fi
+              echo "Registry returned version metadata that did not exactly match ${VERSION}: $(cat "$META_FILE")"
             fi
             echo "Waiting for androidmcp-framework@${VERSION} metadata on npm (attempt ${attempt}/72)."
             sleep 10
           done
           if [ "$visible" != true ]; then
-            echo "::error::npm acknowledged publication, but androidmcp-framework@${VERSION} was not visible on registry.npmjs.org after 12 minutes."
+            echo "::error::Could not verify androidmcp-framework@${VERSION} metadata on registry.npmjs.org after 12 minutes."
+            echo "Last npm view diagnostic:"
+            cat "$ERROR_FILE" || true
             echo "The publish workflow's exact-tarball smoke test is a separate check and does not prove public registry installability."
             exit 1
           fi
