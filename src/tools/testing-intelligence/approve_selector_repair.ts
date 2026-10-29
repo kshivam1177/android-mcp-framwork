@@ -97,7 +97,9 @@ export function register(server: McpServer) {
     const backupPath = path.join(backupDir, args.testCaseId + '-' + stamp + '.json');
     await fs.writeFile(backupPath, JSON.stringify(parsed, null, 2) + '\n', { flag: 'wx' });
     step.target = args.proposedTarget;
-    await fs.writeFile(casePath, JSON.stringify(parsed, null, 2) + '\n', { flag: 'w' });
+    const temporaryCasePath = casePath + '.repair-' + process.pid + '-' + stamp + '.tmp';
+    await fs.writeFile(temporaryCasePath, JSON.stringify(parsed, null, 2) + '\n', { flag: 'wx' });
+    await fs.rename(temporaryCasePath, casePath);
     const audit = {
       schemaVersion: 1, testCaseId: args.testCaseId, stepNumber: args.stepNumber,
       originalTarget: args.originalTarget, proposedTarget: args.proposedTarget,
