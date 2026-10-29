@@ -30,6 +30,7 @@ import inspectTestRuntime from './inspect_test_runtime.js';
 import planChangeAwareTestRun from './plan_change_aware_test_run.js';
 import reviewTestCandidate from './review_test_candidate.js';
 import prepareChangeAwareExecutionPlan from './prepare_change_aware_execution_plan.js';
+import approveSelectorRepair from './approve_selector_repair.js';
 import type { ToolModule } from '../types.js';
 
 export const testingIntelligenceTools: ToolModule[] = [
@@ -37,5 +38,5 @@ export const testingIntelligenceTools: ToolModule[] = [
   auditScreen, runTestCase, analyzeChanges, resolveTestInstructions, validateTestPlan,
   refreshTestKnowledge, planTestRun, consolidateTestReports, runTestWorkflow,
   validateTestEnvironment, runProjectTests, generateTestCandidate, aggregateTestEvidence, evaluateTestGate,
-  planIntelligentTests, diagnoseTestFailures, proposeSelectorRepairs, runAutonomousTestCycle, analyzeTestQuality, evaluateTestQualityGate, runTestSuiteMatrix, validateTestEvidenceBundle, runUnifiedTestRun, inspectTestRuntime, planChangeAwareTestRun, reviewTestCandidate, prepareChangeAwareExecutionPlan,
+  planIntelligentTests, diagnoseTestFailures, proposeSelectorRepairs, runAutonomousTestCycle, analyzeTestQuality, evaluateTestQualityGate, runTestSuiteMatrix, validateTestEvidenceBundle, runUnifiedTestRun, inspectTestRuntime, planChangeAwareTestRun, reviewTestCandidate, prepareChangeAwareExecutionPlan, approveSelectorRepair,
 ];
