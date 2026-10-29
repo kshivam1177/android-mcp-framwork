@@ -32,7 +32,7 @@ export function resolveUniqueTarget(target: string, nodes: NodeEvidence[]): { ma
     const candidate = v ? normalize(v) : '';
     return candidate.length > 0 && (needle.includes(candidate) || candidate.includes(needle));
   }));
-  return { matches: matches.length, clickable: matches.length === 1 && matches[0]?.clickable === true, enabled: matches.length === 1 && matches[0]?.enabled !== false };
+  return { matches: matches.length, clickable: matches.length === 1 && matches[0]?.clickable === true, enabled: matches.length === 1 && matches[0]?.enabled === true };
 }
 export function evaluateRepair(input: Omit<RepairInput, 'projectPath' | 'approve' | 'testCaseId' | 'stepNumber'> & { action?: string; now?: number }) {
   const captured = Date.parse(input.evidenceCapturedAt);
