@@ -75,3 +75,8 @@ The `testing-intelligence` workflow is enabled by default: it analyzes Native An
 ## License
 
 MIT
+
+
+## Autonomous test lifecycle
+
+For the recommended change-aware flow from Git analysis through reviewed test candidates, explicit approval, unified execution, and evidence-backed reporting, see [Autonomous test lifecycle](docs/md-files/autonomous-test-lifecycle.md). The framework keeps candidate, approved, and executed states separate and falls back to broad regression when explicit test mappings do not cover changed files.

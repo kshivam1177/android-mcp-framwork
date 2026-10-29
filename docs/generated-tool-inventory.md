@@ -66,9 +66,11 @@ Generated from the registered MCP tool list. Run npm run docs:generate to refres
 | testing-intelligence | plan_change_aware_test_run |
 | testing-intelligence | plan_intelligent_tests |
 | testing-intelligence | plan_test_run |
+| testing-intelligence | prepare_change_aware_execution_plan |
 | testing-intelligence | propose_selector_repairs |
 | testing-intelligence | refresh_test_knowledge |
 | testing-intelligence | resolve_test_instructions |
+| testing-intelligence | review_test_candidate |
 | testing-intelligence | run_autonomous_test_cycle |
 | testing-intelligence | run_project_tests |
 | testing-intelligence | run_test_case |
