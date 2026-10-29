@@ -28,6 +28,7 @@ import validateTestEvidenceBundle from './validate_test_evidence_bundle.js';
 import runUnifiedTestRun from './run_unified_test_run.js';
 import inspectTestRuntime from './inspect_test_runtime.js';
 import planChangeAwareTestRun from './plan_change_aware_test_run.js';
+import reviewTestCandidate from './review_test_candidate.js';
 import type { ToolModule } from '../types.js';
 
 export const testingIntelligenceTools: ToolModule[] = [
@@ -35,5 +36,5 @@ export const testingIntelligenceTools: ToolModule[] = [
   auditScreen, runTestCase, analyzeChanges, resolveTestInstructions, validateTestPlan,
   refreshTestKnowledge, planTestRun, consolidateTestReports, runTestWorkflow,
   validateTestEnvironment, runProjectTests, generateTestCandidate, aggregateTestEvidence, evaluateTestGate,
-  planIntelligentTests, diagnoseTestFailures, proposeSelectorRepairs, runAutonomousTestCycle, analyzeTestQuality, evaluateTestQualityGate, runTestSuiteMatrix, validateTestEvidenceBundle, runUnifiedTestRun, inspectTestRuntime, planChangeAwareTestRun,
+  planIntelligentTests, diagnoseTestFailures, proposeSelectorRepairs, runAutonomousTestCycle, analyzeTestQuality, evaluateTestQualityGate, runTestSuiteMatrix, validateTestEvidenceBundle, runUnifiedTestRun, inspectTestRuntime, planChangeAwareTestRun, reviewTestCandidate,
 ];
