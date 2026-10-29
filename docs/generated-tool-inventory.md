@@ -55,6 +55,7 @@ Generated from the registered MCP tool list. Run npm run docs:generate to refres
 | testing-intelligence | analyze_changes |
 | testing-intelligence | analyze_test_project |
 | testing-intelligence | analyze_test_quality |
+| testing-intelligence | approve_selector_repair |
 | testing-intelligence | audit_screen |
 | testing-intelligence | consolidate_test_reports |
 | testing-intelligence | diagnose_test_failures |
