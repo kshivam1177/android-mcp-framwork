@@ -1,7 +1,7 @@
 # Converter and Runner
 
-Phase 4 of the TestOrbit plan. The plan of record is
-`~/workspace/test-automation-mcp/testorbit-final-implementation-plan.md`
+Phase 4 of the test-orbit plan. The plan of record is
+`~/workspace/test-automation-mcp/revamp-final-implementation-plan.md`
 (Part A, Part C C1/C4, D6); this doc is the design summary the drift
 report reads — it does not replace the plan.
 
@@ -25,7 +25,7 @@ stable.
   lossy**: the JSON is canonical, the YAML is generated from it.
 - Every generated YAML carries a header with the source JSON's
   hash + `generatedAt` + `schemaVersion: 2`. CI regenerates the
-  YAML and fails on diff (B15; see `~/workspace/your_files/testorbit.yml`).
+  YAML and fails on diff (B15; see `~/workspace/your_files/test-orbit.yml`).
 - The converter emits the variant assertion (`assertVisible` on an
   element unique to the expected variant) as the first step of
   every variant-scoped test.
@@ -41,7 +41,7 @@ stable.
 
 ## Runner: `orbit run`
 
-The TestOrbit Runner (`src/testorbit/application/run-test.ts`) is a thin
+The test-orbit Runner (`src/testorbit/application/run-test.ts`) is a thin
 wrapper around Maestro, owning exactly the five duties a wrapper
 *can* do:
 
@@ -68,7 +68,7 @@ executor path. Replay is 0 LLM calls — that is the whole point.
 ## Run report (standardised Phase 9)
 
 One format, mobile + web (`run-report.json` in
-`<platform>/test-reports/<yyyy-mm-dd>/<hhmmss>-testorbit-<runId>/`):
+`<platform>/test-reports/<yyyy-mm-dd>/<hhmmss>-test-orbit-<runId>/`):
 
 - `testId`, `platform`, `startedAt`, `durationMs`, `success`.
 - `llmCalls`: `{ plan, record, replay }` — replay is always `0`
@@ -97,13 +97,13 @@ rerun command — with typed values redacted.
 **Status (Phase 9): open inconsistency, documented — not silently
 rewired.**
 
-The platform-wise rule says every TestOrbit file lives under
+The platform-wise rule says every test-orbit file lives under
 `<platform>/` in the project tree. The converter and the Runner
 follow it: test cases live at
 `<platform>/testcases/<testId>.json` and the Runner reads exactly
 that path. But the host-agent `save_test_case` MCP tool
 (`src/tools/testing-intelligence/save_test_case.ts`) still writes
-to the flat `.testorbit/testcases/` path — only its
+to the flat `.test-orbit/testcases/` path — only its
 schema changed to v2. The flat path is also what
 `list_test_cases` and `run_test_case` read.
 
@@ -119,7 +119,7 @@ existing flat files into their platform folders; update
 `list_test_cases` and `run_test_case` to read the platform path
 in the same change. Owner: whoever owns the host-agent
 testing-intelligence tools (`save_test_case`,
-`list_test_cases`, `run_test_case`) — not the TestOrbit Runner,
+`list_test_cases`, `run_test_case`) — not the test-orbit Runner,
 which already follows the platform-wise rule. Until the
 follow-up lands, tests intended for `orbit run` must be created
 via `orbit convert`, not via `save_test_case`.

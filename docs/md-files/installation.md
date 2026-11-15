@@ -8,34 +8,34 @@
 - A Gradle wrapper in your Android project (recommended) or Gradle on `PATH`
 - Optional: Google's Android CLI installed separately for the `android-cli` workflow
 
-TestOrbit itself does not require Python. Run `testorbit doctor` to check the local Android toolchain.
+test-orbit itself does not require Python. Run `test-orbit doctor` to check the local Android toolchain.
 
 ## Install
 
 ```bash
-npm install -g testorbit@latest
+npm install -g test-orbit@latest
 ```
 
 Verify:
 
 ```bash
-testorbit --help
-testorbit doctor
+test-orbit --help
+test-orbit doctor
 ```
 
 ### Run without installing globally
 
 ```bash
-npx -y testorbit@latest mcp
+npx -y test-orbit@latest mcp
 ```
 
 ## Updating
 
 ```bash
-npm install -g testorbit@latest
+npm install -g test-orbit@latest
 ```
 
-When using the `npx -y testorbit@latest` form in your MCP client config, npx re-resolves the package version according to its normal cache behavior.
+When using the `npx -y test-orbit@latest` form in your MCP client config, npx re-resolves the package version according to its normal cache behavior.
 
 ## Next
 

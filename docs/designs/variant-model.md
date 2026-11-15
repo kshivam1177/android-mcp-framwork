@@ -1,7 +1,7 @@
 # Variant model
 
-Phase 2 of the TestOrbit plan. The plan of record is
-`~/workspace/test-automation-mcp/testorbit-final-implementation-plan.md`
+Phase 2 of the test-orbit plan. The plan of record is
+`~/workspace/test-automation-mcp/revamp-final-implementation-plan.md`
 (Part B, B2/B4/D8/D9); this doc is the design summary the drift
 report reads — it does not replace the plan.
 

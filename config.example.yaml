@@ -1,5 +1,5 @@
-# TestOrbit project config.
-# Created at .testorbit/config.yaml by `testorbit setup`.
+# test-orbit project config.
+# Created at .test-orbit/config.yaml by `test-orbit setup`.
 # Every field is optional; the whole file is optional.
 
 schemaVersion: 1

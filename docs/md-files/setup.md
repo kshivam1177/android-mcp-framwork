@@ -5,16 +5,16 @@
 From your Android or Flutter project's root:
 
 ```bash
-testorbit setup
+test-orbit setup
 ```
 
-This creates `.testorbit/config.yaml` if it doesn't exist. Existing canonical configurations are never overwritten.
+This creates `.test-orbit/config.yaml` if it doesn't exist. Existing canonical configurations are never overwritten.
 
-If the project already contains `.android-build-mcp/` or `.androidbuildmcp/`, setup reports that legacy directory. Review the files and run `testorbit setup --migrate` to copy them into `.testorbit/`; the migration does not overwrite existing files or delete the old directory.
+If the project already contains `.android-build-mcp/` or `.androidbuildmcp/`, setup reports that legacy directory. Review the files and run `test-orbit setup --migrate` to copy them into `.test-orbit/`; the migration does not overwrite existing files or delete the old directory.
 
 ## The config file
 
-`.testorbit/config.yaml` is project-scoped. A monorepo can keep one configuration for each project. See [`config.example.yaml`](../../config.example.yaml) for the complete schema.
+`.test-orbit/config.yaml` is project-scoped. A monorepo can keep one configuration for each project. See [`config.example.yaml`](../../config.example.yaml) for the complete schema.
 
 - **`enabledWorkflows`** controls which workflows are exposed.
 - **`customWorkflows`** enables selected tools outside their parent workflow.
@@ -30,7 +30,7 @@ If you work across multiple Android projects from the same MCP client, `session_
 ## Verifying the environment
 
 ```bash
-testorbit doctor
+test-orbit doctor
 ```
 
 The doctor command checks Node.js-visible Android tooling such as `adb`, Java, Gradle, Android SDK variables, the emulator binary, build-tools and the optional Google Android CLI integration.

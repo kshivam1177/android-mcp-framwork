@@ -1,4 +1,4 @@
-# TestOrbit design docs — SITEMAP
+# test-orbit design docs — SITEMAP
 
 EGM rule: approved specs live under `docs/designs/` with this
 index. This file is the drift report's input (Phase 10): it maps
@@ -9,7 +9,7 @@ that implements it.
 
 The full implementation plan — 132 KB, Parts A–F, Phases 0–10 —
 lives **outside the repo** at
-`~/workspace/test-automation-mcp/testorbit-final-implementation-plan.md`.
+`~/workspace/test-automation-mcp/revamp-final-implementation-plan.md`.
 It is deliberately not copied into the repo. The docs below are
 short design summaries + pointers; where a doc and the plan
 disagree, the plan wins and the divergence goes in the drift
@@ -26,24 +26,24 @@ report.
 | [measurement-model.md](measurement-model.md) | Phase 9 tasks 2–5, Part D D6 | `src/testorbit/application/report.ts`, `run-test.ts`; `src/testorbit/domain/testcase-schemas.ts` (`RunReport`) |
 | [screen-split-merge-migration.md](screen-split-merge-migration.md) | Phase 3 task 3, enforced Phase 6 | `src/testorbit/core/migration-check.ts`, `src/testorbit/application/check-map-migration.ts` |
 
-## Other TestOrbit docs
+## Other test-orbit docs
 
-- `src/testorbit/README.md` — the TestOrbit README (Phase 9 task 7):
-  what TestOrbit is and is not, the record → save → replay loop,
+- `src/testorbit/README.md` — the test-orbit README (Phase 9 task 7):
+  what test-orbit is and is not, the record → save → replay loop,
   folder layout, how to add a screen / variant / test, the rules.
 - `src/testorbit/{core,domain,application,infrastructure,cli,config}/README.md`
   — one short README per module (Phase 9 task 7).
-- `~/workspace/your_files/testorbit.yml` — the CI workflow handover
+- `~/workspace/your_files/test-orbit.yml` — the CI workflow handover
   copy (Phase 9 task 1). Lives outside the repo by design; Shivam
-  adds it manually as `.github/workflows/testorbit.yml`. The local
-  equivalent is `npm run testorbit:ci`.
+  adds it manually as `.github/workflows/test-orbit.yml`. The local
+  equivalent is `npm run test-orbit:ci`.
 
 ## Phase 9 status (2026-11-13)
 
-Done in this phase: CI handover copy + `testorbit:ci` script;
+Done in this phase: CI handover copy + `test-orbit:ci` script;
 standard run-report format with the screen-map coverage block;
 standard failure-bundle format; design docs placed here with
-this index; TestOrbit README + per-module READMEs.
+this index; test-orbit README + per-module READMEs.
 
 **Not done, by necessity — no pilot apps exist yet** (Phase 0
 task 1 not done; Phases 7–8 not run):
@@ -57,13 +57,13 @@ task 1 not done; Phases 7–8 not run):
   unset until Phase 0 task 1 names the pilots.
 - "A fresh checkout reproduces a green run from the README
   alone" (Phase 9 Verify) — the static half is verifiable
-  (`npm run testorbit:ci`); the pilot half cannot be reproduced
+  (`npm run test-orbit:ci`); the pilot half cannot be reproduced
   until the pilots exist.
 
 ## Open items (decided and documented, not silently rewired)
 
 1. **`save_test_case` writes the flat path** — the host-agent
-   tool writes `.testorbit/testcases/` while the
+   tool writes `.test-orbit/testcases/` while the
    platform-wise rule puts test cases under `<platform>/`.
    Recommended resolution + owner in
    [converter-and-runner.md](converter-and-runner.md#open-item-save_test_case-still-writes-the-flat-path).

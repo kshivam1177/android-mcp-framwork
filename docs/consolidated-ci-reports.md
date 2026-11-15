@@ -1,6 +1,6 @@
 # Consolidated CI test reports
 
-Use the `consolidate_test_reports` MCP tool after test execution to consolidate recognized report JSON files under `.testorbit/test-reports/`.
+Use the `consolidate_test_reports` MCP tool after test execution to consolidate recognized report JSON files under `.test-orbit/test-reports/`.
 
 It writes:
 - `summary.md` — human-readable counts and per-test outcomes;

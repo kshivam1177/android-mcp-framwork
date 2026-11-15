@@ -1,14 +1,14 @@
 # Measurement model (reporting standard)
 
-Phase 9 tasks 2–5 of the TestOrbit plan. The plan of record is
-`~/workspace/test-automation-mcp/testorbit-final-implementation-plan.md`
+Phase 9 tasks 2–5 of the test-orbit plan. The plan of record is
+`~/workspace/test-automation-mcp/revamp-final-implementation-plan.md`
 (Phase 9, Part D D6); this doc is the standard a reader uses to
-reproduce TestOrbit's numbers — it does not replace the plan.
+reproduce test-orbit's numbers — it does not replace the plan.
 
 ## The standard run report (one format, mobile + web)
 
 Every run writes `run-report.json` into
-`<platform>/test-reports/<yyyy-mm-dd>/<hhmmss>-testorbit-<runId>/`
+`<platform>/test-reports/<yyyy-mm-dd>/<hhmmss>-test-orbit-<runId>/`
 (see `converter-and-runner.md` for the field list). The same
 format covers mobile (Maestro) and web (Playwright) runs — web's
 canonical form is the Playwright test itself, but its report is
@@ -92,7 +92,7 @@ happens with the Phase 7/8 pilots, using this method.
 
 ## Reproducing the numbers
 
-1. `npm run testorbit:ci` — static checks green (typecheck, lint,
+1. `npm run test-orbit:ci` — static checks green (typecheck, lint,
    layout, tests, coverage).
 2. `orbit run --test <testId> --platform <platform>
    --project <projectRoot>` — replay; read

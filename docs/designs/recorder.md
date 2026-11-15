@@ -1,7 +1,7 @@
 # Recorder
 
-Phase 5 of the TestOrbit plan. The plan of record is
-`~/workspace/test-automation-mcp/testorbit-final-implementation-plan.md`
+Phase 5 of the test-orbit plan. The plan of record is
+`~/workspace/test-automation-mcp/revamp-final-implementation-plan.md`
 (Part B B8, Part D D2/D7); this doc is the design summary the drift
 report reads — it does not replace the plan.
 
@@ -77,7 +77,7 @@ recording path has no dry-run and previews in chat instead.
 The tree readers for the other platforms exist:
 `IosHierarchyProvider` reads WebDriverAgent's `/source` JSON, and
 the Flutter tree reader converts a Patrol semantics dump
-(`integration_test/testorbit_tree_dump_test.dart`, run with
+(`integration_test/test-orbit_tree_dump_test.dart`, run with
 `patrol test`) to the core hierarchy shape. `RecordingDetector`
 itself is provider-agnostic — it takes any `HierarchyProvider`.
 

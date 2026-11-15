@@ -1,6 +1,6 @@
 # Screen splits and merges — the element-id migration-list rule
 
-Phase 3 task 3 of the TestOrbit plan. Enforcement lands in Phase 6
+Phase 3 task 3 of the test-orbit plan. Enforcement lands in Phase 6
 (`check-screen-map`); this document is the rule the checker enforces.
 
 ## The rule

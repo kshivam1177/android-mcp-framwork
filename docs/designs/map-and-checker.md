@@ -1,7 +1,7 @@
 # Screen map, checker, and rename
 
-Phase 6 of the TestOrbit plan. The plan of record is
-`~/workspace/test-automation-mcp/testorbit-final-implementation-plan.md`
+Phase 6 of the test-orbit plan. The plan of record is
+`~/workspace/test-automation-mcp/revamp-final-implementation-plan.md`
 (Part B B7/B12/C3/C16, D11); this doc is the design summary the
 drift report reads — it does not replace the plan.
 

@@ -4,7 +4,7 @@ The `analyze_changes` MCP tool inspects committed and working-tree changes, reco
 
 ## Explicit test-case mappings
 
-Add one or more optional string-array fields to a test case JSON file in `.testorbit/testcases/`:
+Add one or more optional string-array fields to a test case JSON file in `.test-orbit/testcases/`:
 
 - `relatedFiles`
 - `affectedPaths`
