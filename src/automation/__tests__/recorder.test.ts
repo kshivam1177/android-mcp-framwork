@@ -22,8 +22,8 @@ describe('UI action recorder', () => {
     const saved = await stopRecording();
     expect(saved.actionCount).toBe(1);
     expect(isRecording()).toBe(false);
-    expect(saved.recordingPath).toBe('.testorbit/android/recordings/login-flow.json');
-    const contents = JSON.parse(await readFile(path.join(root, '.testorbit', 'android', 'recordings', 'login-flow.json'), 'utf8'));
+    expect(saved.recordingPath).toBe('.test-orbit/android/recordings/login-flow.json');
+    const contents = JSON.parse(await readFile(path.join(root, '.test-orbit', 'android', 'recordings', 'login-flow.json'), 'utf8'));
     expect(contents.schemaVersion).toBe(2);
     expect(contents.platform).toBe('android');
     expect(contents.actions[0].type).toBe('tap');
@@ -43,8 +43,8 @@ describe('UI action recorder', () => {
       detectionNote: 'hierarchy dump failed: device offline',
     });
     const saved = await stopRecording();
-    expect(saved.recordingPath).toBe('.testorbit/ios/recordings/ios-flow.json');
-    const contents = JSON.parse(await readFile(path.join(root, '.testorbit', 'ios', 'recordings', 'ios-flow.json'), 'utf8'));
+    expect(saved.recordingPath).toBe('.test-orbit/ios/recordings/ios-flow.json');
+    const contents = JSON.parse(await readFile(path.join(root, '.test-orbit', 'ios', 'recordings', 'ios-flow.json'), 'utf8'));
     expect(contents.schemaVersion).toBe(2);
     expect(contents.platform).toBe('ios');
     expect(contents.actions[0].screenId).toBe('checkout');
@@ -61,7 +61,7 @@ describe('UI action recorder', () => {
     recordAction({ type: 'tap', durationMs: 1, selector: { resourceId: 'password_field' } });
     recordAction({ type: 'type_text', durationMs: 1, text: 'secret-value' });
     await stopRecording();
-    const contents = JSON.parse(await readFile(path.join(root, '.testorbit', 'android', 'recordings', 'private-flow.json'), 'utf8'));
+    const contents = JSON.parse(await readFile(path.join(root, '.test-orbit', 'android', 'recordings', 'private-flow.json'), 'utf8'));
     expect(contents.actions[0].redacted).toBe(true);
     expect(contents.actions[0].text).toBeUndefined();
     expect(contents.actions[2].redacted).toBe(true);

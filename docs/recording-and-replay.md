@@ -11,9 +11,9 @@ Recording is opt-in. It captures the core UI automation calls made through `tap`
 
 Files are written under the project root:
 
-- `.testorbit/recordings/<flowId>.json` — versioned action log.
-- `.testorbit/recording-evidence/<flowId>/` — starting/ending screenshots and replay failure evidence.
-- `.testorbit/test-reports/YYYY-MM-DD/<time>-replay-<runId>/replay-report.json` — per-step replay report.
+- `.test-orbit/recordings/<flowId>.json` — versioned action log.
+- `.test-orbit/recording-evidence/<flowId>/` — starting/ending screenshots and replay failure evidence.
+- `.test-orbit/test-reports/YYYY-MM-DD/<time>-replay-<runId>/replay-report.json` — per-step replay report.
 
 ## Replay behavior and safety
 

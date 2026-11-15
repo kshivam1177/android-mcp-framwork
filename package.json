@@ -1,11 +1,11 @@
 {
-  "name": "testorbit",
+  "name": "test-orbit",
   "version": "0.1.52",
-  "description": "TestOrbit — record once, replay fast, forever. A Model Context Protocol (MCP) server and CLI for testing any app: Android, iOS, Flutter and web. Record a flow once in plain language, replay it deterministically with zero LLM calls, export Maestro YAML or Playwright tests.",
+  "description": "test-orbit — record once, replay fast, forever. A Model Context Protocol (MCP) server and CLI for testing any app: Android, iOS, Flutter and web. Record a flow once in plain language, replay it deterministically with zero LLM calls, export Maestro YAML or Playwright tests.",
   "type": "module",
   "license": "MIT",
   "bin": {
-    "testorbit": "build/cli/index.js",
+    "test-orbit": "build/cli/index.js",
     "orbit": "./build/testorbit/cli/index.js",
     "skill-gen": "build/cli/skill-gen.js"
   },
@@ -53,10 +53,10 @@
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
     "lint": "eslint src",
-    "lint:testorbit": "eslint src/testorbit",
-    "typecheck:testorbit": "tsc -p tsconfig.testorbit.json --noEmit",
-    "testorbit:check-layout": "npm run build && node build/testorbit/cli/check-layout.js",
-    "testorbit:ci": "npm run typecheck && npm run typecheck:testorbit && npm run lint && npm run lint:testorbit && npm run testorbit:check-layout && npm test && npm run coverage",
+    "lint:test-orbit": "eslint src/testorbit",
+    "typecheck:test-orbit": "tsc -p tsconfig.test-orbit.json --noEmit",
+    "test-orbit:check-layout": "npm run build && node build/testorbit/cli/check-layout.js",
+    "test-orbit:ci": "npm run typecheck && npm run typecheck:test-orbit && npm run lint && npm run lint:test-orbit && npm run test-orbit:check-layout && npm test && npm run coverage",
     "docs:generate": "npm run build && node scripts/generate-tool-inventory.mjs --write",
     "docs:check": "npm run build && node scripts/generate-tool-inventory.mjs --check",
     "test:gate": "node scripts/evaluate-test-gate.mjs"

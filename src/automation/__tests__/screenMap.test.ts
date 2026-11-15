@@ -19,7 +19,7 @@ describe('createScreenMap', () => {
   it('stores stable selectors, coordinates, and a fingerprint stamp', () => {
     const options = {
       screenId: 'login', deviceId: 'emulator-5554', backend: 'adb',
-      screenshotPath: '.testorbit/screen-maps/images/login.png',
+      screenshotPath: '.test-orbit/screen-maps/images/login.png',
       width: 120, height: 90, nodes: [node], capturedAt: '2026-10-26T00:00:00.000Z',
     };
     const map = createScreenMap(options);

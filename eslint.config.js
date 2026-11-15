@@ -15,7 +15,7 @@ export default [
     }
   },
   {
-    // TestOrbit (src/testorbit/) is held to the enterprise standards in the plan
+    // test-orbit (src/testorbit/) is held to the enterprise standards in the plan
     // (Part D): strict typing, layered imports, file/function size caps,
     // JSDoc on public functions, no import cycles. These rules apply ONLY
     // to src/testorbit/ — the existing 118-tool codebase keeps its own rules.
@@ -36,7 +36,7 @@ export default [
       ],
       'import/resolver': {
         typescript: {
-          project: ['tsconfig.json', 'tsconfig.testorbit.json'],
+          project: ['tsconfig.json', 'tsconfig.test-orbit.json'],
           noWarnOnMultipleProjects: true,
         },
       },

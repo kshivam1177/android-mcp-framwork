@@ -47,8 +47,8 @@ Example: configure a minimum changed-file threshold and regression comparison:
   "projectPath": ".",
   "coveragePath": "coverage/lcov.info",
   "minChangedFileCoveragePercent": 80,
-  "baselineReportPath": ".testorbit/test-reports/baseline/summary.json",
-  "currentReportPath": ".testorbit/test-reports/current/summary.json",
+  "baselineReportPath": ".test-orbit/test-reports/baseline/summary.json",
+  "currentReportPath": ".test-orbit/test-reports/current/summary.json",
   "failOnRegression": true
 }
 ```

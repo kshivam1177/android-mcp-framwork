@@ -1,6 +1,6 @@
 # Workflows
 
-A workflow is a named group of related tools. TestOrbit enables six workflows by default, including testing intelligence, and lets you enable optional workflows as needed.
+A workflow is a named group of related tools. test-orbit enables six workflows by default, including testing intelligence, and lets you enable optional workflows as needed.
 
 ## Default state
 
@@ -26,7 +26,7 @@ Optional workflows are `emulator-management`, `debugging`, `project-discovery`, 
 
 ## Persistent configuration
 
-Edit `.testorbit/config.yaml` and restart the MCP client to change enabled workflows:
+Edit `.test-orbit/config.yaml` and restart the MCP client to change enabled workflows:
 
 ```yaml
 enabledWorkflows:

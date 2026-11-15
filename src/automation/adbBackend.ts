@@ -4,12 +4,12 @@ import type { ExecOptions } from '../utils/exec.js';
 import { TestOrbitFrameworkError } from '../types.js';
 import type { AutomationBackend } from './backend.js';
 
-const DUMP_PATH = '/data/local/tmp/testorbit_dump.xml';
+const DUMP_PATH = '/data/local/tmp/test-orbit_dump.xml';
 
 /**
  * Build an exec options object carrying only the fields that are set:
  * an explicit `signal: undefined` is not assignable to the optional
- * `signal` field under `exactOptionalPropertyTypes` (the TestOrbit
+ * `signal` field under `exactOptionalPropertyTypes` (the test-orbit
  * tsconfig), so optional fields are spread in only when defined.
  */
 function shellOptions(signal?: AbortSignal, timeoutMs?: number): Pick<ExecOptions, 'timeoutMs' | 'signal'> {

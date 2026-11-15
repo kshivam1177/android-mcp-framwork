@@ -1,9 +1,9 @@
 {
   "mcpServers": {
-    "testorbit": {
+    "test-orbit": {
       "command": "node",
       "args": [
-        "/absolute/path/to/testorbit/build/cli/index.js",
+        "/absolute/path/to/test-orbit/build/cli/index.js",
         "mcp"
       ],
       "env": {

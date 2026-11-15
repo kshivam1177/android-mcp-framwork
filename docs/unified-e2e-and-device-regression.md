@@ -2,7 +2,7 @@
 
 ## Unified test run
 
-Call run_unified_test_run with execute=false first to inspect the selected work. Then rerun with execute=true. The tool uses one run ID for native/Flutter suites and saved cases, stores a durable manifest under .testorbit/test-reports/.runs/<runId>.json, and writes summary.json and summary.md into the timestamped report directory.
+Call run_unified_test_run with execute=false first to inspect the selected work. Then rerun with execute=true. The tool uses one run ID for native/Flutter suites and saved cases, stores a durable manifest under .test-orbit/test-reports/.runs/<runId>.json, and writes summary.json and summary.md into the timestamped report directory.
 
 - Use resumeRunId with the returned run ID to resume pending work. Git HEAD and project root must match.
 - Passed work is preserved. Native suites interrupted while running can resume. An interrupted UI case is marked incomplete rather than blindly replayed because taps and submissions may have side effects.
@@ -20,4 +20,4 @@ The regression script uses the framework MCP server and requires a local Android
     TESTORBIT_TEST_PACKAGES=com.pgi.savera_storewell,com.pgi.saverastaff \
     node scripts/run-samsung-device-regression.mjs
 
-If the device serial changes, replace the ID. Reports are saved under .testorbit/test-reports/YYYY-MM-DD/*-samsung-device-/. The script records failures rather than pretending missing device access is a pass. This is a device-backed smoke test, not full business-flow E2E coverage; use saved UI test cases and the unified runner for app-specific workflows.
+If the device serial changes, replace the ID. Reports are saved under .test-orbit/test-reports/YYYY-MM-DD/*-samsung-device-/. The script records failures rather than pretending missing device access is a pass. This is a device-backed smoke test, not full business-flow E2E coverage; use saved UI test cases and the unified runner for app-specific workflows.
