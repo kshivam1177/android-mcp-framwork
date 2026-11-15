@@ -14,7 +14,7 @@ export function textResult(text: string, structuredContent?: Record<string, unkn
  * empty/ambiguous success - matches TestOrbitFrameworkError's `code` so an agent
  * can branch on failure type without string-matching prose.
  *
- * TestOrbit typed errors (Phase 2) are mapped the same way: the stable code,
+ * test-orbit typed errors (Phase 2) are mapped the same way: the stable code,
  * the message, the remediation telling the caller what to do next, and the
  * named context values — never a bare [UNEXPECTED_ERROR].
  */

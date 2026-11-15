@@ -16,7 +16,7 @@ export async function runAdb(args: string[], options: Pick<ExecOptions, 'timeout
     if (err instanceof TestOrbitFrameworkError && err.code === 'COMMAND_FAILED' && /not found on PATH/.test(err.message)) {
       throw new TestOrbitFrameworkError(
         'ADB_NOT_FOUND',
-        `adb was not found (looked for "${getAdbPath()}"). Set paths.adbPath in .testorbit/config.yaml, or add Android SDK platform-tools to PATH.`
+        `adb was not found (looked for "${getAdbPath()}"). Set paths.adbPath in .test-orbit/config.yaml, or add Android SDK platform-tools to PATH.`
       );
     }
     throw err;

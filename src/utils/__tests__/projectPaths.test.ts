@@ -6,7 +6,7 @@ import { PROJECT_CONFIG_DIR, findProjectConfigPath } from '../paths.js';
 
 const roots: string[] = [];
 function tempRoot(): string {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-paths-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-paths-'));
   roots.push(root);
   return root;
 }
