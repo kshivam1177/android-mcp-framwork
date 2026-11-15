@@ -46,7 +46,7 @@ const TAG_RE = /<node((?:\s+[a-zA-Z_:][\w:.-]*="[^"]*")*)\s*(\/)?>|<\/node>/g;
 export function parseUiHierarchy(xml: string): UiNode[] {
   const nodes: UiNode[] = [];
   // Stack of open nodes' refs, root first: the top is the current node's
-  // parent, the whole stack is its ancestor chain. TestOrbit's stable id
+  // parent, the whole stack is its ancestor chain. test-orbit's stable id
   // derivation (B3) needs both — the old depth-only stack discarded them.
   const refStack: string[] = [];
   let refCounter = 0;
@@ -67,7 +67,7 @@ export function parseUiHierarchy(xml: string): UiNode[] {
     const parentRef = refStack.length > 0 ? refStack[refStack.length - 1] : undefined;
     // Optional UiNode fields are assigned only when present: an explicit
     // `undefined` is not assignable under `exactOptionalPropertyTypes`
-    // (the TestOrbit tsconfig).
+    // (the test-orbit tsconfig).
     const className = attrs.class || undefined;
     const text = attrs.text || undefined;
     const contentDesc = attrs['content-desc'] || undefined;

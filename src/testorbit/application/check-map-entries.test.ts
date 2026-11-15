@@ -24,7 +24,7 @@ describe('CheckMapUseCase map-entry rules', () => {
   let projectRoot: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-checkmap-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-checkmap-'));
   });
 
   afterEach(() => {
@@ -42,7 +42,7 @@ describe('CheckMapUseCase map-entry rules', () => {
   it('fails MAP_ENTRY_UNKNOWN_SCREEN when the map lists a ghost screen', () => {
     writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));
     generateMap(projectRoot);
-    const mapPath = path.join(projectRoot, '.testorbit', 'android', 'screen-map.json');
+    const mapPath = path.join(projectRoot, '.test-orbit', 'android', 'screen-map.json');
     const map = JSON.parse(fs.readFileSync(mapPath, 'utf8')) as { screens: Record<string, unknown>[] };
     map.screens.push({ screenId: 'ghost', variants: [], elementCount: 0 });
     fs.writeFileSync(mapPath, JSON.stringify(map), 'utf8');
@@ -54,7 +54,7 @@ describe('CheckMapUseCase map-entry rules', () => {
     writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));
     generateMap(projectRoot);
     fs.writeFileSync(
-      path.join(projectRoot, '.testorbit', 'android', 'screen-map.json'),
+      path.join(projectRoot, '.test-orbit', 'android', 'screen-map.json'),
       '{bad',
       'utf8',
     );
@@ -79,7 +79,7 @@ describe('CheckMapUseCase variant and migration rules', () => {
   let projectRoot: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-checkmap-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-checkmap-'));
   });
 
   afterEach(() => {
@@ -105,7 +105,7 @@ describe('CheckMapUseCase variant and migration rules', () => {
 
   it('fails INVALID_SCREEN_ID when a screen folder name is not a valid id', () => {
     writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));
-    fs.mkdirSync(path.join(projectRoot, '.testorbit', 'android', 'screens', 'bad id!'), { recursive: true });
+    fs.mkdirSync(path.join(projectRoot, '.test-orbit', 'android', 'screens', 'bad id!'), { recursive: true });
     const { report } = checkMap(projectRoot);
     expect(failRules(report)).toContain('INVALID_SCREEN_ID');
   });
@@ -115,7 +115,7 @@ describe('CheckMapUseCase migration rules', () => {
   let projectRoot: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-checkmap-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-checkmap-'));
   });
 
   afterEach(() => {
@@ -150,7 +150,7 @@ describe('CheckMapUseCase file rules', () => {
   let projectRoot: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-checkmap-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-checkmap-'));
   });
 
   afterEach(() => {

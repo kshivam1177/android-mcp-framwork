@@ -57,10 +57,10 @@ function loginCheckoutRecording(): TestOrbitRecordingDocument {
 
 /** Temp project with login + checkout learned and a login form-spec. */
 function makeProject(): { projectRoot: string; useCase: ConvertRecordingUseCase } {
-  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-convert-'));
+  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-convert-'));
   writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));
   writeFixtureScreenTree(projectRoot, 'android', toScreenId('checkout'));
-  const loginDir = path.join(projectRoot, '.testorbit', 'android', 'screens', 'login');
+  const loginDir = path.join(projectRoot, '.test-orbit', 'android', 'screens', 'login');
   fs.writeFileSync(
     path.join(loginDir, 'form-spec.json'),
     JSON.stringify({ fields: [{ elementId: 'login.password' }], submitButton: null }, null, 2),
@@ -115,7 +115,7 @@ function assertConvertedOutput(
   expect(result.submitElementId).toBe('login.submit');
   const formSpec = JSON.parse(
     fs.readFileSync(
-      path.join(projectRoot, '.testorbit', 'android', 'screens', 'login', 'form-spec.json'),
+      path.join(projectRoot, '.test-orbit', 'android', 'screens', 'login', 'form-spec.json'),
       'utf8',
     ),
   ) as { submitButton: string | null };

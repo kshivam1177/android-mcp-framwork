@@ -300,7 +300,7 @@ export class CopyTestUseCase {
     writeFileAtomic(testCasePath, `${JSON.stringify(testCase, null, 2)}\n`);
     writeFileAtomic(yamlPath, yamlText);
     const envExample = [
-      `# TestOrbit env manifest for ${newTestId} — names only, no values.`,
+      `# test-orbit env manifest for ${newTestId} — names only, no values.`,
       `# Copied from ${input.fromPlatform}/${input.testId}; load from the environment at test setup.`,
       ...envVars.map((name) => `${name}=`),
     ].join('\n');

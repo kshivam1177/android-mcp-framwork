@@ -3,7 +3,7 @@
 One file per use case: learn, detect, record, convert, run,
 copy, generate-map, check-map, rename-screen, report. Use cases
 orchestrate `core/` logic and `infrastructure/` adapters; they
-own the TestOrbit workflows and nothing else.
+own the test-orbit workflows and nothing else.
 
 ## Layer rule
 
@@ -21,7 +21,7 @@ LLM in the loop.
 - `convert-recording.ts`, `maestro-export.ts` — recording →
   JSON test case → Maestro YAML.
 - `run-test.ts`, `post-run-analysis.ts`, `report.ts` — the
-  TestOrbit Runner, post-run failure analysis, run report +
+  test-orbit Runner, post-run failure analysis, run report +
   failure-bundle writer.
 - `generate-map.ts`, `check-map.ts` (+ `check-map-screen.ts`,
   `check-map-entries.ts`, `check-map-migration.ts`),

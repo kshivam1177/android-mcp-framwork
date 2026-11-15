@@ -271,7 +271,7 @@ export class ConvertRecordingUseCase {
     writeFileAtomic(testCasePath, `${JSON.stringify(testCase, null, 2)}\n`);
     writeFileAtomic(yamlPath, yamlText);
     const envExample = [
-      `# TestOrbit env manifest for ${input.testId} — names only, no values.`,
+      `# test-orbit env manifest for ${input.testId} — names only, no values.`,
       '# Load these from the environment at test setup; never commit values.',
       ...envVars.map((name) => `${name}=`),
     ].join('\n');

@@ -1,14 +1,14 @@
-# TestOrbit — record once, save as a test, replay with 0 LLM calls
+# test-orbit — record once, save as a test, replay with 0 LLM calls
 
-TestOrbit is the test-automation kit inside `testorbit`:
+test-orbit is the test-automation kit inside `test-orbit`:
 a coding agent records a flow once in plain language, the flow is
 saved as a deterministic test, and the test replays through
 Maestro (mobile) or Playwright (web) with **zero LLM calls**.
 
-## What TestOrbit is
+## What test-orbit is
 
 - **Record → save → replay.** The host agent drives the app in
-  plain language while TestOrbit records every action with the
+  plain language while test-orbit records every action with the
   `(screen, variant, elementId)` it acted on. The recording is
   converted to a canonical JSON test case + a generated Maestro
   YAML. `orbit run` replays the YAML.
@@ -19,13 +19,13 @@ Maestro (mobile) or Playwright (web) with **zero LLM calls**.
 - **Deterministic replay.** The saved test is the test. Replay
   needs no model, no API key, no cost.
 
-## What TestOrbit is not
+## What test-orbit is not
 
 - Not an in-server LLM planner (deferred to a Phase 10 decision,
   only for a named headless case — none exists yet).
 - Not a custom YAML executor, not a web screen learner, not
   self-healing. Maestro runs the YAML; Playwright runs the web
-  test. TestOrbit wraps them, it does not re-implement them.
+  test. test-orbit wraps them, it does not re-implement them.
 - Not a recorder of coordinates: actions address stable element
   ids, never screen coordinates.
 - Not a place for secrets: typed values are `${ENV_VAR}`
@@ -42,8 +42,8 @@ run     →  test-reports/<date>/<run>/run-report.json  (0 LLM calls)
 check   →  screen-map.json + check-screen-map report
 ```
 
-Every TestOrbit file lives under
-`<projectRoot>/.testorbit/<platform>/`, one folder
+Every test-orbit file lives under
+`<projectRoot>/.test-orbit/<platform>/`, one folder
 per platform (`android/`, `ios/`, `flutter/`, `web/`). Nothing is
 written outside the project folder.
 
@@ -84,7 +84,7 @@ written outside the project folder.
 
 ## How the LLM plugs in (Part D7)
 
-The LLM is **not inside TestOrbit's code** — TestOrbit never calls an
+The LLM is **not inside test-orbit's code** — test-orbit never calls an
 LLM API. The LLM lives in the host agent and plugs in at three
 points: **plan** (once per flow, at record time — the agent
 decides each step), **convert** (once per flow — naming the test
@@ -96,13 +96,13 @@ distinguishes plan / record / replay LLM counts.
 ## Checks and CI
 
 ```sh
-npm run testorbit:ci   # typecheck, lint, layout, tests, coverage — the local CI
-npm run testorbit:check-layout
+npm run test-orbit:ci   # typecheck, lint, layout, tests, coverage — the local CI
+npm run test-orbit:check-layout
 ```
 
 The GitHub workflow is a handover copy at
-`~/workspace/your_files/testorbit.yml` (Shivam adds it manually as
-`.github/workflows/testorbit.yml`; the App token cannot push
+`~/workspace/your_files/test-orbit.yml` (Shivam adds it manually as
+`.github/workflows/test-orbit.yml`; the App token cannot push
 workflow files). Its static job runs on every push to `rewamp`;
 its device jobs are gated on pilot-app inputs that do not exist
 yet — there is no pilot app, no APK, no demo flow in this repo.
@@ -111,6 +111,6 @@ yet — there is no pilot app, no APK, no demo flow in this repo.
 
 - Design docs + index: `docs/designs/` (`SITEMAP.md`).
 - Plan of record (not copied into the repo):
-  `~/workspace/test-automation-mcp/testorbit-final-implementation-plan.md`.
+  `~/workspace/test-automation-mcp/revamp-final-implementation-plan.md`.
 - Per-module READMEs: `core/`, `domain/`, `application/`,
   `infrastructure/`, `cli/`, `config/` under this directory.

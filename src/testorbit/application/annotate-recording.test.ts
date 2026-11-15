@@ -36,7 +36,7 @@ function recording(actions: Record<string, unknown>[]): TestOrbitRecordingDocume
 
 /** Temp project with login + checkout learned. */
 function makeProject(): string {
-  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-annotate-'));
+  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-annotate-'));
   writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));
   writeFixtureScreenTree(projectRoot, 'android', toScreenId('checkout'));
   return projectRoot;

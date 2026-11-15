@@ -60,7 +60,7 @@ export class FileDeviceFleet {
   readonly registryPath: string;
   readonly leasesPath: string;
   constructor(projectRoot: string) {
-    const directory = path.resolve(projectRoot, '.testorbit');
+    const directory = path.resolve(projectRoot, '.test-orbit');
     this.registryPath = path.join(directory, 'device-fleet.json');
     this.leasesPath = path.join(directory, 'device-fleet-leases.json');
   }

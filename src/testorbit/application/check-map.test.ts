@@ -25,7 +25,7 @@ describe('CheckMapUseCase map rules', () => {
   let projectRoot: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-checkmap-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-checkmap-'));
   });
 
   afterEach(() => {
@@ -75,7 +75,7 @@ describe('CheckMapUseCase screen rules', () => {
   let projectRoot: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-checkmap-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-checkmap-'));
   });
 
   afterEach(() => {

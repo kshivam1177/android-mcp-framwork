@@ -36,10 +36,10 @@ function writeIosVariant(screenDir: string, variantId: string, required: string[
 
 /** Write the iOS target tree: same ids, iOS-style resourceIds, shared contentDesc. */
 function writeIosTree(projectRoot: string): void {
-  const screenDir = path.join(projectRoot, '.testorbit', 'ios', 'screens', 'login', 'variants');
+  const screenDir = path.join(projectRoot, '.test-orbit', 'ios', 'screens', 'login', 'variants');
   fs.mkdirSync(screenDir, { recursive: true });
   fs.writeFileSync(
-    path.join(projectRoot, '.testorbit', 'ios', 'screens', 'login', 'screen.json'),
+    path.join(projectRoot, '.test-orbit', 'ios', 'screens', 'login', 'screen.json'),
     JSON.stringify({ schemaVersion: 2, screenId: 'login', appPackage: 'com.shop.ios' }),
     'utf8',
   );
@@ -50,7 +50,7 @@ function writeIosTree(projectRoot: string): void {
     enabled: true,
   });
   fs.writeFileSync(
-    path.join(projectRoot, '.testorbit', 'ios', 'screens', 'login', 'elements.json'),
+    path.join(projectRoot, '.test-orbit', 'ios', 'screens', 'login', 'elements.json'),
     JSON.stringify([
       iosElement('login.username', 'Username'),
       iosElement('login.password', 'Password'),
@@ -66,7 +66,7 @@ function writeIosTree(projectRoot: string): void {
 
 /** Give the Android source tree contentDesc values (learned elements carry them when present). */
 function addContentDescToAndroidTree(projectRoot: string): void {
-  const elementsPath = path.join(projectRoot, '.testorbit', 'android', 'screens', 'login', 'elements.json');
+  const elementsPath = path.join(projectRoot, '.test-orbit', 'android', 'screens', 'login', 'elements.json');
   const elements = JSON.parse(fs.readFileSync(elementsPath, 'utf8')) as {
     id: string;
     stableSelector: Record<string, string>;
@@ -110,7 +110,7 @@ function buildSourceTest(projectRoot: string): void {
 
 /** Remove one element from the iOS learned elements (unmappable fixture). */
 function removeIosElement(projectRoot: string, elementId: string): void {
-  const elementsPath = path.join(projectRoot, '.testorbit', 'ios', 'screens', 'login', 'elements.json');
+  const elementsPath = path.join(projectRoot, '.test-orbit', 'ios', 'screens', 'login', 'elements.json');
   const elements = JSON.parse(fs.readFileSync(elementsPath, 'utf8')) as Record<string, unknown>[];
   fs.writeFileSync(
     elementsPath,
@@ -131,7 +131,7 @@ describe('CopyTestUseCase', () => {
   let projectRoot: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-copy-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-copy-'));
     buildCopyFixture(projectRoot);
   });
 

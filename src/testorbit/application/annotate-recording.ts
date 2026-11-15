@@ -181,7 +181,7 @@ function annotateUnresolved(
   if (hit === undefined) {
     throw new ConversionError(
       `Action "${action.id}" cannot be annotated: its selector matched, but the match was lost.`,
-      'Re-run orbit convert; this is a TestOrbit bug if it repeats.',
+      'Re-run orbit convert; this is a test-orbit bug if it repeats.',
       { actionId: action.id },
     );
   }
