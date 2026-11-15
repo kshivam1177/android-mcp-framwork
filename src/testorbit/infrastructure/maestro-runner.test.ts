@@ -13,7 +13,7 @@ describe('MaestroRunner', () => {
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-maestro-'));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-maestro-'));
   });
 
   afterEach(() => {

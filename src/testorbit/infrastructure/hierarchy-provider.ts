@@ -1,7 +1,7 @@
 /**
  * Hierarchy providers (Part D, D1) — adapters behind one interface.
  *
- * The TestOrbit Runner and `orbit_detect_variant` need a fresh hierarchy dump on
+ * The test-orbit Runner and `orbit_detect_variant` need a fresh hierarchy dump on
  * any platform; each provider converts its platform's tree into the same
  * `CoreHierarchyNode` shape the matcher consumes. Providers never depend
  * on each other and never touch the cross-platform engine in
@@ -54,7 +54,7 @@ export type HierarchyDump = z.infer<typeof HierarchyDumpSchema>;
 
 /**
  * Convert a parsed hierarchy dump into core nodes. The dump schema's
- * optional fields carry explicit `undefined` under the testorbit tsconfig,
+ * optional fields carry explicit `undefined` under the test-orbit tsconfig,
  * so the conversion assigns each optional field only when present.
  *
  * @param dump - Validated hierarchy dump.

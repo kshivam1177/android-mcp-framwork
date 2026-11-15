@@ -1,5 +1,5 @@
 /**
- * Variant fixtures for unit-testing pure TestOrbit logic ONLY (Part D, D6).
+ * Variant fixtures for unit-testing pure test-orbit logic ONLY (Part D, D6).
  *
  * Two domains prove the variant model is generic (Phase 2 task 6):
  * checkout (method picker / card / UPI / COD / combined) and login
@@ -283,11 +283,11 @@ export function elementId(value: string): ElementId {
 /**
  * Write one fixture screen's learned tree into a temp project root:
  * `elements.json` plus every variant file, under
- * `<projectRoot>/.testorbit/<platform>/screens/<screenId>/`.
+ * `<projectRoot>/.test-orbit/<platform>/screens/<screenId>/`.
  * Test data only — never a flow, never shipped as an example.
  */
 export function writeFixtureScreenTree(projectRoot: string, platform: Platform, screenId: ScreenId): void {
-  const screenDir = path.join(projectRoot, '.testorbit', platform, 'screens', screenId);
+  const screenDir = path.join(projectRoot, '.test-orbit', platform, 'screens', screenId);
   fs.mkdirSync(path.join(screenDir, 'variants'), { recursive: true });
   const elements = baseElements(screenId).map((element) => ({
     id: element.id,

@@ -1,5 +1,5 @@
 /**
- * Zod schemas for TestOrbit recordings (Part B, B8).
+ * Zod schemas for test-orbit recordings (Part B, B8).
  *
  * Split out of `domain/schemas.ts` so neither file breaches the
  * 300-line cap (Part D): this file owns the recording formats, that

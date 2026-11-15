@@ -6,15 +6,15 @@ import { getPlatformDir, listFiles, listSubdirectories, readFileText, writeFileA
 import { TestOrbitError } from '../domain/errors.js';
 
 function tempDir(): string {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-fs-'));
+  return fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-fs-'));
 }
 
 describe('getPlatformDir', () => {
-  it('returns the platform folder under .testorbit', () => {
-    expect(getPlatformDir('/proj', 'android')).toBe(path.join('/proj', '.testorbit', 'android'));
-    expect(getPlatformDir('/proj', 'ios')).toBe(path.join('/proj', '.testorbit', 'ios'));
-    expect(getPlatformDir('/proj', 'flutter')).toBe(path.join('/proj', '.testorbit', 'flutter'));
-    expect(getPlatformDir('/proj', 'web')).toBe(path.join('/proj', '.testorbit', 'web'));
+  it('returns the platform folder under .test-orbit', () => {
+    expect(getPlatformDir('/proj', 'android')).toBe(path.join('/proj', '.test-orbit', 'android'));
+    expect(getPlatformDir('/proj', 'ios')).toBe(path.join('/proj', '.test-orbit', 'ios'));
+    expect(getPlatformDir('/proj', 'flutter')).toBe(path.join('/proj', '.test-orbit', 'flutter'));
+    expect(getPlatformDir('/proj', 'web')).toBe(path.join('/proj', '.test-orbit', 'web'));
   });
 
   it('rejects an unsupported platform', () => {

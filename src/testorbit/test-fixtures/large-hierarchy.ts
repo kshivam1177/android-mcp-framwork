@@ -1,5 +1,5 @@
 /**
- * Synthetic hierarchy fixtures for unit-testing pure TestOrbit logic ONLY.
+ * Synthetic hierarchy fixtures for unit-testing pure test-orbit logic ONLY.
  *
  * These are test data — never flows, never shipped as example tests, never
  * a stand-in for a real app. The large-hierarchy generator exists to

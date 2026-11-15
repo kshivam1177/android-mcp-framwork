@@ -8,8 +8,8 @@
  * recordings yield no edges and are labelled "unproven / start-stop
  * only". Paths resolve platform-wise first
  * (`<platform>/recordings/<flowId>.json`); the legacy flat path
- * (`.testorbit/recordings/`) is still accepted so
- * pre-TestOrbit recordings keep replaying.
+ * (`.test-orbit/recordings/`) is still accepted so
+ * pre-test-orbit recordings keep replaying.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -88,7 +88,7 @@ export function readRecordingFile(filePath: string): RecordingReadResult {
 export function resolveRecordingPath(projectRoot: string, platform: Platform, flowId: string): string {
   const platformPath = path.join(getPlatformDir(projectRoot, platform), 'recordings', `${flowId}.json`);
   if (fs.existsSync(platformPath)) return platformPath;
-  const flatPath = path.join(projectRoot, '.testorbit', 'recordings', `${flowId}.json`);
+  const flatPath = path.join(projectRoot, '.test-orbit', 'recordings', `${flowId}.json`);
   if (fs.existsSync(flatPath)) return flatPath;
   throw new TestOrbitError(
     'FILE_READ_FAILED',

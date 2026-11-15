@@ -4,7 +4,7 @@
  *
  * Mechanism (named in the plan): the Flutter app is built with Patrol
  * integrated (`patrol` in `dev_dependencies`) and the harness test
- * `integration_test/testorbit_tree_dump_test.dart` (run with `patrol test`)
+ * `integration_test/test-orbit_tree_dump_test.dart` (run with `patrol test`)
  * dumps the app's semantics tree to JSON under the pilot tree; this
  * reader converts that JSON. Patrol is the tree *source*; this file is
  * the reader.
@@ -109,7 +109,7 @@ export function parsePatrolTree(payload: unknown): CoreHierarchyNode[] {
     throw new TestOrbitError(
       'PATROL_TREE_INVALID',
       `Patrol semantics dump is not a valid tree: ${issues}`,
-      'Run the testorbit_tree_dump_test.dart harness again and check the dump file.',
+      'Run the test-orbit_tree_dump_test.dart harness again and check the dump file.',
       {},
     );
   }

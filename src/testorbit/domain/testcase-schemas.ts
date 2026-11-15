@@ -94,7 +94,7 @@ export const TestCaseSchema = z
   .strict();
 export type TestCase = z.infer<typeof TestCaseSchema>;
 
-/** One step of a TestOrbit run report. */
+/** One step of a test-orbit run report. */
 export const RunReportStepSchema = z
   .object({
     index: z.number().int().nonnegative(),
@@ -106,7 +106,7 @@ export const RunReportStepSchema = z
   .strict();
 export type RunReportStep = z.infer<typeof RunReportStepSchema>;
 
-/** The TestOrbit run report (Part A duty 4; format standardised Phase 9). */
+/** The test-orbit run report (Part A duty 4; format standardised Phase 9). */
 export const RunReportSchema = z
   .object({
     schemaVersion: z.literal(2),

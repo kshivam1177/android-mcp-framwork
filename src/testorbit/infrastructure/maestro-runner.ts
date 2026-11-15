@@ -1,5 +1,5 @@
 /**
- * Maestro runner (Part D, D1) — the adapter behind the TestOrbit Runner
+ * Maestro runner (Part D, D1) — the adapter behind the test-orbit Runner
  * that invokes `maestro test` as a subprocess.
  *
  * One invocation runs the whole flow: `maestro test <yaml> --format

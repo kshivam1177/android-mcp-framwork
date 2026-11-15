@@ -4,7 +4,7 @@ import { TestOrbitError } from '../domain/errors.js';
 
 /**
  * Fixture Patrol semantics dump (JSON only — no Flutter SDK / Patrol on
- * this VM). The harness `integration_test/testorbit_tree_dump_test.dart`
+ * this VM). The harness `integration_test/test-orbit_tree_dump_test.dart`
  * produces this shape: `key` is the widget's `ValueKey`, `label` the
  * `Semantics` label, `flags` the semantics flags.
  */

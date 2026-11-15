@@ -1,7 +1,7 @@
 /**
- * TestOrbit filesystem adapter (Part D, D1): every TestOrbit read/write goes
- * through here. Platform-wise storage: all TestOrbit data lives under
- * `<projectRoot>/.testorbit/<platform>/`, one folder per
+ * test-orbit filesystem adapter (Part D, D1): every test-orbit read/write goes
+ * through here. Platform-wise storage: all test-orbit data lives under
+ * `<projectRoot>/.test-orbit/<platform>/`, one folder per
  * platform, nothing outside the project folder.
  *
  * Writes are atomic (temp file + rename) and optionally keep a `.bak`
@@ -16,11 +16,11 @@ import { isPlatform } from '../domain/types.js';
 import type { Platform } from '../domain/types.js';
 
 /**
- * Resolve the TestOrbit directory for one platform.
+ * Resolve the test-orbit directory for one platform.
  *
  * @param projectRoot - Project root (absolute).
  * @param platform - Target platform (android | ios | flutter | web).
- * @returns `<projectRoot>/.testorbit/<platform>/`.
+ * @returns `<projectRoot>/.test-orbit/<platform>/`.
  * @throws TestOrbitError when the platform is not supported.
  */
 export function getPlatformDir(projectRoot: string, platform: Platform): string {

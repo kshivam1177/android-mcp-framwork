@@ -19,7 +19,7 @@ export function failRules(report: { findings: readonly { rule: string; severity:
 
 /** Write the proving recording used by the generate-map fixture. */
 export function writeProvingRecording(projectRoot: string, stoppedAt: string): void {
-  const recordingsDir = path.join(projectRoot, '.testorbit', 'android', 'recordings');
+  const recordingsDir = path.join(projectRoot, '.test-orbit', 'android', 'recordings');
   fs.mkdirSync(recordingsDir, { recursive: true });
   fs.writeFileSync(
     path.join(recordingsDir, 'login-checkout-flow.json'),
@@ -53,7 +53,7 @@ export function checkMap(projectRoot: string): ReturnType<CheckMapUseCase['check
 
 /** Absolute path of one screen's folder in the fixture tree. */
 export function screenDirFor(projectRoot: string, screenId: string): string {
-  return path.join(projectRoot, '.testorbit', 'android', 'screens', screenId);
+  return path.join(projectRoot, '.test-orbit', 'android', 'screens', screenId);
 }
 
 /** Write a previous-learn backup with one extra element id. */

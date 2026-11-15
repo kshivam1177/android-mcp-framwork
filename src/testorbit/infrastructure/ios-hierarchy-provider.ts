@@ -2,7 +2,7 @@
  * iOS hierarchy provider (Phase 2) — reads the iOS tree from
  * WebDriverAgent's `/source` JSON directly.
  *
- * This is a SEPARATE TestOrbit-side provider that BYPASSES the existing
+ * This is a SEPARATE test-orbit-side provider that BYPASSES the existing
  * Appium driver (`src/platform/ios/appiumXCUITestDriver.ts`, which
  * regex-parses the XML source into snapshots). It does not modify the
  * cross-platform engine, so the engine's existing consumers are

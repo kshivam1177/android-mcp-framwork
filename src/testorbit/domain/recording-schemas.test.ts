@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { parseRecording } from './recording-schemas.js';
 
-/** Minimal v1 recording document (pre-TestOrbit shape). */
+/** Minimal v1 recording document (pre-test-orbit shape). */
 function v1Document(): Record<string, unknown> {
   return {
     schemaVersion: 1,

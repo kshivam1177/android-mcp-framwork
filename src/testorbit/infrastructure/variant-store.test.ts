@@ -9,7 +9,7 @@ import { toScreenId } from '../domain/types.js';
 
 /** Temp project with the checkout screen tree written. */
 function makeStore(): { projectRoot: string; store: VariantStore } {
-  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-store-'));
+  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-store-'));
   writeFixtureScreenTree(projectRoot, 'android', toScreenId('checkout'));
   return { projectRoot, store: new VariantStore(projectRoot, 'android') };
 }
@@ -69,7 +69,7 @@ describe('VariantStore — candidates', () => {
   });
 
   it('fails loudly when a variant references an unknown element id', () => {
-    const variantsDir = path.join(projectRoot, '.testorbit', 'android', 'screens', 'checkout', 'variants');
+    const variantsDir = path.join(projectRoot, '.test-orbit', 'android', 'screens', 'checkout', 'variants');
     const bad = {
       schemaVersion: 2,
       screenId: 'checkout',

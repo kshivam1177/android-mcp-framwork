@@ -49,7 +49,7 @@ export function resolveBuildParams(args: BuildParamArgs): ResolvedBuildParams {
   if (missing.length > 0) {
     throw new TestOrbitFrameworkError(
       'INVALID_CONFIG',
-      `Missing ${missing.join(', ')}. Pass it explicitly, set sessionDefaults in .testorbit/config.yaml, or call session_set_defaults first.`
+      `Missing ${missing.join(', ')}. Pass it explicitly, set sessionDefaults in .test-orbit/config.yaml, or call session_set_defaults first.`
     );
   }
   return {

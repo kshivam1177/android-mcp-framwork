@@ -1,5 +1,5 @@
 /**
- * TestOrbit domain types — the contract every layer shares.
+ * test-orbit domain types — the contract every layer shares.
  *
  * Ids are branded strings so a plain string can never be passed where an
  * ElementId, ScreenId, VariantId, or TestId is required; the compiler
@@ -22,7 +22,7 @@ export type ElementId = Brand<string, 'ElementId'>;
 /** Saved test case id, e.g. `checkout-cod`. */
 export type TestId = Brand<string, 'TestId'>;
 
-/** Platforms TestOrbit supports (Part A): Android, iOS, Flutter, web. */
+/** Platforms test-orbit supports (Part A): Android, iOS, Flutter, web. */
 export const PlatformSchema = z.enum(['android', 'ios', 'flutter', 'web']);
 export type Platform = z.infer<typeof PlatformSchema>;
 export const PLATFORMS: readonly Platform[] = PlatformSchema.options;
@@ -53,7 +53,7 @@ export interface StableSelector {
 }
 
 /**
- * Minimal structural view of a hierarchy node that TestOrbit core logic needs
+ * Minimal structural view of a hierarchy node that test-orbit core logic needs
  * for identity (B3). The full `UiNode` (src/types.ts) satisfies this
  * interface; core never imports the repo-wide type.
  */

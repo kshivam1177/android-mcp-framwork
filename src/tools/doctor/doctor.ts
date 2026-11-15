@@ -78,7 +78,7 @@ export async function runDoctorChecks(): Promise<{ summary: string; checks: Chec
   checks.push(await checkBinary('Android CLI', config.paths.androidCliPath ?? 'android', ['-V'], false));
   checks.push(await checkBinary('Tesseract OCR', process.env.TESSERACT_PATH || 'tesseract', ['--version'], false));
 
-  // TestOrbit checks (Phase 0 task 9): Maestro, Playwright, WebDriverAgent.
+  // test-orbit checks (Phase 0 task 9): Maestro, Playwright, WebDriverAgent.
   checks.push(await checkBinary('Maestro', 'maestro', ['--version'], false));
   checks.push(await checkBinary('Playwright', 'npx', ['--no-install', 'playwright', '--version'], false));
   checks.push(await checkWebDriverAgent());
@@ -95,7 +95,7 @@ export function register(server: McpServer) {
     toolName,
     {
       title: 'Doctor',
-      description: 'Check Android development prerequisites: adb, Java, Gradle, Android SDK, emulator, build-tools and the optional Google Android CLI integration, plus TestOrbit checks (config valid, Maestro, Playwright, WebDriverAgent). This framework does not require Python.',
+      description: 'Check Android development prerequisites: adb, Java, Gradle, Android SDK, emulator, build-tools and the optional Google Android CLI integration, plus test-orbit checks (config valid, Maestro, Playwright, WebDriverAgent). This framework does not require Python.',
       inputSchema: {},
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
     },

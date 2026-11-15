@@ -2,7 +2,7 @@
  * Variant store (Phase 2) — reads learned screens and their variant
  * files from the platform folder.
  *
- * Layout: `<projectRoot>/.testorbit/<platform>/screens/
+ * Layout: `<projectRoot>/.test-orbit/<platform>/screens/
  * <screenId>/elements.json` holds the base elements (one selector per
  * element id) and `variants/<variantId>.json` holds each variant file
  * (B2). Variant files reference element ids; they never redefine

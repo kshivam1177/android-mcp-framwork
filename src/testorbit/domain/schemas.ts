@@ -1,5 +1,5 @@
 /**
- * Zod schemas for every TestOrbit file format touched by Phase 2 (Part D, D4).
+ * Zod schemas for every test-orbit file format touched by Phase 2 (Part D, D4).
  *
  * Every file read from disk is parsed through its schema here; a file that
  * fails validation is rejected with the field named, never silently
@@ -261,7 +261,7 @@ export function parseDetectionResult(value: unknown): z.infer<typeof DetectionRe
   if (!result.success) {
     throw new SchemaVersionError(
       `Invalid detection result: ${describeIssues(result.error)}`,
-      'This is a TestOrbit bug — report it with the detection output.',
+      'This is a test-orbit bug — report it with the detection output.',
       {},
     );
   }
