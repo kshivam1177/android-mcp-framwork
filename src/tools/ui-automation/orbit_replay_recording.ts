@@ -80,7 +80,7 @@ export function register(server: McpServer) {
     const startedAt = new Date();
     const started = Date.now();
     const reportSteps: Array<{ id: string; type: string; status: 'passed' | 'failed'; durationMs: number; message?: string }> = [];
-    const evidenceDir = path.join(projectRoot, '.testorbit', 'recording-evidence', recording.flowId, 'replays');
+    const evidenceDir = path.join(projectRoot, '.test-orbit', 'recording-evidence', recording.flowId, 'replays');
     await fs.mkdir(evidenceDir, { recursive: true });
 
     for (const action of recording.actions) {
@@ -147,7 +147,7 @@ export function register(server: McpServer) {
     const date = startedAt.toISOString().slice(0, 10);
     const time = startedAt.toISOString().slice(11, 19).replace(/:/g, '');
     const runId = randomUUID().slice(0, 8);
-    const reportDir = path.join(projectRoot, '.testorbit', 'test-reports', date, `${time}-replay-${runId}`);
+    const reportDir = path.join(projectRoot, '.test-orbit', 'test-reports', date, `${time}-replay-${runId}`);
     await fs.mkdir(reportDir, { recursive: true });
     const report = {
       schemaVersion: 1,

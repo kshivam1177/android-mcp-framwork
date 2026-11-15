@@ -22,12 +22,12 @@ export const workflow = 'ui-automation';
 
 type LearnedElement = {
   id: string;
-  /** Absent in pre-TestOrbit elements.json files (clean break: re-learn). */
+  /** Absent in pre-test-orbit elements.json files (clean break: re-learn). */
   stableSelector?: StableSelector;
   /**
-   * TestOrbit v2 elements.json carries no stored centers: taps use the live
+   * test-orbit v2 elements.json carries no stored centers: taps use the live
    * node's coordinates, so these are absent for screens learned by
-   * orbit_learn_screen and present only in pre-TestOrbit files.
+   * orbit_learn_screen and present only in pre-test-orbit files.
    */
   center?: { x: number; y: number };
   normalizedCenter?: { x: number; y: number };
@@ -36,7 +36,7 @@ type LearnedElement = {
   bounds?: { left: number; top: number; right: number; bottom: number };
 };
 
-/** A learned element without a stableSelector was learned before TestOrbit v2. */
+/** A learned element without a stableSelector was learned before test-orbit v2. */
 function requireStableSelector(element: LearnedElement): StableSelector {
   if (element.stableSelector === undefined) {
     throw new Error(`Learned element "${element.id}" has no stableSelector. Re-run orbit_learn_screen for this screen.`);

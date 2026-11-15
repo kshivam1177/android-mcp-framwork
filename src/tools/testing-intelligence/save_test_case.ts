@@ -49,7 +49,7 @@ export function register(server: McpServer) {
     {
       title: 'Save Test Case',
       description:
-        'Save or update a structured, machine-readable test case definition under .testorbit/testcases/ (schemaVersion 2). Stores pre-conditions, step actions, targets, assertions, setup/teardown, per-step timeoutMs/assert, and provenance metadata.',
+        'Save or update a structured, machine-readable test case definition under .test-orbit/testcases/ (schemaVersion 2). Stores pre-conditions, step actions, targets, assertions, setup/teardown, per-step timeoutMs/assert, and provenance metadata.',
       inputSchema: {
         projectPath: z.string().optional().describe('Project root; defaults to cwd.'),
         id: z.string().min(1).max(100).describe('Unique test case identifier, e.g. "TC-FURNITURE-001".'),

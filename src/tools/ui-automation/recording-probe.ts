@@ -1,6 +1,6 @@
 /**
  * Recording probe glue (Phase 5, B8) — the thin tools-side seam between
- * the UI-automation handlers and the TestOrbit `RecordingDetector`.
+ * the UI-automation handlers and the test-orbit `RecordingDetector`.
  *
  * Each handler that performs a recorded action calls
  * `startRecordingProbe()` before the action (one fresh hierarchy dump +

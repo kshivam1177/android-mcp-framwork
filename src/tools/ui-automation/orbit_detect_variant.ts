@@ -17,7 +17,7 @@ export function register(server: McpServer) {
   return server.registerTool(toolName, {
     title: 'Detect Variant',
     description:
-      'Identify the current screen and variant from a fresh hierarchy dump: dump the live hierarchy (or read a hierarchy dump file), run TestOrbit variant detection against the learned screens, and return the identified (screen, variant) with match evidence and diff, or unknown with evidence. Takes a hierarchy dump file or a screenId plus a fresh live dump.',
+      'Identify the current screen and variant from a fresh hierarchy dump: dump the live hierarchy (or read a hierarchy dump file), run test-orbit variant detection against the learned screens, and return the identified (screen, variant) with match evidence and diff, or unknown with evidence. Takes a hierarchy dump file or a screenId plus a fresh live dump.',
     inputSchema: {
       screenId: z.string().min(1).max(80).optional(),
       platform: z.string().optional(),

@@ -10,7 +10,7 @@ export const workflow = 'ui-automation';
 export function register(server: McpServer) {
   return server.registerTool(toolName, {
     title: 'Stop UI Recording',
-    description: 'Stop the active UI recording and persist its actions and start/stop screenshots under .testorbit/. Replay it later with orbit_replay_recording.',
+    description: 'Stop the active UI recording and persist its actions and start/stop screenshots under .test-orbit/. Replay it later with orbit_replay_recording.',
     inputSchema: {},
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, withErrorHandling(async () => {

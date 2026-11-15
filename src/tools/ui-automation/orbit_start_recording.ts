@@ -51,7 +51,7 @@ export function register(server: McpServer) {
     return textResult(`Started recording "${started.flowId}" on ${started.deviceId}.`, {
       ...started,
       screenshotCaptured,
-      recordingPath: `.testorbit/${started.platform}/recordings/${started.flowId}.json (written when recording stops)`,
+      recordingPath: `.test-orbit/${started.platform}/recordings/${started.flowId}.json (written when recording stops)`,
     });
   }));
 }

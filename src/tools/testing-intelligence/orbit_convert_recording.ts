@@ -71,7 +71,7 @@ export function register(server: McpServer) {
     {
       title: 'Convert Recording to Test Case',
       description:
-        'Convert a saved recording (schema v1 or v2) into a canonical JSON test case (schemaVersion 2) plus generated Maestro YAML, per the TestOrbit C2 mapping table. Typed values become ${ENV_VAR} references with a <testId>.env.example manifest; assertions are derived mechanically from the recorded screen sequence; unmappable elements fail loudly naming the step.',
+        'Convert a saved recording (schema v1 or v2) into a canonical JSON test case (schemaVersion 2) plus generated Maestro YAML, per the test-orbit C2 mapping table. Typed values become ${ENV_VAR} references with a <testId>.env.example manifest; assertions are derived mechanically from the recorded screen sequence; unmappable elements fail loudly naming the step.',
       inputSchema: {
         projectPath: z.string().optional().describe('Project root; defaults to cwd.'),
         flowId: z.string().min(1).max(80).describe('Recording id, e.g. "login-flow".'),

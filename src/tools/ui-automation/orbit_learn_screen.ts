@@ -47,7 +47,7 @@ function relativeOrNull(projectRoot: string, filePath: string | null): string | 
 export function register(server: McpServer) {
   return server.registerTool(toolName, {
     title: 'Learn Screen',
-    description: 'Capture the current Android screen once and save a reusable screen definition, screenshot, semantic element selectors, normalized coordinates, and a basic form specification under .testorbit/<platform>/screens/<screenId>/. Learning goes through the TestOrbit LearnScreenUseCase, which also writes the default variant. Re-learning an existing screen refuses without force: true; with force it keeps .bak backups of the previous files and reports the added/removed/renamed/changed element diff.',
+    description: 'Capture the current Android screen once and save a reusable screen definition, screenshot, semantic element selectors, normalized coordinates, and a basic form specification under .test-orbit/<platform>/screens/<screenId>/. Learning goes through the test-orbit LearnScreenUseCase, which also writes the default variant. Re-learning an existing screen refuses without force: true; with force it keeps .bak backups of the previous files and reports the added/removed/renamed/changed element diff.',
     inputSchema: {
       screenId: z.string().min(1).max(80).regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/),
       targetId: z.string().optional(),

@@ -15,7 +15,7 @@ export function register(server: McpServer) {
     {
       title: 'Copy Test Case Across Platforms',
       description:
-        'Copy a canonical JSON test case from one platform folder to another (TestOrbit C4). The flow copies; each step\'s elementId is re-resolved against the target platform\'s learned screens (stable-selector fields, then unique contentDesc, then className + sibling index — never raw text or list order). The target Maestro YAML is regenerated; the copy is marked "copied, unverified" until its first green run. Unmapped elements fail loudly naming the step.',
+        'Copy a canonical JSON test case from one platform folder to another (test-orbit C4). The flow copies; each step\'s elementId is re-resolved against the target platform\'s learned screens (stable-selector fields, then unique contentDesc, then className + sibling index — never raw text or list order). The target Maestro YAML is regenerated; the copy is marked "copied, unverified" until its first green run. Unmapped elements fail loudly naming the step.',
       inputSchema: {
         projectPath: z.string().optional().describe('Project root; defaults to cwd.'),
         testId: z.string().min(1).max(80).describe('Test case id to copy, e.g. "login-flow".'),

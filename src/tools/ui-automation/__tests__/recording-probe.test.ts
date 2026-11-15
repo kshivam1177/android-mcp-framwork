@@ -102,7 +102,7 @@ afterEach(async () => {
 
 /** Read one stopped recording's JSON from its platform folder. */
 async function readRecording(platform: string, flowId: string): Promise<Record<string, unknown>> {
-  const raw = await readFile(path.join(root as string, '.testorbit', platform, 'recordings', `${flowId}.json`), 'utf8');
+  const raw = await readFile(path.join(root as string, '.test-orbit', platform, 'recordings', `${flowId}.json`), 'utf8');
   return JSON.parse(raw) as Record<string, unknown>;
 }
 

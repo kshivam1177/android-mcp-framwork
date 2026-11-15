@@ -83,7 +83,7 @@ export function register(server: McpServer) {
     const configExists = await exists(path.join(configDir, 'config.yaml'));
     add(configExists
       ? { name: 'framework-config', status: 'pass', detail: 'Framework project config exists.' }
-      : { name: 'framework-config', status: 'warning', detail: 'No .testorbit/config.yaml found; run testorbit setup to initialize project-local configuration.' });
+      : { name: 'framework-config', status: 'warning', detail: 'No .test-orbit/config.yaml found; run test-orbit setup to initialize project-local configuration.' });
 
     const testCaseDir = path.join(configDir, 'testcases');
     let files: string[] = [];
@@ -104,7 +104,7 @@ export function register(server: McpServer) {
     }
     const validCases = caseDetails.filter(item => item.valid);
     if (validCases.length) add({ name: 'saved-test-cases', status: 'pass', detail: validCases.length + ' executable saved case(s) found (' + caseDetails.length + ' JSON file(s) scanned).' });
-    else add({ name: 'saved-test-cases', status: 'blocker', detail: 'No valid executable saved test cases found under .testorbit/testcases/.' });
+    else add({ name: 'saved-test-cases', status: 'blocker', detail: 'No valid executable saved test cases found under .test-orbit/testcases/.' });
     for (const invalid of caseDetails.filter(item => !item.valid)) {
       add({ name: 'test-case:' + invalid.file, status: 'warning', detail: [...invalid.issues, ...invalid.unsupportedActions.map(action => 'Unsupported action ' + action)].join(' ') || 'Case is not executable.' });
     }
