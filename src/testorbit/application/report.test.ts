@@ -44,7 +44,7 @@ describe('run report', () => {
   });
 
   it('writes the report into a run directory', () => {
-    const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-report-'));
+    const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-report-'));
     try {
       const { dir } = createRunDir(projectRoot, 'android');
       const report = buildRunReport({
@@ -124,7 +124,7 @@ describe('run report coverage block', () => {
 
 describe('readRunCoverage', () => {
   it('reads the coverage block from the platform screen map', () => {
-    const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-coverage-'));
+    const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-coverage-'));
     try {
       writeMapFile(projectRoot, `${JSON.stringify(mapWithCoverage(), null, 2)}\n`);
       expect(readRunCoverage(projectRoot, 'android')).toEqual({
@@ -140,7 +140,7 @@ describe('readRunCoverage', () => {
   });
 
   it('returns undefined when the tree has no map yet', () => {
-    const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-coverage-'));
+    const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-coverage-'));
     try {
       expect(readRunCoverage(projectRoot, 'android')).toBeUndefined();
     } finally {
@@ -149,7 +149,7 @@ describe('readRunCoverage', () => {
   });
 
   it('returns undefined for an unreadable or invalid map, never throwing', () => {
-    const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-coverage-'));
+    const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-coverage-'));
     try {
       writeMapFile(projectRoot, '{ not json');
       expect(readRunCoverage(projectRoot, 'android')).toBeUndefined();
@@ -163,7 +163,7 @@ describe('readRunCoverage', () => {
 
 describe('failure bundle', () => {
   it('redacts secrets from the diff summary', () => {
-    const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-bundle-'));
+    const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-bundle-'));
     try {
       const { dir } = createRunDir(projectRoot, 'android');
       const bundlePath = writeFailureBundle(

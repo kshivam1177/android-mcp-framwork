@@ -73,7 +73,7 @@ function makeDetector(
   provider: HierarchyProvider,
   withScreens = true,
 ): { projectRoot: string; detector: RecordingDetector } {
-  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-record-'));
+  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-record-'));
   if (withScreens) {
     writeFixtureScreenTree(projectRoot, 'android', toScreenId('checkout'));
     writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));

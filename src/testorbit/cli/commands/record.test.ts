@@ -17,7 +17,7 @@ describe('runRecordCommand', () => {
   let output: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-cli-record-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-cli-record-'));
     output = '';
     writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));
     planFile = path.join(projectRoot, 'plan.json');
@@ -35,7 +35,7 @@ describe('runRecordCommand', () => {
   });
 
   it('dry-run prints the resolved steps and writes nothing', async () => {
-    const before = fs.readdirSync(path.join(projectRoot, '.testorbit', 'android')).sort();
+    const before = fs.readdirSync(path.join(projectRoot, '.test-orbit', 'android')).sort();
     const code = await runRecordCommand({
       projectRoot,
       platform: 'android',
@@ -47,7 +47,7 @@ describe('runRecordCommand', () => {
     expect(code).toBe(0);
     expect(output).toContain('would execute tap on login / login.password / login.submit');
     expect(output).toContain('dry-run: nothing was recorded');
-    expect(fs.readdirSync(path.join(projectRoot, '.testorbit', 'android')).sort()).toEqual(before);
+    expect(fs.readdirSync(path.join(projectRoot, '.test-orbit', 'android')).sort()).toEqual(before);
   });
 
   it('--no-dry-run prints the plan and points at the MCP recording path', async () => {

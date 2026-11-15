@@ -344,7 +344,7 @@ export function deriveElementId(
     throw new TestOrbitError(
       'INTERNAL_ERROR',
       `deriveElementId produced no id for node ${node.ref}; this is an internal invariant failure.`,
-      'Report this as a TestOrbit bug with the hierarchy that produced it.',
+      'Report this as a test-orbit bug with the hierarchy that produced it.',
       { ref: node.ref, screenId },
     );
   }

@@ -16,7 +16,7 @@ import { writeFixtureScreenTree } from '../test-fixtures/variants.js';
 
 /** Platform-relative helper: `<platform>/<rel>` under the fixture root. */
 function platformPath(projectRoot: string, rel: string): string {
-  return path.join(projectRoot, '.testorbit', 'android', rel);
+  return path.join(projectRoot, '.test-orbit', 'android', rel);
 }
 
 /** Write screen.json, form-spec.json, and a stale `.bak` for login. */
@@ -143,7 +143,7 @@ describe('RenameScreenUseCase success', () => {
   let projectRoot: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-rename-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-rename-'));
     buildFixture(projectRoot);
   });
 
@@ -176,7 +176,7 @@ describe('RenameScreenUseCase refusal', () => {
   let projectRoot: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-rename-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-rename-'));
     buildFixture(projectRoot);
   });
 

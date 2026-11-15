@@ -12,15 +12,15 @@ import { writeFixtureScreenTree } from '../../test-fixtures/variants.js';
 
 /** Minimal iOS login tree (resourceIds differ; contentDesc is shared). */
 function writeIosTree(projectRoot: string): void {
-  const screenDir = path.join(projectRoot, '.testorbit', 'ios', 'screens', 'login', 'variants');
+  const screenDir = path.join(projectRoot, '.test-orbit', 'ios', 'screens', 'login', 'variants');
   fs.mkdirSync(screenDir, { recursive: true });
   fs.writeFileSync(
-    path.join(projectRoot, '.testorbit', 'ios', 'screens', 'login', 'screen.json'),
+    path.join(projectRoot, '.test-orbit', 'ios', 'screens', 'login', 'screen.json'),
     JSON.stringify({ schemaVersion: 2, screenId: 'login', appPackage: 'com.shop.ios' }),
     'utf8',
   );
   fs.writeFileSync(
-    path.join(projectRoot, '.testorbit', 'ios', 'screens', 'login', 'elements.json'),
+    path.join(projectRoot, '.test-orbit', 'ios', 'screens', 'login', 'elements.json'),
     JSON.stringify([
       { id: 'login.submit', stableSelector: { resourceId: 'com.shop.ios:id/submit', contentDesc: 'Log in' }, clickable: true, enabled: true },
       { id: 'login.username', stableSelector: { resourceId: 'com.shop.ios:id/username', contentDesc: 'Username' }, clickable: true, enabled: true },
@@ -47,17 +47,17 @@ describe('runCopyCommand', () => {
   let output: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-cli-copy-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-cli-copy-'));
     output = '';
     writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));
-    const elementsPath = path.join(projectRoot, '.testorbit', 'android', 'screens', 'login', 'elements.json');
+    const elementsPath = path.join(projectRoot, '.test-orbit', 'android', 'screens', 'login', 'elements.json');
     const elements = JSON.parse(fs.readFileSync(elementsPath, 'utf8')) as { id: string; stableSelector: Record<string, string> }[];
     for (const element of elements) {
       if (element.id === 'login.submit') element.stableSelector['contentDesc'] = 'Log in';
     }
     fs.writeFileSync(elementsPath, JSON.stringify(elements, null, 2), 'utf8');
     writeIosTree(projectRoot);
-    const testcasesDir = path.join(projectRoot, '.testorbit', 'android', 'testcases');
+    const testcasesDir = path.join(projectRoot, '.test-orbit', 'android', 'testcases');
     fs.mkdirSync(testcasesDir, { recursive: true });
     fs.writeFileSync(
       path.join(testcasesDir, 'login-flow.json'),
@@ -92,6 +92,6 @@ describe('runCopyCommand', () => {
     });
     expect(code).toBe(0);
     expect(output).toContain('copied-unverified');
-    expect(fs.existsSync(path.join(projectRoot, '.testorbit', 'ios', 'tests', 'login-flow.yaml'))).toBe(true);
+    expect(fs.existsSync(path.join(projectRoot, '.test-orbit', 'ios', 'tests', 'login-flow.yaml'))).toBe(true);
   });
 });

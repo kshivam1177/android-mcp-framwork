@@ -6,7 +6,7 @@
  * hierarchy dump file (`--hierarchy-file`, offline). The unknown path
  * prints the exact `orbit learn` command to learn the state as a new
  * variant; a human runs it. Output goes through `process.stdout.write`
- * (no `console.log` in TestOrbit code, Part D).
+ * (no `console.log` in test-orbit code, Part D).
  */
 import { DetectVariantUseCase, serialiseDetectionResult } from '../../application/detect-variant.js';
 import type { DetectVariantInput } from '../../application/detect-variant.js';

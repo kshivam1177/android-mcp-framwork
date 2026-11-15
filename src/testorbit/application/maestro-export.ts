@@ -277,7 +277,7 @@ export function buildMaestroFlow(
 }
 
 /**
- * Render a validated flow as YAML text with the TestOrbit header.
+ * Render a validated flow as YAML text with the test-orbit header.
  *
  * @param flow - Validated flow.
  * @param header - Source JSON hash, generation time, schema version.

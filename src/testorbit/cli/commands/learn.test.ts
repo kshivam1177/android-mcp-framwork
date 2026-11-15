@@ -16,7 +16,7 @@ describe('runLearnCommand', () => {
   let output: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-cli-learn-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-cli-learn-'));
     output = '';
     dumpFile = path.join(projectRoot, 'dump.json');
     fs.writeFileSync(
@@ -49,7 +49,7 @@ describe('runLearnCommand', () => {
     expect(output).toContain('login.password');
     expect(
       fs.existsSync(
-        path.join(projectRoot, '.testorbit', 'android', 'screens', 'login', 'variants', 'login.password.json'),
+        path.join(projectRoot, '.test-orbit', 'android', 'screens', 'login', 'variants', 'login.password.json'),
       ),
     ).toBe(true);
   });

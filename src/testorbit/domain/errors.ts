@@ -1,10 +1,10 @@
 /**
- * TestOrbit typed error hierarchy (Part D, D6).
+ * test-orbit typed error hierarchy (Part D, D6).
  *
- * Every TestOrbit error carries a stable `code`, a human-readable message, a
+ * Every test-orbit error carries a stable `code`, a human-readable message, a
  * `remediation` telling the caller what to do next, and a `context` map of
  * string fields naming the values involved. No bare `throw new Error(...)`
- * in TestOrbit code.
+ * in test-orbit code.
  */
 export class TestOrbitError extends Error {
   readonly code: string;
@@ -70,7 +70,7 @@ export class ElementNotFoundError extends TestOrbitError {
   }
 }
 
-/** A TestOrbit file's schemaVersion is unknown or its content fails validation. */
+/** A test-orbit file's schemaVersion is unknown or its content fails validation. */
 export class SchemaVersionError extends TestOrbitError {
   /**
    * @param message - Which file and version failed, and why.

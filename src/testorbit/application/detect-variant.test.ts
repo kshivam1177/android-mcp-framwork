@@ -17,7 +17,7 @@ import type { CoreHierarchyNode } from '../domain/types.js';
 
 /** Temp project with checkout + login screens learned. */
 function makeUseCase(): { projectRoot: string; useCase: DetectVariantUseCase } {
-  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-detect-'));
+  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-detect-'));
   writeFixtureScreenTree(projectRoot, 'android', toScreenId('checkout'));
   writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));
   return { projectRoot, useCase: new DetectVariantUseCase(new VariantStore(projectRoot, 'android')) };

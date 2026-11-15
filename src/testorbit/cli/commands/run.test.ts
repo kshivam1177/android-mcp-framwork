@@ -16,9 +16,9 @@ describe('runRunCommand', () => {
   let dumpFile: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-cli-run-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-cli-run-'));
     writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));
-    const platformDir = path.join(projectRoot, '.testorbit', 'android');
+    const platformDir = path.join(projectRoot, '.test-orbit', 'android');
     fs.mkdirSync(path.join(platformDir, 'testcases'), { recursive: true });
     fs.mkdirSync(path.join(platformDir, 'tests'), { recursive: true });
     fs.writeFileSync(
@@ -59,7 +59,7 @@ describe('runRunCommand', () => {
   });
 
   it('fails loudly when the YAML is missing', async () => {
-    fs.rmSync(path.join(projectRoot, '.testorbit', 'android', 'tests', 'login-flow.yaml'));
+    fs.rmSync(path.join(projectRoot, '.test-orbit', 'android', 'tests', 'login-flow.yaml'));
     await expect(
       runRunCommand({ projectRoot, platform: 'android', testId: toTestId('login-flow'), hierarchyFile: dumpFile }),
     ).rejects.toThrow(/No Maestro YAML/);

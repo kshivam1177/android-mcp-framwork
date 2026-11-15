@@ -15,7 +15,7 @@ describe('runRenameScreenCommand', () => {
   let output: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-cli-rename-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-cli-rename-'));
     output = '';
     writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));
   });
@@ -37,6 +37,6 @@ describe('runRenameScreenCommand', () => {
     expect(code).toBe(0);
     expect(output).toContain('signin');
     expect(output).toContain('.rename-backup-login-');
-    expect(fs.existsSync(path.join(projectRoot, '.testorbit', 'android', 'screens', 'signin'))).toBe(true);
+    expect(fs.existsSync(path.join(projectRoot, '.test-orbit', 'android', 'screens', 'signin'))).toBe(true);
   });
 });

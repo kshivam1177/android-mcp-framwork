@@ -1,6 +1,6 @@
-# `config/` — TestOrbit configuration (reserved)
+# `config/` — test-orbit configuration (reserved)
 
-Reserved for the single TestOrbit config file (`config.ts`,
+Reserved for the single test-orbit config file (`config.ts`,
 Zod-validated; `doctor` validates it) from the plan's Part D
 layout. **Empty as of Phase 9** — no config file exists yet,
 because no pilot project has needed one: every tool and CLI

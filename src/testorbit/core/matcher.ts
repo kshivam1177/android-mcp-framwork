@@ -1,6 +1,6 @@
 /**
  * The stable-selector matcher (Part B, B5) — the only element-matching
- * code in TestOrbit.
+ * code in test-orbit.
  *
  * Compares only the stable-selector fields (`resourceId`, `contentDesc`,
  * `className`) — never `text`, never exact bounds, never coordinates.

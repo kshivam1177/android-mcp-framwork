@@ -9,7 +9,7 @@ import type { CoreHierarchyNode } from '../../domain/types.js';
 
 /** Temp project with the checkout screen learned, plus a dump file. */
 function makeProject(): { projectRoot: string; dumpFile: string } {
-  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-cli-'));
+  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-cli-'));
   writeFixtureScreenTree(projectRoot, 'android', toScreenId('checkout'));
   return { projectRoot, dumpFile: path.join(projectRoot, 'dump.json') };
 }

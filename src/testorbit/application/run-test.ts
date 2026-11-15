@@ -1,5 +1,5 @@
 /**
- * TestOrbit Runner (Part A decision, Phase 4) — the thin wrapper CLI around
+ * test-orbit Runner (Part A decision, Phase 4) — the thin wrapper CLI around
  * Maestro, owning exactly the five duties a wrapper *can* do:
  *
  * 1. Before a flow (pre-flow only): dump a fresh hierarchy, run screen
@@ -70,7 +70,7 @@ function fallbackSteps(
   return steps;
 }
 
-/** The TestOrbit Runner use case. */
+/** The test-orbit Runner use case. */
 export class RunTestUseCase {
   /**
    * @param store - Variant store for the target platform folder.
@@ -82,7 +82,7 @@ export class RunTestUseCase {
   ) {}
 
   /**
-   * Run one saved test via the TestOrbit Runner.
+   * Run one saved test via the test-orbit Runner.
    *
    * @param input - Project, platform, test id, and hierarchy source.
    * @returns The report, its path, and the failure-bundle path (if any).

@@ -20,7 +20,7 @@ file-size cap, no `console.*` in shipped code).
   `--platform`, `--test`, `--recording`, `--screen`,
   `--variantId`, `--required`, `--hierarchy-file`).
 - `commands/` — one file per command.
-- `check-layout.ts` — `npm run testorbit:check-layout`.
+- `check-layout.ts` — `npm run test-orbit:check-layout`.
 
 ## How to test it
 

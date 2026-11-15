@@ -1,12 +1,12 @@
 /**
- * Layout check for TestOrbit (src/testorbit/).
+ * Layout check for test-orbit (src/testorbit/).
  *
  * Verifies the enterprise folder/layer rules from the plan (Part D) that
  * ESLint cannot express on its own: the required directories exist, core/
  * imports only core/ + domain/ (plus node:crypto for hashing), no file
  * exceeds 300 lines, and no console.* output exists in shipped code.
  *
- * Run as `npm run testorbit:check-layout`. Exits non-zero with every
+ * Run as `npm run test-orbit:check-layout`. Exits non-zero with every
  * violation listed; exits 0 with a pass summary.
  */
 import fs from 'node:fs';
@@ -80,13 +80,13 @@ function checkStructure(root: string): string[] {
  * layering rule targets shipped core logic. The file-size and no-console
  * checks still apply to them.
  */
-function checkCoreImports(files: string[], testorbitDir: string): string[] {
+function checkCoreImports(files: string[], testOrbitDir: string): string[] {
   const violations: string[] = [];
-  const coreDir = path.join(testorbitDir, 'core');
+  const coreDir = path.join(testOrbitDir, 'core');
   for (const file of files) {
     if (!file.startsWith(coreDir + path.sep)) continue;
     if (file.endsWith('.test.ts')) continue;
-    const rel = path.relative(testorbitDir, file);
+    const rel = path.relative(testOrbitDir, file);
     const source = fs.readFileSync(file, 'utf8');
     for (const spec of importSpecifiers(source)) {
       if (spec.startsWith('node:')) {
@@ -97,7 +97,7 @@ function checkCoreImports(files: string[], testorbitDir: string): string[] {
       }
       if (spec.startsWith('.')) {
         const target = path.normalize(path.join(path.dirname(file), spec));
-        const targetRel = path.relative(testorbitDir, target);
+        const targetRel = path.relative(testOrbitDir, target);
         if (!targetRel.startsWith('core') && !targetRel.startsWith('domain')) {
           violations.push(`${rel}: core/ must only import core/ or domain/ (found ${spec})`);
         }
@@ -110,26 +110,26 @@ function checkCoreImports(files: string[], testorbitDir: string): string[] {
 }
 
 /** Check no file exceeds the 300 content-line cap. */
-function checkFileSizes(files: string[], testorbitDir: string): string[] {
+function checkFileSizes(files: string[], testOrbitDir: string): string[] {
   const violations: string[] = [];
   for (const file of files) {
     const source = fs.readFileSync(file, 'utf8');
     const lines = contentLineCount(source);
     if (lines > MAX_FILE_LINES) {
-      violations.push(`${path.relative(testorbitDir, file)}: ${lines} content lines exceeds ${MAX_FILE_LINES}`);
+      violations.push(`${path.relative(testOrbitDir, file)}: ${lines} content lines exceeds ${MAX_FILE_LINES}`);
     }
   }
   return violations;
 }
 
-/** Check no console.* output exists in shipped TestOrbit code. */
-function checkNoConsole(files: string[], testorbitDir: string): string[] {
+/** Check no console.* output exists in shipped test-orbit code. */
+function checkNoConsole(files: string[], testOrbitDir: string): string[] {
   const violations: string[] = [];
   const pattern = /\bconsole\.(log|warn|error|debug|info)\s*\(/;
   for (const file of files) {
     const source = fs.readFileSync(file, 'utf8');
     if (pattern.test(source)) {
-      violations.push(`${path.relative(testorbitDir, file)}: console.* output is banned (use the structured logger)`);
+      violations.push(`${path.relative(testOrbitDir, file)}: console.* output is banned (use the structured logger)`);
     }
   }
   return violations;
@@ -138,22 +138,22 @@ function checkNoConsole(files: string[], testorbitDir: string): string[] {
 /** Run every layout check and exit with the result. */
 function main(): void {
   const root = repoRoot();
-  const testorbitDir = path.join(root, 'src', 'testorbit');
+  const testOrbitDir = path.join(root, 'src', 'testorbit');
   const violations: string[] = [...checkStructure(root)];
-  if (fs.existsSync(testorbitDir)) {
-    const files = collectTsFiles(testorbitDir);
-    violations.push(...checkCoreImports(files, testorbitDir));
-    violations.push(...checkFileSizes(files, testorbitDir));
-    violations.push(...checkNoConsole(files, testorbitDir));
-    process.stdout.write(`testorbit layout check: ${files.length} file(s) scanned\n`);
+  if (fs.existsSync(testOrbitDir)) {
+    const files = collectTsFiles(testOrbitDir);
+    violations.push(...checkCoreImports(files, testOrbitDir));
+    violations.push(...checkFileSizes(files, testOrbitDir));
+    violations.push(...checkNoConsole(files, testOrbitDir));
+    process.stdout.write(`test-orbit layout check: ${files.length} file(s) scanned\n`);
   }
   if (violations.length > 0) {
     for (const violation of violations) process.stdout.write(`FAIL: ${violation}\n`);
-    process.stdout.write(`testorbit layout check: ${violations.length} violation(s)\n`);
+    process.stdout.write(`test-orbit layout check: ${violations.length} violation(s)\n`);
     process.exitCode = 1;
     return;
   }
-  process.stdout.write('testorbit layout check: passed\n');
+  process.stdout.write('test-orbit layout check: passed\n');
 }
 
 main();

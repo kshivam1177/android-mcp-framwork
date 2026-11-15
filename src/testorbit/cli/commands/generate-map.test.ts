@@ -15,7 +15,7 @@ describe('runGenerateMapCommand', () => {
   let output: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-cli-genmap-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-cli-genmap-'));
     output = '';
     writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));
   });
@@ -35,6 +35,6 @@ describe('runGenerateMapCommand', () => {
     expect(code).toBe(0);
     expect(output).toContain('screen-map.json');
     expect(output).toContain('login');
-    expect(fs.existsSync(path.join(projectRoot, '.testorbit', 'android', 'screen-map.json'))).toBe(true);
+    expect(fs.existsSync(path.join(projectRoot, '.test-orbit', 'android', 'screen-map.json'))).toBe(true);
   });
 });

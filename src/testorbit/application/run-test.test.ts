@@ -1,5 +1,5 @@
 /**
- * TestOrbit Runner tests — pre-flow detection gates the Maestro run, a
+ * test-orbit Runner tests — pre-flow detection gates the Maestro run, a
  * Maestro failure produces a complete bundle, and a missing YAML fails
  * loudly. Maestro itself is stubbed; one test proves the real
  * missing-binary path via the runner test instead. Fixture data only.
@@ -16,9 +16,9 @@ import { freshNodes, writeFixtureScreenTree } from '../test-fixtures/variants.js
 
 /** Temp project with the login screen learned and a saved test + YAML. */
 function makeProject(): { projectRoot: string; dumpFile: string; yamlPath: string } {
-  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-run-'));
+  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-run-'));
   writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));
-  const platformDir = path.join(projectRoot, '.testorbit', 'android');
+  const platformDir = path.join(projectRoot, '.test-orbit', 'android');
   fs.mkdirSync(path.join(platformDir, 'testcases'), { recursive: true });
   fs.mkdirSync(path.join(platformDir, 'tests'), { recursive: true });
   fs.writeFileSync(

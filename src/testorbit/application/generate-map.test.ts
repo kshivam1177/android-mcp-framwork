@@ -35,7 +35,7 @@ function v2Action(
 
 /** Write a v2 recording proving login → checkout → checkout.cod. */
 function writeProvingRecording(projectRoot: string, stoppedAt: string): void {
-  const recordingsDir = path.join(projectRoot, '.testorbit', 'android', 'recordings');
+  const recordingsDir = path.join(projectRoot, '.test-orbit', 'android', 'recordings');
   fs.mkdirSync(recordingsDir, { recursive: true });
   fs.writeFileSync(
     path.join(recordingsDir, 'login-checkout-flow.json'),
@@ -60,7 +60,7 @@ function writeProvingRecording(projectRoot: string, stoppedAt: string): void {
 
 /** Write a v1 recording (no ids, no edges). */
 function writeV1Recording(projectRoot: string): void {
-  const recordingsDir = path.join(projectRoot, '.testorbit', 'android', 'recordings');
+  const recordingsDir = path.join(projectRoot, '.test-orbit', 'android', 'recordings');
   fs.mkdirSync(recordingsDir, { recursive: true });
   fs.writeFileSync(
     path.join(recordingsDir, 'old-flow.json'),
@@ -107,7 +107,7 @@ describe('GenerateMapUseCase edges', () => {
   let projectRoot: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-genmap-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-genmap-'));
   });
 
   afterEach(() => {
@@ -130,7 +130,7 @@ describe('GenerateMapUseCase edges', () => {
     buildFixture(projectRoot, '2026-11-13T11:00:00.000Z');
     const elementsPath = path.join(
       projectRoot,
-      '.testorbit',
+      '.test-orbit',
       'android',
       'screens',
       'checkout',
@@ -148,7 +148,7 @@ describe('GenerateMapUseCase coverage', () => {
   let projectRoot: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-genmap-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-genmap-'));
   });
 
   afterEach(() => {

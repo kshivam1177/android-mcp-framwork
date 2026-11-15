@@ -1,5 +1,5 @@
 /**
- * `orbit run` (Phase 4) — thin wrapper around the TestOrbit Runner
+ * `orbit run` (Phase 4) — thin wrapper around the test-orbit Runner
  * (`RunTestUseCase`): pre-flow detection, `maestro test`, post-run
  * failure analysis, report. Prints the report path and exits 1 when
  * the run fails. Output goes through `process.stdout.write`.

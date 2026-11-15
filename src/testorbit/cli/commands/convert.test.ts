@@ -15,10 +15,10 @@ describe('runConvertCommand', () => {
   let output: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-cli-convert-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-cli-convert-'));
     output = '';
     writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));
-    const recordingsDir = path.join(projectRoot, '.testorbit', 'android', 'recordings');
+    const recordingsDir = path.join(projectRoot, '.test-orbit', 'android', 'recordings');
     fs.mkdirSync(recordingsDir, { recursive: true });
     fs.writeFileSync(
       path.join(recordingsDir, 'login-flow.json'),
@@ -55,6 +55,6 @@ describe('runConvertCommand', () => {
     });
     expect(code).toBe(0);
     expect(output).toContain('login-flow.yaml');
-    expect(fs.existsSync(path.join(projectRoot, '.testorbit', 'android', 'tests', 'login-flow.yaml'))).toBe(true);
+    expect(fs.existsSync(path.join(projectRoot, '.test-orbit', 'android', 'tests', 'login-flow.yaml'))).toBe(true);
   });
 });

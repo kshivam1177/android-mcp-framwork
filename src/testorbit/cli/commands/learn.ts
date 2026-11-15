@@ -4,7 +4,7 @@
  *
  * Thin wrapper around `LearnScreenUseCase`: drive the app into the
  * variant's state, dump the hierarchy, learn the variant. Output goes
- * through `process.stdout.write` (no `console.log` in TestOrbit code).
+ * through `process.stdout.write` (no `console.log` in test-orbit code).
  */
 import { LearnScreenUseCase } from '../../application/learn-screen.js';
 import { TestOrbitError } from '../../domain/errors.js';

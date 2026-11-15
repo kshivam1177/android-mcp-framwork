@@ -28,7 +28,7 @@ describe('variantAssertionCommands', () => {
   let projectRoot: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-export-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-export-'));
     writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));
   });
 
@@ -50,7 +50,7 @@ describe('variantAssertionCommands', () => {
 
 describe('buildMaestroFlow', () => {
   it('builds a validated flow with setup and teardown', () => {
-    const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-export-'));
+    const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-export-'));
     try {
       writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));
       const store = new VariantStore(projectRoot, 'android');

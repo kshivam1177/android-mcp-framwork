@@ -12,7 +12,7 @@ import type { CoreHierarchyNode } from '../domain/types.js';
 
 /** Temp project with a fresh LearnScreenUseCase. */
 function makeUseCase(): { projectRoot: string; useCase: LearnScreenUseCase; store: VariantStore } {
-  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-learn-'));
+  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-learn-'));
   const store = new VariantStore(projectRoot, 'android');
   return { projectRoot, useCase: new LearnScreenUseCase(store), store };
 }
@@ -64,13 +64,13 @@ function relearnCard(
 }
 
 function readVariant(projectRoot: string, screenId: string, variantId: string): Record<string, unknown> {
-  const filePath = path.join(projectRoot, '.testorbit', 'android', 'screens', screenId, 'variants', `${variantId}.json`);
+  const filePath = path.join(projectRoot, '.test-orbit', 'android', 'screens', screenId, 'variants', `${variantId}.json`);
   return JSON.parse(fs.readFileSync(filePath, 'utf8')) as Record<string, unknown>;
 }
 
 /** Read a learned screen's elements.json as id-keyed records. */
 function readElements(projectRoot: string, screenId: string): Array<Record<string, unknown>> {
-  const filePath = path.join(projectRoot, '.testorbit', 'android', 'screens', screenId, 'elements.json');
+  const filePath = path.join(projectRoot, '.test-orbit', 'android', 'screens', screenId, 'elements.json');
   return JSON.parse(fs.readFileSync(filePath, 'utf8')) as Array<Record<string, unknown>>;
 }
 
@@ -115,7 +115,7 @@ describe('LearnScreenUseCase — first variant', () => {
     const stored = parseVariantDefinition(readVariant(projectRoot, 'checkout', 'checkout.online-card'), 'x');
     expect(stored.required).toEqual(result.definition.required);
     const elements = JSON.parse(
-      fs.readFileSync(path.join(projectRoot, '.testorbit', 'android', 'screens', 'checkout', 'elements.json'), 'utf8'),
+      fs.readFileSync(path.join(projectRoot, '.test-orbit', 'android', 'screens', 'checkout', 'elements.json'), 'utf8'),
     ) as unknown[];
     expect(elements).toHaveLength(7);
   });
@@ -192,7 +192,7 @@ describe('LearnScreenUseCase — safe re-learn (Phase 3)', () => {
     expect(first.elementBackupPath).toBeNull();
     const elementsPath = path.join(
       projectRoot,
-      '.testorbit',
+      '.test-orbit',
       'android',
       'screens',
       'checkout',

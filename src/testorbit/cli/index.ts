@@ -7,7 +7,7 @@
  * directory. `record` is dry-run by default (writes nothing).
  *
  * Output goes through `process.stdout.write` / `process.stderr.write`
- * (no `console.log` in TestOrbit code, Part D).
+ * (no `console.log` in test-orbit code, Part D).
  */
 import path from 'node:path';
 import { AndroidHierarchyProvider } from '../infrastructure/hierarchy-provider.js';

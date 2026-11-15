@@ -16,7 +16,7 @@ describe('runCheckCommand', () => {
   let output: string;
 
   beforeEach(() => {
-    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'testorbit-cli-check-'));
+    projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'test-orbit-cli-check-'));
     output = '';
     writeFixtureScreenTree(projectRoot, 'android', toScreenId('login'));
   });

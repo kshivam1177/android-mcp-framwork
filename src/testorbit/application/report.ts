@@ -2,7 +2,7 @@
  * Run report + failure bundle writer (Part A duties 3–4, Part D D6).
  *
  * One run directory per run:
- * `<platform>/test-reports/<yyyy-mm-dd>/<hhmmss>-testorbit-<runId>/`,
+ * `<platform>/test-reports/<yyyy-mm-dd>/<hhmmss>-test-orbit-<runId>/`,
  * holding `run-report.json`, the hierarchy dumps, and the failure
  * bundle when the run fails. The report distinguishes plan / record /
  * replay LLM counts, and the replay count is always 0 — the Runner
@@ -26,7 +26,7 @@ export function createRunDir(projectRoot: string, platform: Platform): { dir: st
   const now = new Date();
   const date = now.toISOString().slice(0, 10);
   const time = now.toISOString().slice(11, 19).replace(/:/g, '');
-  const dir = path.join(getPlatformDir(projectRoot, platform), 'test-reports', date, `${time}-testorbit-${runId}`);
+  const dir = path.join(getPlatformDir(projectRoot, platform), 'test-reports', date, `${time}-test-orbit-${runId}`);
   fs.mkdirSync(dir, { recursive: true });
   return { dir, runId };
 }
