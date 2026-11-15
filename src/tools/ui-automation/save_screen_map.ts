@@ -34,7 +34,7 @@ export function register(server: McpServer) {
       const nodes = parseUiHierarchy(hierarchy);
       cacheSnapshot({ targetId: target.id, capturedAt: new Date().toISOString(), backend: backend.name, nodes });
       const projectRoot = path.resolve(args.projectPath ?? process.cwd());
-      const mapDir = path.join(projectRoot, '.testorbit', 'screen-maps');
+      const mapDir = path.join(projectRoot, '.test-orbit', 'screen-maps');
       const imageDir = path.join(mapDir, 'images');
       fs.mkdirSync(imageDir, { recursive: true });
       const imageExtension = screenshot.mimeType === 'image/jpeg' ? 'jpg' : 'png';

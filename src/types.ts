@@ -106,7 +106,7 @@ export class TestOrbitFrameworkError extends Error {
     this.name = 'TestOrbitFrameworkError';
     this.code = code;
     // Optional field assigned only when defined: an explicit `undefined`
-    // is not assignable under `exactOptionalPropertyTypes` (TestOrbit tsconfig).
+    // is not assignable under `exactOptionalPropertyTypes` (test-orbit tsconfig).
     if (details !== undefined) this.details = details;
   }
 }
